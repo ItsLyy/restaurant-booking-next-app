@@ -9,7 +9,7 @@ const dmSans = DM_Sans({
   variable: "--font-dm-sans",
 });
 
-Playfair_Display({
+const playfairDisplay = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-playfair-display",
 });
@@ -27,7 +27,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${dmSans.variable} h-full text-c-body antialiased`}
+      className={`${dmSans.variable} ${playfairDisplay.variable} h-full text-c-body antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
