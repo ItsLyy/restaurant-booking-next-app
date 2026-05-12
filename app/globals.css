@@ -26,8 +26,8 @@
   .text-d-label        { @apply text-[10px] font-medium uppercase tracking-widest text-muted; }
 
   .text-c-header-xl  { @apply text-4xl font-playfair-display leading-tight; }
-  .text-c-header-lg  { @apply text-3xl font-playfair-display leading-snug; }
-  .text-c-header-md  { @apply text-xl font-playfair-display leading-snug; }
+  .text-c-header-lg  { @apply text-3xl font-playfair-display leading-tight; }
+  .text-c-header-md  { @apply text-xl font-playfair-display leading-tight; }
   .text-c-body       { @apply text-base text-muted; }
   .text-c-caption    { @apply text-xs text-muted; }
   .text-c-ref        { @apply text-[13px] font-mono; }
