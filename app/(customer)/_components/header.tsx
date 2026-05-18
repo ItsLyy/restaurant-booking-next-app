@@ -21,8 +21,8 @@ const Header = () => {
           >
             <MagnifyingGlassIcon weight="duotone" className="size-5" />
           </Button>
-          <Button as="link" href="/login" className="h-full py-0!">
-            Login
+          <Button as="link" href="/signin" className="h-full py-0!">
+            Sign in
           </Button>
         </div>
       </nav>

@@ -19,7 +19,7 @@ interface AsLinkProps extends LinkProps {
 
 type ButtonProps = BaseButtonProps & (AsButtonProps | AsLinkProps);
 
-const Button = ({
+export const Button = ({
   children,
   className = "",
   variant = "default",
@@ -27,7 +27,7 @@ const Button = ({
   ...props
 }: ButtonProps) => {
   const baseClassName =
-    "px-6 py-4 flex justify-center items-center cursor-pointer text-c-button rounded-md";
+    "px-6 h-11 flex justify-center items-center cursor-pointer text-c-button rounded-md focus:outline-0";
   let variantClassName = "";
   switch (variant) {
     case "outline":

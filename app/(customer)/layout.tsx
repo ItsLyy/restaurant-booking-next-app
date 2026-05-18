@@ -2,9 +2,9 @@ import { Footer, Header } from "./_components";
 
 export default function CustomerLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
     <>
       <Header />
