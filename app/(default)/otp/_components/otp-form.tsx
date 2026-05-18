@@ -78,7 +78,9 @@ const InputCode = ({ ref, index, ...props }: InputCodeProps) => {
       type="number"
       className="border-muted text-foreground bg-base-200 border rounded-lg text-center text-lg focus:outline-none focus:ring-2 focus:ring-accent-200/20 ease-in-out duration-300 transition-all"
       maxLength={1}
-      ref={(el: HTMLInputElement) => (ref.current[index] = el)}
+      ref={(el: HTMLInputElement) => {
+        ref.current[index] = el;
+      }}
     />
   );
 };
