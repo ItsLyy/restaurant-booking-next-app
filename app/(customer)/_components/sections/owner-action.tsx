@@ -2,7 +2,7 @@ import Image from "next/image";
 
 import banner from "@assets/images/owner-banner.jpg";
 
-const OwnerActionSection = () => {
+export const OwnerActionSection = () => {
   return (
     <section className="relative text-base-100 bg-base-200 rounded-lg w-full overflow-hidden">
       <Image
@@ -24,5 +24,3 @@ const OwnerActionSection = () => {
     </section>
   );
 };
-
-export default OwnerActionSection;

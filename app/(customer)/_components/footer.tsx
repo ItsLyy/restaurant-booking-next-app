@@ -1,8 +1,8 @@
 import Link from "next/link";
 
-import { Logo } from "@components/index";
+import { Logo } from "@components/general/logo";
 
-const Footer = () => {
+export const Footer = () => {
   return (
     <footer className="h-75 w-full bg-base-200">
       <div className="max-w-300 w-full mx-auto py-6 px-4 flex justify-between">
@@ -25,5 +25,3 @@ const Footer = () => {
     </footer>
   );
 };
-
-export default Footer;
