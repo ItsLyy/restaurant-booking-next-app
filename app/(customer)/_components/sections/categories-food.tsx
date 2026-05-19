@@ -1,11 +1,9 @@
 import CategoryGrid from "../categories/categories-grid";
 
-const CategoriesFood = () => {
+export const CategoriesFoodSection = () => {
   return (
     <section className="p-2">
       <CategoryGrid />
     </section>
   );
 };
-
-export default CategoriesFood;

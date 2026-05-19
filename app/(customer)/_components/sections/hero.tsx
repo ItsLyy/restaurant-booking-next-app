@@ -1,10 +1,10 @@
 import Image from "next/image";
 
-import Button from "@components/ui/button";
+import { Button } from "@components/ui/button";
 
 import heroBanner from "@assets/images/hero-banner.jpg";
 
-export default function HeroSection() {
+export const HeroSection = () => {
   return (
     <section className="flex items-center gap-8 w-ful">
       <div className="flex-1 justify-center flex flex-col gap-2">
@@ -33,4 +33,4 @@ export default function HeroSection() {
       </div>
     </section>
   );
-}
+};

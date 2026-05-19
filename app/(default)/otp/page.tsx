@@ -1,5 +1,12 @@
 import OTPForm from "./_components/otp-form";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "OTP Verification",
+  description: "Enter OTP Code sended to your email",
+};
+
 export default function OTPPage() {
   return (
     <section className="flex h-svh w-full justify-center items-center">

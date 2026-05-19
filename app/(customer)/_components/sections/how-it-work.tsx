@@ -1,6 +1,6 @@
-import { Button } from "@components/index";
+import { Button } from "@components/ui/button";
 
-export default function HowItWorkSection() {
+export const HowItWorkSection = () => {
   return (
     <section className="w-full p-6 pb-12 bg-base-200 rounded-lg space-y-4 shadow-sm shadow-black/5">
       <h2 className="text-c-header-md text-foreground">How It Works</h2>
@@ -33,7 +33,7 @@ export default function HowItWorkSection() {
       </div>
     </section>
   );
-}
+};
 
 const Steps = ({
   number,

@@ -3,7 +3,7 @@ import { MagnifyingGlassIcon } from "@phosphor-icons/react/dist/ssr";
 
 import { Button, Logo } from "@components";
 
-const Header = () => {
+export const Header = () => {
   return (
     <header className="w-full sticky top-0 left-0 bg-base-100 z-20">
       <nav className="w-full max-w-300 mx-auto p-4 flex justify-between">
@@ -29,5 +29,3 @@ const Header = () => {
     </header>
   );
 };
-
-export default Header;

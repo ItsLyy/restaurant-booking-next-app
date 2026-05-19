@@ -15,7 +15,10 @@ const playfairDisplay = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "RES.BOOK",
+  title: {
+    default: "RES.BOOK",
+    template: "%s | RES.BOOK",
+  },
   description: "A book system for restaurants in your area.",
 };
 

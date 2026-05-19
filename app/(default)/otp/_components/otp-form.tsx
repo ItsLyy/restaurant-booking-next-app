@@ -9,7 +9,7 @@ import { verifyOTPAction } from "../_actions/otp";
 import type { InputHTMLAttributes } from "react";
 
 const OTPForm = () => {
-  const [codes, setCodes] = useState(new Array(6).fill(""));
+  const [codes, setCodes] = useState(() => new Array(6).fill(""));
   const inputRef = useRef<HTMLInputElement[]>([]);
 
   const handleChange = (
@@ -43,8 +43,9 @@ const OTPForm = () => {
     <Form className="space-y-12" action={verifyOTPAction}>
       <div className="grid grid-cols-6 grid-row-1 gap-3 w-full h-15">
         {codes.map((code, index) => (
+          // biome-ignore lint/correctness/noArrayIndexKey: static fixed-length OTP array, never reordered
           <InputCode
-            key={index}
+            key={`otp-field-${index}`}
             value={code}
             ref={inputRef}
             index={index}

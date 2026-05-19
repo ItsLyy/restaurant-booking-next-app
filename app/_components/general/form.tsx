@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useActionState, useContext } from "react";
+import { createContext, use, useActionState } from "react";
 
 import { Button } from "../ui/button";
 import { InputField } from "../ui/input-field";
@@ -23,7 +23,7 @@ interface FormContextProps {
 
 const FormContext = createContext<FormContextProps | undefined>(undefined);
 export const useFormContext = () => {
-  const context = useContext(FormContext);
+  const context = use(FormContext);
   if (!context) throw new Error("useFormContext must be used within a Form");
   return context;
 };
