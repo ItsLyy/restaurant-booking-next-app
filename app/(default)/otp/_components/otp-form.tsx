@@ -43,7 +43,6 @@ const OTPForm = () => {
     <Form className="space-y-12" action={verifyOTPAction}>
       <div className="grid grid-cols-6 grid-row-1 gap-3 w-full h-15">
         {codes.map((code, index) => (
-          // biome-ignore lint/correctness/noArrayIndexKey: static fixed-length OTP array, never reordered
           <InputCode
             key={`otp-field-${index}`}
             value={code}

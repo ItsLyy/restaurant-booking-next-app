@@ -1,0 +1,24 @@
+[
+  {
+    "id": "review-001",
+    "customerComment": "Absolutely fantastic experience! The curry was rich and aromatic, and the naan bread was perfectly charred. Our server Anjali was incredibly attentive and knowledgeable about the menu. Will definitely return!",
+    "customerRating": 5,
+    "customerCommentAt": "2026-05-16T10:30:00.000Z",
+    "ownerReply": "Thank you so much for your kind words! We are thrilled you enjoyed your evening at The Spice Route. Anjali and the entire team look forward to welcoming you back soon!",
+    "ownerReplyAt": "2026-05-16T14:00:00.000Z",
+    "bookingId": "booking-002",
+    "createdAt": "2026-05-16T10:30:00.000Z",
+    "updatedAt": "2026-05-16T14:00:00.000Z"
+  },
+  {
+    "id": "review-002",
+    "customerComment": "Wonderful birthday dinner for our group! The Spice Lounge area was cosy and the staff went out of their way to make the birthday surprise special. The biryani was the highlight — absolutely mouth-watering. Four stars only because we had to wait a bit longer than expected for our starters.",
+    "customerRating": 4,
+    "customerCommentAt": "2026-05-19T09:15:00.000Z",
+    "ownerReply": "Happy belated birthday to the guest of honour! We appreciate your honest feedback and will work on our starter timing. So glad the biryani and the birthday surprise hit the mark — see you again soon!",
+    "ownerReplyAt": "2026-05-19T13:00:00.000Z",
+    "bookingId": "booking-005",
+    "createdAt": "2026-05-19T09:15:00.000Z",
+    "updatedAt": "2026-05-19T13:00:00.000Z"
+  }
+]

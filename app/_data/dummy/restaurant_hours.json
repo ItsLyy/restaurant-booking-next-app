@@ -1,0 +1,151 @@
+[
+  {
+    "id": "hours-001",
+    "dayOfWeek": 0,
+    "openTime": "11:00",
+    "closeTime": "22:00",
+    "restaurantId": "rest-001"
+  },
+  {
+    "id": "hours-002",
+    "dayOfWeek": 1,
+    "openTime": "11:30",
+    "closeTime": "22:00",
+    "restaurantId": "rest-001"
+  },
+  {
+    "id": "hours-003",
+    "dayOfWeek": 2,
+    "openTime": "11:30",
+    "closeTime": "22:00",
+    "restaurantId": "rest-001"
+  },
+  {
+    "id": "hours-004",
+    "dayOfWeek": 3,
+    "openTime": "11:30",
+    "closeTime": "22:00",
+    "restaurantId": "rest-001"
+  },
+  {
+    "id": "hours-005",
+    "dayOfWeek": 4,
+    "openTime": "11:30",
+    "closeTime": "23:00",
+    "restaurantId": "rest-001"
+  },
+  {
+    "id": "hours-006",
+    "dayOfWeek": 5,
+    "openTime": "11:00",
+    "closeTime": "23:00",
+    "restaurantId": "rest-001"
+  },
+  {
+    "id": "hours-007",
+    "dayOfWeek": 6,
+    "openTime": "11:00",
+    "closeTime": "22:00",
+    "restaurantId": "rest-001"
+  },
+
+  {
+    "id": "hours-008",
+    "dayOfWeek": 0,
+    "openTime": "12:00",
+    "closeTime": "23:00",
+    "restaurantId": "rest-002"
+  },
+  {
+    "id": "hours-009",
+    "dayOfWeek": 1,
+    "openTime": "12:00",
+    "closeTime": "22:30",
+    "restaurantId": "rest-002"
+  },
+  {
+    "id": "hours-010",
+    "dayOfWeek": 2,
+    "openTime": "12:00",
+    "closeTime": "22:30",
+    "restaurantId": "rest-002"
+  },
+  {
+    "id": "hours-011",
+    "dayOfWeek": 3,
+    "openTime": "12:00",
+    "closeTime": "22:30",
+    "restaurantId": "rest-002"
+  },
+  {
+    "id": "hours-012",
+    "dayOfWeek": 4,
+    "openTime": "12:00",
+    "closeTime": "23:00",
+    "restaurantId": "rest-002"
+  },
+  {
+    "id": "hours-013",
+    "dayOfWeek": 5,
+    "openTime": "11:00",
+    "closeTime": "23:30",
+    "restaurantId": "rest-002"
+  },
+  {
+    "id": "hours-014",
+    "dayOfWeek": 6,
+    "openTime": "11:00",
+    "closeTime": "23:00",
+    "restaurantId": "rest-002"
+  },
+
+  {
+    "id": "hours-015",
+    "dayOfWeek": 0,
+    "openTime": "12:30",
+    "closeTime": "22:30",
+    "restaurantId": "rest-003"
+  },
+  {
+    "id": "hours-016",
+    "dayOfWeek": 1,
+    "openTime": "12:00",
+    "closeTime": "22:00",
+    "restaurantId": "rest-003"
+  },
+  {
+    "id": "hours-017",
+    "dayOfWeek": 2,
+    "openTime": "12:00",
+    "closeTime": "22:00",
+    "restaurantId": "rest-003"
+  },
+  {
+    "id": "hours-018",
+    "dayOfWeek": 3,
+    "openTime": "12:00",
+    "closeTime": "22:00",
+    "restaurantId": "rest-003"
+  },
+  {
+    "id": "hours-019",
+    "dayOfWeek": 4,
+    "openTime": "12:00",
+    "closeTime": "23:00",
+    "restaurantId": "rest-003"
+  },
+  {
+    "id": "hours-020",
+    "dayOfWeek": 5,
+    "openTime": "11:30",
+    "closeTime": "23:30",
+    "restaurantId": "rest-003"
+  },
+  {
+    "id": "hours-021",
+    "dayOfWeek": 6,
+    "openTime": "11:30",
+    "closeTime": "23:00",
+    "restaurantId": "rest-003"
+  }
+]

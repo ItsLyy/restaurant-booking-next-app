@@ -1,0 +1,92 @@
+[
+  {
+    "id": "table-001",
+    "name": "Sakura Suite",
+    "price": 25000,
+    "category": "private",
+    "floor": 2,
+    "restaurantId": "rest-001",
+    "createdAt": "2024-01-12T11:00:00.000Z",
+    "updatedAt": "2024-01-12T11:00:00.000Z"
+  },
+  {
+    "id": "table-002",
+    "name": "Garden View A",
+    "price": 15000,
+    "category": "standard",
+    "floor": 1,
+    "restaurantId": "rest-001",
+    "createdAt": "2024-01-12T11:05:00.000Z",
+    "updatedAt": "2024-01-12T11:05:00.000Z"
+  },
+  {
+    "id": "table-003",
+    "name": "Tatami Room",
+    "price": 35000,
+    "category": "private",
+    "floor": 1,
+    "restaurantId": "rest-001",
+    "createdAt": "2024-01-12T11:10:00.000Z",
+    "updatedAt": "2024-01-12T11:10:00.000Z"
+  },
+  {
+    "id": "table-004",
+    "name": "Mango Corner",
+    "price": 10000,
+    "category": "standard",
+    "floor": 1,
+    "restaurantId": "rest-002",
+    "createdAt": "2024-02-07T12:30:00.000Z",
+    "updatedAt": "2024-02-07T12:30:00.000Z"
+  },
+  {
+    "id": "table-005",
+    "name": "Spice Lounge",
+    "price": 18000,
+    "category": "lounge",
+    "floor": 1,
+    "restaurantId": "rest-002",
+    "createdAt": "2024-02-07T12:35:00.000Z",
+    "updatedAt": "2024-02-07T12:35:00.000Z"
+  },
+  {
+    "id": "table-006",
+    "name": "Rooftop Terrace",
+    "price": 22000,
+    "category": "outdoor",
+    "floor": 3,
+    "restaurantId": "rest-002",
+    "createdAt": "2024-02-07T12:40:00.000Z",
+    "updatedAt": "2024-02-07T12:40:00.000Z"
+  },
+  {
+    "id": "table-007",
+    "name": "Cantina Table",
+    "price": 12000,
+    "category": "standard",
+    "floor": 1,
+    "restaurantId": "rest-003",
+    "createdAt": "2024-03-03T15:00:00.000Z",
+    "updatedAt": "2024-03-03T15:00:00.000Z"
+  },
+  {
+    "id": "table-008",
+    "name": "Vineyard Booth",
+    "price": 20000,
+    "category": "booth",
+    "floor": 1,
+    "restaurantId": "rest-003",
+    "createdAt": "2024-03-03T15:05:00.000Z",
+    "updatedAt": "2024-03-03T15:05:00.000Z"
+  },
+  {
+    "id": "table-009",
+    "name": "Chef's Counter",
+    "price": 40000,
+    "category": "counter",
+    "floor": 1,
+    "restaurantId": "rest-003",
+    "createdAt": "2024-03-03T15:10:00.000Z",
+    "updatedAt": "2024-03-03T15:10:00.000Z"
+  }
+]

@@ -1,0 +1,86 @@
+[
+  {
+    "id": "booking-001",
+    "date": "2026-06-10",
+    "time": "19:00",
+    "partySize": 2,
+    "specialRequest": "Window seat if possible, celebrating anniversary",
+    "status": "confirmed",
+    "customerId": "user-001",
+    "tableId": "table-001",
+    "createdAt": "2026-05-20T10:00:00.000Z",
+    "updatedAt": "2026-05-20T10:15:00.000Z"
+  },
+  {
+    "id": "booking-002",
+    "date": "2026-05-15",
+    "time": "20:00",
+    "partySize": 4,
+    "specialRequest": null,
+    "status": "completed",
+    "customerId": "user-002",
+    "tableId": "table-004",
+    "createdAt": "2026-05-10T14:00:00.000Z",
+    "updatedAt": "2026-05-15T22:30:00.000Z"
+  },
+  {
+    "id": "booking-003",
+    "date": "2026-06-18",
+    "time": "18:30",
+    "partySize": 3,
+    "specialRequest": "One guest has gluten intolerance, please advise the chef",
+    "status": "pending",
+    "customerId": "user-003",
+    "tableId": "table-007",
+    "createdAt": "2026-05-22T09:30:00.000Z",
+    "updatedAt": "2026-05-22T09:30:00.000Z"
+  },
+  {
+    "id": "booking-004",
+    "date": "2026-05-05",
+    "time": "19:30",
+    "partySize": 2,
+    "specialRequest": null,
+    "status": "cancelled",
+    "customerId": "user-004",
+    "tableId": "table-002",
+    "createdAt": "2026-04-28T16:00:00.000Z",
+    "updatedAt": "2026-05-02T11:00:00.000Z"
+  },
+  {
+    "id": "booking-005",
+    "date": "2026-05-18",
+    "time": "13:00",
+    "partySize": 6,
+    "specialRequest": "Birthday celebration, surprise dessert for the guest of honour",
+    "status": "completed",
+    "customerId": "user-005",
+    "tableId": "table-005",
+    "createdAt": "2026-05-12T08:00:00.000Z",
+    "updatedAt": "2026-05-18T15:00:00.000Z"
+  },
+  {
+    "id": "booking-006",
+    "date": "2026-07-02",
+    "time": "20:30",
+    "partySize": 2,
+    "specialRequest": "Quiet corner table preferred",
+    "status": "confirmed",
+    "customerId": "user-003",
+    "tableId": "table-009",
+    "createdAt": "2026-05-25T11:00:00.000Z",
+    "updatedAt": "2026-05-25T11:20:00.000Z"
+  },
+  {
+    "id": "booking-007",
+    "date": "2026-05-10",
+    "time": "19:00",
+    "partySize": 1,
+    "specialRequest": null,
+    "status": "no_show",
+    "customerId": "user-001",
+    "tableId": "table-006",
+    "createdAt": "2026-05-05T13:00:00.000Z",
+    "updatedAt": "2026-05-10T21:00:00.000Z"
+  }
+]

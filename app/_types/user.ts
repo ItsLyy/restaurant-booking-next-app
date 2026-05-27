@@ -1,0 +1,31 @@
+export interface IUser {
+  id: string;
+  username: string;
+  email: string;
+  password: string;
+  role: "owner" | "officer" | "customer";
+  emailVerifyAt: string;
+  allergics: string[];
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface IOwner extends IUser {
+  businessLicense?: string;
+  verifyAt?: string;
+}
+
+export interface IOfficer extends IUser {
+  position: "manager" | "staff";
+  invitedBy: string;
+  restaurantId: string;
+}
+
+export interface IOTPToken {
+  id: string;
+  email: string;
+  code: string;
+  type: "email_verification" | "two_factor" | "password_reset";
+  expiresAt: string;
+  createdAt?: string;
+}
