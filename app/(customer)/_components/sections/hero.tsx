@@ -16,10 +16,10 @@ export const HeroSection = () => {
         </span>
         <div className="mt-8 flex gap-2">
           <Button as="link" href="/restaurants">
-            Browse Restaurant
+            Browse Restaurants
           </Button>
           <Button as="link" href="/signin" variant="outline">
-            Sign to Book
+            Sign in to Book
           </Button>
         </div>
       </div>
