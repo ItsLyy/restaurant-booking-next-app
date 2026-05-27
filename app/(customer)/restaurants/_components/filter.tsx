@@ -2,7 +2,9 @@ import { Button } from "@components";
 
 export const Filter = () => {
   return (
-    <Button as="button" className="rounded-lg!">
+    <Button as="button" type="button" className="rounded-lg!">
+      Filter
+    </Button>
       Filter
     </Button>
   );
