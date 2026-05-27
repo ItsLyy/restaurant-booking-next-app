@@ -1,0 +1,55 @@
+export interface IRestaurant {
+  id: string;
+  name: string;
+  slug: string;
+  country: string;
+  city: string;
+  address: string;
+  tags: string[];
+  ownerId: string;
+  discount?: number;
+  description: string;
+  shortDescription?: string;
+  lat?: number;
+  lng?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface IRestaurantPhoto {
+  id: string;
+  url: string;
+  isCover: boolean;
+  restaurantId: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface IRestaurantHour {
+  id: string;
+  dayOfWeek: number;
+  openTime: string;
+  closeTime: string;
+  restaurantId: string;
+}
+
+export interface ITable {
+  id: string;
+  name: string;
+  price: number;
+  category: string;
+  floor: number;
+  restaurantId: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface IRestaurantListItem extends Omit<
+  IRestaurant,
+  "ownerId" | "createdAt" | "updatedAt"
+> {
+  image: string;
+  rating: number;
+  minPrice: number;
+  maxPrice?: number;
+}

@@ -4,7 +4,7 @@ import { Logo } from "@components/general/logo";
 
 export const Footer = () => {
   return (
-    <footer className="h-75 w-full bg-base-200">
+    <footer className="shrink-0 h-75 w-full bg-base-200">
       <div className="max-w-300 w-full mx-auto py-6 px-4 flex justify-between">
         <Link href="/" className="flex gap-2 items-center">
           <Logo />

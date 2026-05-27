@@ -1,0 +1,57 @@
+[
+  {
+    "id": "user-001",
+    "username": "alice_johnson",
+    "email": "alice.johnson@gmail.com",
+    "password": "$2b$10$hI4jK5lM6nO7pQ8rS9tU0vW1xY2zA3bC4dE5fG6hI7jK8lM9nO0pQ",
+    "role": "customer",
+    "emailVerifyAt": "2024-04-01T12:00:00.000Z",
+    "allergics": ["peanuts", "shellfish"],
+    "createdAt": "2024-03-30T10:00:00.000Z",
+    "updatedAt": "2024-04-01T12:00:00.000Z"
+  },
+  {
+    "id": "user-002",
+    "username": "ben_nguyen",
+    "email": "ben.nguyen@outlook.com",
+    "password": "$2b$10$jK5lM6nO7pQ8rS9tU0vW1xY2zA3bC4dE5fG6hI7jK8lM9nO0pQ1rS",
+    "role": "customer",
+    "emailVerifyAt": "2024-04-05T09:00:00.000Z",
+    "allergics": [],
+    "createdAt": "2024-04-04T08:30:00.000Z",
+    "updatedAt": "2024-04-05T09:00:00.000Z"
+  },
+  {
+    "id": "user-003",
+    "username": "clara_smith",
+    "email": "clara.smith@yahoo.com",
+    "password": "$2b$10$lM6nO7pQ8rS9tU0vW1xY2zA3bC4dE5fG6hI7jK8lM9nO0pQ1rS2tU",
+    "role": "customer",
+    "emailVerifyAt": "2024-04-10T11:30:00.000Z",
+    "allergics": ["gluten", "dairy"],
+    "createdAt": "2024-04-09T09:00:00.000Z",
+    "updatedAt": "2024-04-10T11:30:00.000Z"
+  },
+  {
+    "id": "user-004",
+    "username": "daniel_park",
+    "email": "daniel.park@gmail.com",
+    "password": "$2b$10$nO7pQ8rS9tU0vW1xY2zA3bC4dE5fG6hI7jK8lM9nO0pQ1rS2tU3vW",
+    "role": "customer",
+    "emailVerifyAt": "2024-04-12T14:00:00.000Z",
+    "allergics": ["nuts"],
+    "createdAt": "2024-04-11T13:00:00.000Z",
+    "updatedAt": "2024-04-12T14:00:00.000Z"
+  },
+  {
+    "id": "user-005",
+    "username": "emma_wilson",
+    "email": "emma.wilson@icloud.com",
+    "password": "$2b$10$pQ8rS9tU0vW1xY2zA3bC4dE5fG6hI7jK8lM9nO0pQ1rS2tU3vW4xY",
+    "role": "customer",
+    "emailVerifyAt": "2024-04-15T10:45:00.000Z",
+    "allergics": [],
+    "createdAt": "2024-04-14T09:30:00.000Z",
+    "updatedAt": "2024-04-15T10:45:00.000Z"
+  }
+]

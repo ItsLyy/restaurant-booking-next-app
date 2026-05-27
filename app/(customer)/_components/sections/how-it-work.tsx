@@ -20,6 +20,7 @@ export const HowItWorkSection = () => {
           title="Find your perfect table"
           content="Explore restaurants near you, check real-time availability, and reserve your spot instantly."
           actionLabel="Explore Restaurants"
+          actionLinkTo="/restaurants"
         />
         <div className="py-4">
           <hr className="w-11 text-muted" />

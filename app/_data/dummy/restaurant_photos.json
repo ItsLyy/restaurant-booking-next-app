@@ -1,0 +1,74 @@
+[
+  {
+    "id": "photo-001",
+    "url": "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=1200",
+    "isCover": true,
+    "restaurantId": "rest-001",
+    "createdAt": "2024-01-12T10:30:00.000Z",
+    "updatedAt": "2024-01-12T10:30:00.000Z"
+  },
+  {
+    "id": "photo-002",
+    "url": "https://images.unsplash.com/photo-1611143669185-af224c5e3252?w=1200",
+    "isCover": false,
+    "restaurantId": "rest-001",
+    "createdAt": "2024-01-12T10:35:00.000Z",
+    "updatedAt": "2024-01-12T10:35:00.000Z"
+  },
+  {
+    "id": "photo-003",
+    "url": "https://images.unsplash.com/photo-1493770348161-369560ae357d?w=1200",
+    "isCover": false,
+    "restaurantId": "rest-001",
+    "createdAt": "2024-01-12T10:40:00.000Z",
+    "updatedAt": "2024-01-12T10:40:00.000Z"
+  },
+  {
+    "id": "photo-004",
+    "url": "https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=1200",
+    "isCover": true,
+    "restaurantId": "rest-002",
+    "createdAt": "2024-02-07T12:00:00.000Z",
+    "updatedAt": "2024-02-07T12:00:00.000Z"
+  },
+  {
+    "id": "photo-005",
+    "url": "https://images.unsplash.com/photo-1567337710282-00832b415979?w=1200",
+    "isCover": false,
+    "restaurantId": "rest-002",
+    "createdAt": "2024-02-07T12:05:00.000Z",
+    "updatedAt": "2024-02-07T12:05:00.000Z"
+  },
+  {
+    "id": "photo-006",
+    "url": "https://images.unsplash.com/photo-1596797038530-2c107229654b?w=1200",
+    "isCover": false,
+    "restaurantId": "rest-002",
+    "createdAt": "2024-02-07T12:10:00.000Z",
+    "updatedAt": "2024-02-07T12:10:00.000Z"
+  },
+  {
+    "id": "photo-007",
+    "url": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1200",
+    "isCover": true,
+    "restaurantId": "rest-003",
+    "createdAt": "2024-03-03T14:30:00.000Z",
+    "updatedAt": "2024-03-03T14:30:00.000Z"
+  },
+  {
+    "id": "photo-008",
+    "url": "https://images.unsplash.com/photo-1551183053-bf91798d5264?w=1200",
+    "isCover": false,
+    "restaurantId": "rest-003",
+    "createdAt": "2024-03-03T14:35:00.000Z",
+    "updatedAt": "2024-03-03T14:35:00.000Z"
+  },
+  {
+    "id": "photo-009",
+    "url": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200",
+    "isCover": false,
+    "restaurantId": "rest-003",
+    "createdAt": "2024-03-03T14:40:00.000Z",
+    "updatedAt": "2024-03-03T14:40:00.000Z"
+  }
+]

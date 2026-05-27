@@ -15,7 +15,8 @@ export const Header = () => {
         </Link>
         <div className="flex gap-2">
           <Button
-            as="button"
+            as="link"
+            href="/restaurants?search="
             variant="outline"
             className="size-11 p-0! border! flex justify-center items-center"
           >

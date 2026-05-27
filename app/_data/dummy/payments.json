@@ -1,0 +1,72 @@
+[
+  {
+    "id": "payment-001",
+    "price": 90,
+    "status": "unpaid",
+    "deadline": "2026-05-23T23:59:59.000Z",
+    "gatewayToken": "tok_sandbox_aB1cD2eF3gH4iJ5kL6mN",
+    "bookingId": { "id": "booking-001" },
+    "createdAt": "2026-05-20T10:15:00.000Z",
+    "updatedAt": "2026-05-20T10:15:00.000Z"
+  },
+  {
+    "id": "payment-002",
+    "price": 48,
+    "status": "paid",
+    "deadline": "2026-05-13T23:59:59.000Z",
+    "gatewayToken": "tok_sandbox_zY9xW8vU7tS6rQ5pO4nM",
+    "bookingId": { "id": "booking-002" },
+    "createdAt": "2026-05-10T14:15:00.000Z",
+    "updatedAt": "2026-05-11T08:30:00.000Z"
+  },
+  {
+    "id": "payment-003",
+    "price": 54,
+    "status": "unpaid",
+    "deadline": "2026-05-29T23:59:59.000Z",
+    "gatewayToken": "tok_sandbox_mN8lK7jI6hG5fE4dC3bA",
+    "bookingId": { "id": "booking-003" },
+    "createdAt": "2026-05-22T09:30:00.000Z",
+    "updatedAt": "2026-05-22T09:30:00.000Z"
+  },
+  {
+    "id": "payment-004",
+    "price": 30,
+    "status": "refunded",
+    "deadline": "2026-05-01T23:59:59.000Z",
+    "gatewayToken": "tok_sandbox_pQ9rS0tU1vW2xY3zA4bC",
+    "bookingId": { "id": "booking-004" },
+    "createdAt": "2026-04-28T16:15:00.000Z",
+    "updatedAt": "2026-05-03T10:00:00.000Z"
+  },
+  {
+    "id": "payment-005",
+    "price": 108,
+    "status": "paid",
+    "deadline": "2026-05-15T23:59:59.000Z",
+    "gatewayToken": "tok_sandbox_hI4jK5lM6nO7pQ8rS9tU",
+    "bookingId": { "id": "booking-005" },
+    "createdAt": "2026-05-12T08:15:00.000Z",
+    "updatedAt": "2026-05-13T09:00:00.000Z"
+  },
+  {
+    "id": "payment-006",
+    "price": 80,
+    "status": "unpaid",
+    "deadline": "2026-05-31T23:59:59.000Z",
+    "gatewayToken": "tok_sandbox_jK5lM6nO7pQ8rS9tU0vW",
+    "bookingId": { "id": "booking-006" },
+    "createdAt": "2026-05-25T11:20:00.000Z",
+    "updatedAt": "2026-05-25T11:20:00.000Z"
+  },
+  {
+    "id": "payment-007",
+    "price": 22,
+    "status": "failed",
+    "deadline": "2026-05-08T23:59:59.000Z",
+    "gatewayToken": "tok_sandbox_lM6nO7pQ8rS9tU0vW1xY",
+    "bookingId": { "id": "booking-007" },
+    "createdAt": "2026-05-05T13:15:00.000Z",
+    "updatedAt": "2026-05-08T00:01:00.000Z"
+  }
+]
