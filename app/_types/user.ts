@@ -6,6 +6,7 @@ export interface IUser {
   role: "owner" | "officer" | "customer";
   emailVerifyAt: string;
   allergics: string[];
+  avatar?: string;
   createdAt?: string;
   updatedAt?: string;
 }

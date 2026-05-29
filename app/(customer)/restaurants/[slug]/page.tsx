@@ -15,9 +15,6 @@ export default async function RestaurantDetailPage({
   const restaurant = await getRestaurant(slug);
   if (!restaurant) return null;
 
-  const photos = restaurant.photos.filter((photo) => !photo.isCover);
-  const banner = restaurant.photos.find((photo) => photo.isCover);
-
   return (
     <section className="size-full space-y-4">
       <Breadcrumb name={restaurant.name} />
@@ -26,8 +23,8 @@ export default async function RestaurantDetailPage({
           <Photos
             name={restaurant.name}
             slug={slug}
-            banner={banner ?? photos[0]}
-            photos={photos}
+            cover={restaurant.cover}
+            photos={restaurant.photos}
           />
         </div>
         <div className="w-full flex flex-col grow-0 p-2 gap-4 overflow-hidden">
@@ -40,9 +37,9 @@ export default async function RestaurantDetailPage({
           />
           <p className="text-c-body">{restaurant.description}</p>
           <h2 className="text-c-header-md text-foreground">Menus</h2>
-          <Menus />
+          <Menus menus={restaurant.menus} />
           <h2 className="text-c-header-md text-foreground">Reviews</h2>
-          <Reviews />
+          <Reviews owner={restaurant.owner} reviews={restaurant.reviews} />
         </div>
       </div>
     </section>

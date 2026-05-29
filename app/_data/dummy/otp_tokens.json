@@ -1,0 +1,42 @@
+[
+  {
+    "id": "otp-001",
+    "email": "alice.johnson@gmail.com",
+    "code": "482916",
+    "type": "email_verification",
+    "expiresAt": "2026-05-29T11:00:00.000Z",
+    "createdAt": "2026-05-29T10:45:00.000Z"
+  },
+  {
+    "id": "otp-002",
+    "email": "hiroshi.tanaka@sakuragarden.jp",
+    "code": "739025",
+    "type": "password_reset",
+    "expiresAt": "2026-05-29T11:30:00.000Z",
+    "createdAt": "2026-05-29T11:15:00.000Z"
+  },
+  {
+    "id": "otp-003",
+    "email": "marco.ferrari@labellaitalia.it",
+    "code": "156384",
+    "type": "two_factor",
+    "expiresAt": "2026-05-29T10:20:00.000Z",
+    "createdAt": "2026-05-29T10:15:00.000Z"
+  },
+  {
+    "id": "otp-004",
+    "email": "ben.nguyen@outlook.com",
+    "code": "924071",
+    "type": "email_verification",
+    "expiresAt": "2026-05-30T08:00:00.000Z",
+    "createdAt": "2026-05-29T07:45:00.000Z"
+  },
+  {
+    "id": "otp-005",
+    "email": "priya.sharma@thespiceroute.in",
+    "code": "613847",
+    "type": "two_factor",
+    "expiresAt": "2026-05-29T14:05:00.000Z",
+    "createdAt": "2026-05-29T14:00:00.000Z"
+  }
+]

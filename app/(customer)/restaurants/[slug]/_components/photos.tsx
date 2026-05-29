@@ -6,19 +6,19 @@ import type { IRestaurantPhoto } from "@types";
 type ImageProps = Pick<IRestaurantPhoto, "url" | "id">;
 
 interface PhotosProps {
-  banner: ImageProps;
+  cover: string;
   photos: ImageProps[];
   slug: string;
   name: string;
 }
 
-export const Photos = ({ banner, photos, slug, name }: PhotosProps) => {
+export const Photos = ({ cover, photos, slug, name }: PhotosProps) => {
   return (
     <div className="space-y-4">
       <div className="relative w-full h-67 rounded-2xl overflow-hidden bg-base-200">
         <Image
-          src={banner.url}
-          alt={`banner-${name}`}
+          src={cover}
+          alt={`cover-${name}`}
           fill
           sizes="416px"
           className="text-transparent object-cover object-center"

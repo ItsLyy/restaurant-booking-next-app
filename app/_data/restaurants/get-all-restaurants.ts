@@ -30,7 +30,7 @@ export async function getAllRestaurants(): Promise<GetAllRestaurantsResponse> {
       });
 
     const restaurantImage = restaurantPhotos.find(
-      (photo) => photo.restaurantId === restaurant.id && photo.isCover,
+      (photo) => photo.restaurantId === restaurant.id && photo.type === "cover",
     )?.url;
 
     return {

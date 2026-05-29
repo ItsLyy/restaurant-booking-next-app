@@ -19,7 +19,7 @@ export interface IRestaurant {
 export interface IRestaurantPhoto {
   id: string;
   url: string;
-  isCover: boolean;
+  type: "cover" | "post" | "menu";
   restaurantId: string;
   createdAt?: string;
   updatedAt?: string;

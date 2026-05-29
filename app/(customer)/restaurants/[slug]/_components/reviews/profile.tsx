@@ -1,5 +1,7 @@
 import { Avatar } from "@components";
 
+import { formatDate } from "@utils/formatDate";
+
 export const Profile = ({
   name,
   avatar,
@@ -16,7 +18,7 @@ export const Profile = ({
         <span className="text-c-body text-foreground leading-tight">
           {name}
         </span>
-        <span className="text-c-button font-normal">{date}</span>
+        <span className="text-c-button font-normal">{formatDate(date)}</span>
       </div>
     </div>
   );
