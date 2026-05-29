@@ -16,8 +16,10 @@ export const Reviews = ({ reviews, owner }: ReviewsProps) => {
         <StarIcon size={20} weight="duotone" />
         <span className="text-c-button font-normal">
           <span className="text-[20px] font-medium">
-            {reviews.reduce((acc, curr) => acc + curr.customerRating, 0) /
-              reviews.length}{" "}
+            {reviews.length > 0
+              ? reviews.reduce((acc, curr) => acc + curr.customerRating, 0) /
+                reviews.length
+              : 0}
           </span>
           / 5.0 out of total {reviews.length}
         </span>

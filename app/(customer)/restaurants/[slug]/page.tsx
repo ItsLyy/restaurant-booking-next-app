@@ -6,6 +6,27 @@ import { Reviews } from "./_components/reviews";
 
 import { getRestaurant } from "@data/restaurants/get-restaurant";
 
+import type { Metadata } from "next";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const restaurant = await getRestaurant(slug);
+
+  return {
+    title: restaurant?.name,
+    description: restaurant?.description,
+    openGraph: {
+      title: restaurant?.name,
+      description: restaurant?.description,
+      images: [restaurant?.cover || ""],
+    },
+  };
+}
+
 export default async function RestaurantDetailPage({
   params,
 }: {

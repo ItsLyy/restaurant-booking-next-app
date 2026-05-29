@@ -3,6 +3,8 @@ export interface IUser {
   username: string;
   email: string;
   password: string;
+  firstName: string;
+  lastName: string;
   role: "owner" | "officer" | "customer";
   emailVerifyAt: string;
   allergics: string[];
