@@ -4,47 +4,41 @@ import { Menus } from "./_components/menus";
 import { RestaurantInformationHeader } from "./_components/header";
 import { Reviews } from "./_components/reviews";
 
+import { getRestaurant } from "@data/restaurants/get-restaurant";
+
 export default async function RestaurantDetailPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const photos = [
-    {
-      url: "/",
-      alt: "",
-    },
-    {
-      url: "/",
-      alt: "",
-    },
-    {
-      url: "/",
-      alt: "",
-    },
-  ];
+  const restaurant = await getRestaurant(slug);
+  if (!restaurant) return null;
+
+  const photos = restaurant.photos.filter((photo) => !photo.isCover);
+  const banner = restaurant.photos.find((photo) => photo.isCover);
 
   return (
     <section className="size-full space-y-4">
-      <Breadcrumb name={slug} />
+      <Breadcrumb name={restaurant.name} />
       <div className="flex gap-4 h-full w-full">
         <div className="w-104 shrink-0 space-y-6">
-          <Photos slug={slug} banner={{ url: "/", alt: "" }} photos={photos} />
+          <Photos
+            name={restaurant.name}
+            slug={slug}
+            banner={banner ?? photos[0]}
+            photos={photos}
+          />
         </div>
         <div className="w-full flex flex-col grow-0 p-2 gap-4 overflow-hidden">
           <RestaurantInformationHeader
-            name={slug}
-            address="C/ del Bisbe Sivilla, 42"
-            city="08022"
-            country="Barcelona"
-            shortDescription="FusionAverage price €20"
+            name={restaurant.name}
+            address={restaurant.address}
+            city={restaurant.city}
+            country={restaurant.country}
+            shortDescription={restaurant.shortDescription}
           />
-          <p className="text-c-body">
-            Get inspired by our restaurant description examples and learn how to
-            write your own to use across your branded website, social media, and
-            other digital channels.
-          </p>
+          <p className="text-c-body">{restaurant.description}</p>
           <h2 className="text-c-header-md text-foreground">Menus</h2>
           <Menus />
           <h2 className="text-c-header-md text-foreground">Reviews</h2>

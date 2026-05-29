@@ -1,27 +1,27 @@
 import Image from "next/image";
 import Link from "next/link";
 
-interface ImageProps {
-  url: string;
-  alt: string;
-}
+import type { IRestaurantPhoto } from "@types";
+
+type ImageProps = Pick<IRestaurantPhoto, "url" | "id">;
 
 interface PhotosProps {
   banner: ImageProps;
   photos: ImageProps[];
   slug: string;
+  name: string;
 }
 
-export const Photos = ({ banner, photos, slug }: PhotosProps) => {
+export const Photos = ({ banner, photos, slug, name }: PhotosProps) => {
   return (
     <div className="space-y-4">
       <div className="relative w-full h-67 rounded-2xl overflow-hidden bg-base-200">
         <Image
           src={banner.url}
-          alt={banner.alt}
+          alt={`banner-${name}`}
           fill
           sizes="416px"
-          className="text-transparent"
+          className="text-transparent object-cover object-center"
         />
       </div>
       <div className="grid grid-cols-3 gap-4 h-21.5">
@@ -29,7 +29,8 @@ export const Photos = ({ banner, photos, slug }: PhotosProps) => {
           if (index === 2)
             return (
               <PhotoOtherLink
-                key={index}
+                key={photo.id}
+                alt={`cover-${name}-${index + 1}`}
                 photo={photo}
                 totalPhotos={photos.length - 2}
                 slug={slug}
@@ -37,15 +38,15 @@ export const Photos = ({ banner, photos, slug }: PhotosProps) => {
             );
           return (
             <div
-              key={index}
+              key={photo.id}
               className="relative w-full rounded-2xl overflow-hidden bg-base-200"
             >
               <Image
                 src={photo.url}
-                alt={photo.alt}
+                alt={`cover-${name}-${index + 1}`}
                 fill
                 sizes="416px"
-                className="text-transparent"
+                className="text-transparent object-cover object-center"
               />
             </div>
           );
@@ -58,10 +59,12 @@ export const Photos = ({ banner, photos, slug }: PhotosProps) => {
 export const PhotoOtherLink = ({
   photo,
   totalPhotos,
+  alt,
   slug,
 }: {
   photo: ImageProps;
   totalPhotos: number;
+  alt: string;
   slug: string;
 }) => {
   return (
@@ -71,10 +74,10 @@ export const PhotoOtherLink = ({
     >
       <Image
         src={photo.url}
-        alt={photo.alt}
+        alt={alt}
         fill
         sizes="416px"
-        className="text-transparent"
+        className="text-transparent object-cover object-center"
       />
       <div className="size-full absolute top-0 left-0 bottom-0 right-0 bg-black/60 flex justify-center items-center">
         <span className="text-base-100 text-c-body">{totalPhotos}+</span>
