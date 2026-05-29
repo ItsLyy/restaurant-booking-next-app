@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, use, useActionState } from "react";
+import { createContext, use, useActionState, useMemo } from "react";
 
 import { Button } from "../ui/button";
 import { InputField } from "../ui/input-field";
@@ -30,8 +30,9 @@ export const useFormContext = () => {
 
 const Form = ({ action, children, ...props }: FormProps) => {
   const [state, formAction, loading] = useActionState(action, {});
+  const value = useMemo(() => ({ state, loading }), [state, loading]);
   return (
-    <FormContext.Provider value={{ state, loading }}>
+    <FormContext.Provider value={value}>
       <form action={formAction} {...props}>
         {children}
       </form>

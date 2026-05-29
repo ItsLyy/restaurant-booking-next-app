@@ -6,7 +6,9 @@ import bookings from "@data/dummy/bookings.json";
 
 import { IRestaurantListItem } from "@types";
 
-export async function getAllRestaurants(): Promise<IRestaurantListItem[]> {
+type GetAllRestaurantsResponse = IRestaurantListItem[];
+
+export async function getAllRestaurants(): Promise<GetAllRestaurantsResponse> {
   await new Promise((resolve) => setTimeout(resolve, 2000));
   return restaurants.map((restaurant) => {
     const restaurantTables = tables
@@ -28,7 +30,7 @@ export async function getAllRestaurants(): Promise<IRestaurantListItem[]> {
       });
 
     const restaurantImage = restaurantPhotos.find(
-      (photo) => photo.restaurantId === restaurant.id && photo.isCover,
+      (photo) => photo.restaurantId === restaurant.id && photo.type === "cover",
     )?.url;
 
     return {

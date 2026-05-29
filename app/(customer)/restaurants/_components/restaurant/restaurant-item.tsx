@@ -28,14 +28,14 @@ export const RestaurantItem = ({
   discount,
 }: RestaurantItemProps) => {
   return (
-    <Link href={`/restaurants/${slug}`} className="flex gap-6 w-full">
-      <div className="relative w-71.75 h-48 shrink-0">
+    <Link href={`/restaurants/${slug}`} className="flex gap-6 w-full group">
+      <div className="relative w-71.75 h-48 shrink-0 rounded-2xl overflow-hidden">
         <Image
           src={image}
           alt={name}
           fill
           sizes="100%"
-          className="object-cover size-full rounded-2xl bg-base-200 text-transparent"
+          className="object-cover size-full rounded-2xl bg-base-200 text-transparent group-hover:scale-105 transition-discrete ease-in-out duration-300"
         />
       </div>
       <div className="flex justify-between p-2 grow">

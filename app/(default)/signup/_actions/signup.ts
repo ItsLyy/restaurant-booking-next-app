@@ -6,6 +6,8 @@ export async function SignupAction(
   _: FormState,
   formData: FormData,
 ): Promise<FormState> {
+  const firstName = formData.get("first-name");
+  const lastName = formData.get("last-name");
   const username = formData.get("username");
   const email = formData.get("email");
   const password = formData.get("password");
@@ -13,6 +15,8 @@ export async function SignupAction(
 
   const validate = z
     .object({
+      firstName: z.string().min(1, "First name is required"),
+      lastName: z.string().min(1, "Last name is required"),
       username: z.string().min(1, "Username is required"),
       email: z.string().min(1, "Email is required").email("Invalid email"),
       password: z.string().min(1, "Password is required"),
@@ -28,6 +32,8 @@ export async function SignupAction(
     );
 
   const validatedData = validate.safeParse({
+    firstName,
+    lastName,
     username,
     email,
     password,
