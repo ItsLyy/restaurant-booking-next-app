@@ -1,3 +1,5 @@
+export { Avatar } from "./general/avatar";
+
 export { default as Logo } from "./general/logo";
 export { default as Form } from "./general/form";
 

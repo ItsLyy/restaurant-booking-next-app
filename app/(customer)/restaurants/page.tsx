@@ -8,6 +8,13 @@ import { RestaurantListSkeleton } from "./_components/restaurant/restaurant-list
 
 import { getAllRestaurants } from "@data/restaurants/get-all-restaurants";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Browse",
+  description: "Browse restaurants.",
+};
+
 const RestaurantListWithSuspense = async () => {
   const restaurants = await getAllRestaurants();
   return <RestaurantList restaurants={restaurants} />;

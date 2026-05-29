@@ -5,7 +5,5 @@ export const Filter = () => {
     <Button as="button" type="button" className="rounded-lg!">
       Filter
     </Button>
-      Filter
-    </Button>
   );
 };
