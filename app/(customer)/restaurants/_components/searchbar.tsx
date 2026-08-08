@@ -14,6 +14,7 @@ export const Searchbar = () => {
       <button
         className="size-11 flex justify-center items-center"
         type="submit"
+        aria-label="Search"
       >
         <MagnifyingGlassIcon size={20} className="text-base-100" />
       </button>

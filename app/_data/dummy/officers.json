@@ -2,6 +2,8 @@
   {
     "id": "officer-001",
     "username": "kenji_watanabe",
+    "firstName": "Kenji",
+    "lastName": "Watanabe",
     "email": "kenji.watanabe@sakuragarden.jp",
     "password": "$2b$10$mN8lK7jI6hG5fE4dC3bA2ZyXwVuTsRqPoNmLkJiHgFeDcBaZyXwVu",
     "role": "officer",
@@ -17,6 +19,8 @@
   {
     "id": "officer-002",
     "username": "yuki_nakamura",
+    "firstName": "Yuki",
+    "lastName": "Nakamura",
     "email": "yuki.nakamura@sakuragarden.jp",
     "password": "$2b$10$pQ9rS0tU1vW2xY3zA4bC5dE6fG7hI8jK9lM0nO1pQ2rS3tU4vW5xY",
     "role": "officer",
@@ -32,6 +36,8 @@
   {
     "id": "officer-003",
     "username": "rajesh_kumar",
+    "firstName": "Rajesh",
+    "lastName": "Kumar",
     "email": "rajesh.kumar@thespiceroute.in",
     "password": "$2b$10$aZ9yX8wV7uT6sR5qP4oN3mL2kJ1iH0gF9eD8cB7aZ6yX5wV4uT3sR",
     "role": "officer",
@@ -47,6 +53,8 @@
   {
     "id": "officer-004",
     "username": "anjali_mehta",
+    "firstName": "Anjali",
+    "lastName": "Mehta",
     "email": "anjali.mehta@thespiceroute.in",
     "password": "$2b$10$bC1dE2fG3hI4jK5lM6nO7pQ8rS9tU0vW1xY2zA3bC4dE5fG6hI7jK",
     "role": "officer",
@@ -62,6 +70,8 @@
   {
     "id": "officer-005",
     "username": "giulia_romano",
+    "firstName": "Giulia",
+    "lastName": "Romano",
     "email": "giulia.romano@labellaitalia.it",
     "password": "$2b$10$dE2fG3hI4jK5lM6nO7pQ8rS9tU0vW1xY2zA3bC4dE5fG6hI7jK8lM",
     "role": "officer",
@@ -77,6 +87,8 @@
   {
     "id": "officer-006",
     "username": "luca_bianchi",
+    "firstName": "Luca",
+    "lastName": "Bianchi",
     "email": "luca.bianchi@labellaitalia.it",
     "password": "$2b$10$fG3hI4jK5lM6nO7pQ8rS9tU0vW1xY2zA3bC4dE5fG6hI7jK8lM9nO",
     "role": "officer",

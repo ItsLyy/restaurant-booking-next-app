@@ -41,6 +41,7 @@ const OTPForm = () => {
 
   return (
     <Form className="space-y-12" action={verifyOTPAction}>
+      <input type="hidden" name="otp" value={codes.join("")} />
       <div className="grid grid-cols-6 grid-row-1 gap-3 w-full h-15">
         {codes.map((code, index) => (
           <InputCode
@@ -75,7 +76,9 @@ const InputCode = ({ ref, index, ...props }: InputCodeProps) => {
   return (
     <input
       {...props}
-      type="number"
+      type="text"
+      inputMode="numeric"
+      autoComplete="one-time-code"
       className="border-muted text-foreground bg-base-200 border rounded-lg text-center text-lg focus:outline-none focus:ring-2 focus:ring-accent-200/20 ease-in-out duration-300 transition-all"
       maxLength={1}
       ref={(el: HTMLInputElement) => {

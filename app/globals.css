@@ -30,6 +30,7 @@
   .text-c-header-md  { @apply text-xl font-playfair-display leading-tight; }
   .text-c-body       { @apply text-base text-muted; }
   .text-c-caption    { @apply text-xs text-muted; }
+  .text-c-normal     { @apply text-sm font-medium; }
   .text-c-ref        { @apply text-[13px] font-mono; }
   .text-c-button     { @apply text-[13px] font-medium; }
 }

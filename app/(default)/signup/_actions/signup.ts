@@ -1,3 +1,5 @@
+"use server";
+
 import z from "zod";
 
 import type { FormState } from "@types";
@@ -37,11 +39,10 @@ export async function SignupAction(
     username,
     email,
     password,
-    passwordConfirmation,
+    "password-confirmation": passwordConfirmation,
   });
   if (!validatedData.success) {
     return { errors: z.flattenError(validatedData.error).fieldErrors };
   }
-  console.log({ username, password });
   return {};
 }

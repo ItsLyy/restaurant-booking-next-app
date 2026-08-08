@@ -2,6 +2,8 @@
   {
     "id": "owner-001",
     "username": "hiroshi_tanaka",
+    "firstName": "Hiroshi",
+    "lastName": "Tanaka",
     "email": "hiroshi.tanaka@sakuragarden.jp",
     "password": "$2b$10$xK9mL3nQ2pR8sT1vU4wY6eOjBcDfGhIjKlMnOpQrStUvWxYzAbCd",
     "role": "owner",
@@ -16,6 +18,8 @@
   {
     "id": "owner-002",
     "username": "priya_sharma",
+    "firstName": "Priya",
+    "lastName": "Sharma",
     "email": "priya.sharma@thespiceroute.in",
     "password": "$2b$10$aB1cD2eF3gH4iJ5kL6mN7oP8qR9sT0uV1wX2yZ3AbCdEfGhIjKlMn",
     "role": "owner",
@@ -30,6 +34,8 @@
   {
     "id": "owner-003",
     "username": "marco_ferrari",
+    "firstName": "Marco",
+    "lastName": "Ferrari",
     "email": "marco.ferrari@labellaitalia.it",
     "password": "$2b$10$zY9xW8vU7tS6rQ5pO4nM3lK2jI1hG0fE9dC8bA7ZyXwVuTsRqPoNm",
     "role": "owner",
