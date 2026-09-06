@@ -9,7 +9,7 @@ export const Card = ({
 }) => {
   return (
     <div
-      className={`bg-base-200 p-8 rounded-3xl border border-muted ${className}`}
+      className={`bg-base-200 p-6 sm:p-8 rounded-3xl border border-muted ${className}`}
     >
       {children}
     </div>

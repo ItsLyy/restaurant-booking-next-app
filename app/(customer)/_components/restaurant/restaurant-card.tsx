@@ -21,12 +21,12 @@ const RestaurantCard = ({
 }: RestaurantCardProps) => {
   return (
     <div className="group cursor-pointer">
-      <div className="relative w-full h-39.25 overflow-hidden rounded-2xl">
+      <div className="relative w-full aspect-[3/2] overflow-hidden rounded-2xl">
         <Image
           src={image}
           alt={name}
           fill
-          sizes="100%"
+          sizes="(min-width: 1024px) 33vw, 50vw"
           loading="eager"
           className="group-hover:scale-105 transition-transform ease-in-out duration-300 bg-base-200"
         />

@@ -23,9 +23,11 @@ const RestaurantListWithSuspense = async () => {
 export default async function RestaurantsPage() {
   return (
     <section>
-      <div className="p-6 flex justify-center items-center gap-2">
+      <div className="p-6 flex flex-col sm:flex-row justify-center items-stretch sm:items-center gap-2">
         <Searchbar />
-        <Filter />
+        <div className="flex justify-center">
+          <Filter />
+        </div>
       </div>
       <div className="space-y-6">
         <h1 className="text-c-header-lg text-foreground">Explore</h1>

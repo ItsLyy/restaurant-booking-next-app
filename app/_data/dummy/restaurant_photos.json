@@ -49,7 +49,7 @@
   },
   {
     "id": "photo-r1-menu-01",
-    "url": "https://images.unsplash.com/photo-1617196034099-8571b93e9469?w=800",
+    "url": "https://images.unsplash.com/photo-1512058564366-18510be2db19?w=800",
     "type": "menu",
     "restaurantId": "rest-001",
     "createdAt": "2024-01-14T08:00:00.000Z",
@@ -73,7 +73,7 @@
   },
   {
     "id": "photo-r1-menu-04",
-    "url": "https://images.unsplash.com/photo-1581335438889-68a15f0aafc9?w=800",
+    "url": "https://images.unsplash.com/photo-1528736235302-52922df5c122?w=800",
     "type": "menu",
     "restaurantId": "rest-001",
     "createdAt": "2024-01-14T08:15:00.000Z",
@@ -81,7 +81,7 @@
   },
   {
     "id": "photo-r1-menu-05",
-    "url": "https://images.unsplash.com/photo-1558985212-d32b7e2b9d14?w=800",
+    "url": "https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=800",
     "type": "menu",
     "restaurantId": "rest-001",
     "createdAt": "2024-01-14T08:20:00.000Z",
@@ -211,7 +211,7 @@
   },
   {
     "id": "photo-r3-post-02",
-    "url": "https://images.unsplash.com/photo-1551183053-bf91798d5264?w=1200",
+    "url": "https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=1200",
     "type": "post",
     "restaurantId": "rest-003",
     "createdAt": "2024-03-04T09:05:00.000Z",

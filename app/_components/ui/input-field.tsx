@@ -1,6 +1,7 @@
 interface InputFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
   id: string;
   className?: string;
+  classNameContainer?: string;
   label?: string;
   labelRequired?: boolean;
   labelClassName?: string;
@@ -8,14 +9,15 @@ interface InputFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
 
 export const InputField = ({
   id,
-  className,
+  className = "",
+  classNameContainer = "",
   label,
   labelRequired,
   labelClassName,
   ...props
 }: InputFieldProps) => {
   return (
-    <div className="flex flex-col gap-1">
+    <div className={`flex flex-col gap-1 ${classNameContainer}`}>
       {label && (
         <label
           htmlFor={id}

@@ -6,7 +6,7 @@ import heroBanner from "@assets/images/hero-banner.jpg";
 
 export const HeroSection = () => {
   return (
-    <section className="flex items-center gap-8 w-full">
+    <section className="flex flex-col md:flex-row items-center gap-8 w-full">
       <div className="flex-1 justify-center flex flex-col gap-2">
         <span className="text-c-header-lg text-foreground">
           Your next great meal, one tap away.
@@ -14,7 +14,7 @@ export const HeroSection = () => {
         <span className="text-c-body">
           Find, book, and enjoy the best restaurants around you.
         </span>
-        <div className="mt-8 flex gap-2">
+        <div className="mt-8 flex flex-col sm:flex-row gap-2">
           <Button as="link" href="/restaurants">
             Browse Restaurants
           </Button>
@@ -23,13 +23,14 @@ export const HeroSection = () => {
           </Button>
         </div>
       </div>
-      <div className="flex-1 items-center">
-        <div className="relative aspect-square">
+      <div className="w-full md:flex-1">
+        <div className="relative aspect-[3/2] w-full">
           <Image
             src={heroBanner}
             alt="Hero"
             fill
-            sizes="100%"
+            priority
+            sizes="(min-width: 768px) 50vw, 100vw"
             className="object-cover rounded-xl"
           />
           <div className="size-30 absolute bottom-0 left-0 bg-base-100 rounded-tr-2xl" />

@@ -59,7 +59,7 @@ export const Progress = ({ bookingStatus, paymentStatus }: ProgressProps) => {
   return (
     <Card className="space-y-6">
       <h2 className="text-c-button text-muted">PROGRESS</h2>
-      <div className="flex gap-4">
+      <div className="flex gap-3 sm:gap-4">
         <ProgressCheckpoint
           stepLabel="Booked"
           stepNumber={1}

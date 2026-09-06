@@ -56,7 +56,7 @@ const OTPForm = () => {
   return (
     <Form className="space-y-12" action={verifyOTPAction}>
       <input type="hidden" name="otp" value={otpValue} />
-      <div className="grid grid-cols-6 grid-row-1 gap-3 w-full h-15">
+      <div className="grid grid-cols-6 grid-row-1 gap-2 sm:gap-3 w-full h-15">
         {codes.map((slot, index) => (
           <InputCode
             key={slot.id}

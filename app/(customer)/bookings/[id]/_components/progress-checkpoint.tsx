@@ -31,7 +31,7 @@ export const ProgressCheckpoint = ({
           stepNumber
         )}
       </div>
-      <span className={`text-muted text-c-button ${labelStyles}`}>
+      <span className={`text-muted text-c-button text-center leading-tight ${labelStyles}`}>
         {stepLabel}
       </span>
     </div>

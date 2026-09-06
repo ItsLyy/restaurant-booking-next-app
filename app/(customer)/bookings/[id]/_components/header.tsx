@@ -60,7 +60,7 @@ export const Header = ({
   paymentStatus: PaymentStatus;
 }) => {
   return (
-    <header className="space-y-6 bg-base-200 p-8 rounded-3xl border border-muted">
+    <header className="space-y-6 bg-base-200 p-6 sm:p-8 rounded-3xl border border-muted">
       <div>
         <span className="text-c-caption">Booking Status</span>
         <h1 className="text-c-header-lg text-foreground">{restaurantName}</h1>
