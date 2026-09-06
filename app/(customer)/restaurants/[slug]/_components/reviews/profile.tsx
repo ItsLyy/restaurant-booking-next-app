@@ -1,6 +1,6 @@
 import { Avatar } from "@components";
 
-import { formatDate } from "@utils/formatDate";
+import { formatDate } from "@utils";
 
 export const Profile = ({
   name,

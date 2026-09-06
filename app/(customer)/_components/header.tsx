@@ -6,7 +6,7 @@ import { Button, Logo } from "@components";
 export const Header = () => {
   return (
     <header className="w-full sticky top-0 left-0 bg-base-100 z-20">
-      <nav className="w-full max-w-300 mx-auto p-4 flex justify-between">
+      <nav className="w-full max-w-300 mx-auto p-4 flex items-center justify-between">
         <Link href="/" className="flex gap-2 items-center">
           <Logo />
           <span className="text-c-header-md text-foreground">
@@ -22,7 +22,15 @@ export const Header = () => {
           >
             <MagnifyingGlassIcon weight="duotone" className="size-5" />
           </Button>
-          <Button as="link" href="/signin" className="h-full py-0!">
+          <Button
+            as="link"
+            href="/bookings"
+            variant="outline"
+            className="border!"
+          >
+            Booking
+          </Button>
+          <Button as="link" href="/signin" className="">
             Sign in
           </Button>
         </div>

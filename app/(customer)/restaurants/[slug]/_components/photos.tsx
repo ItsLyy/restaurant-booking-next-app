@@ -15,12 +15,12 @@ interface PhotosProps {
 export const Photos = ({ cover, photos, slug, name }: PhotosProps) => {
   return (
     <div className="space-y-4">
-      <div className="relative w-full h-67 rounded-2xl overflow-hidden bg-base-200">
+      <div className="relative w-full h-56 sm:h-67 rounded-2xl overflow-hidden bg-base-200">
         <Image
           src={cover}
           alt={`cover-${name}`}
           fill
-          sizes="416px"
+          sizes="(min-width: 1024px) 416px, 100vw"
           className="text-transparent object-cover object-center"
         />
       </div>
@@ -45,7 +45,7 @@ export const Photos = ({ cover, photos, slug, name }: PhotosProps) => {
                 src={photo.url}
                 alt={`cover-${name}-${index + 1}`}
                 fill
-                sizes="416px"
+                sizes="(min-width: 1024px) 128px, 33vw"
                 className="text-transparent object-cover object-center"
               />
             </div>
@@ -76,7 +76,7 @@ export const PhotoOtherLink = ({
         src={photo.url}
         alt={alt}
         fill
-        sizes="416px"
+        sizes="(min-width: 1024px) 128px, 33vw"
         className="text-transparent object-cover object-center"
       />
       <div className="size-full absolute top-0 left-0 bottom-0 right-0 bg-black/60 flex justify-center items-center">

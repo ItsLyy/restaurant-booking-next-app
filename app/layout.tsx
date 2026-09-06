@@ -30,9 +30,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${dmSans.variable} ${playfairDisplay.variable} text-dm-sans bg-base-100 h-full text-c-body antialiased`}
+      className={`${dmSans.variable} ${playfairDisplay.variable} font-dm-sans bg-base-100 h-full text-c-body antialiased`}
     >
-      <body className="min-h-svh h-svh flex flex-col">{children}</body>
+      <body className="min-h-svh flex flex-col">{children}</body>
     </html>
   );
 }

@@ -2,6 +2,8 @@
   {
     "id": "user-001",
     "username": "alice_johnson",
+    "firstName": "Alice",
+    "lastName": "Johnson",
     "email": "alice.johnson@gmail.com",
     "password": "$2b$10$hI4jK5lM6nO7pQ8rS9tU0vW1xY2zA3bC4dE5fG6hI7jK8lM9nO0pQ",
     "role": "customer",
@@ -14,6 +16,8 @@
   {
     "id": "user-002",
     "username": "ben_nguyen",
+    "firstName": "Ben",
+    "lastName": "Nguyen",
     "email": "ben.nguyen@outlook.com",
     "password": "$2b$10$jK5lM6nO7pQ8rS9tU0vW1xY2zA3bC4dE5fG6hI7jK8lM9nO0pQ1rS",
     "role": "customer",
@@ -26,6 +30,8 @@
   {
     "id": "user-003",
     "username": "clara_smith",
+    "firstName": "Clara",
+    "lastName": "Smith",
     "email": "clara.smith@yahoo.com",
     "password": "$2b$10$lM6nO7pQ8rS9tU0vW1xY2zA3bC4dE5fG6hI7jK8lM9nO0pQ1rS2tU",
     "role": "customer",
@@ -38,6 +44,8 @@
   {
     "id": "user-004",
     "username": "daniel_park",
+    "firstName": "Daniel",
+    "lastName": "Park",
     "email": "daniel.park@gmail.com",
     "password": "$2b$10$nO7pQ8rS9tU0vW1xY2zA3bC4dE5fG6hI7jK8lM9nO0pQ1rS2tU3vW",
     "role": "customer",
@@ -50,6 +58,8 @@
   {
     "id": "user-005",
     "username": "emma_wilson",
+    "firstName": "Emma",
+    "lastName": "Wilson",
     "email": "emma.wilson@icloud.com",
     "password": "$2b$10$pQ8rS9tU0vW1xY2zA3bC4dE5fG6hI7jK8lM9nO0pQ1rS2tU3vW4xY",
     "role": "customer",

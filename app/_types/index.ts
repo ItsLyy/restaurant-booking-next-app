@@ -7,6 +7,6 @@ export type {
 export type { IUser, IOfficer, IOwner, IOTPToken } from "./user";
 export type { IPayment } from "./payment";
 export type { IReview } from "./review";
-export type { IBooking } from "./booking";
+export type { IBooking, IBookingCancelled } from "./booking";
 
 export type { FormState, FormAction } from "./form";

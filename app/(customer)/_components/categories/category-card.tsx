@@ -11,7 +11,7 @@ const CategoryCard = ({ name, image }: CategoryCardProps) => {
       <Image
         src={image}
         alt={name}
-        className="bg-base-200 text-transparent group-hover:scale-105 transition-discrete ease-in-out duration-300 scroll-smooth"
+        className="bg-base-200 text-transparent group-hover:scale-105 transition-transform ease-in-out duration-300 scroll-smooth"
         fill
         sizes="100%"
       />

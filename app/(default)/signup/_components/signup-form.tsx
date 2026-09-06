@@ -8,7 +8,7 @@ const SignupForm = () => {
   return (
     <Form action={SignupAction} className="space-y-12">
       <div className="space-y-3">
-        <div className="flex gap-3 w-full *:w-full">
+        <div className="flex flex-col sm:flex-row gap-3 w-full sm:*:w-full">
           <Form.InputField
             id="first-name"
             label="First Name"

@@ -28,19 +28,22 @@ export const RestaurantItem = ({
   discount,
 }: RestaurantItemProps) => {
   return (
-    <Link href={`/restaurants/${slug}`} className="flex gap-6 w-full group">
-      <div className="relative w-71.75 h-48 shrink-0 rounded-2xl overflow-hidden">
+    <Link
+      href={`/restaurants/${slug}`}
+      className="flex flex-col sm:flex-row gap-4 sm:gap-6 w-full group"
+    >
+      <div className="relative w-full sm:w-71.75 aspect-[3/2] shrink-0 rounded-2xl overflow-hidden">
         <Image
           src={image}
           alt={name}
           fill
-          sizes="100%"
-          className="object-cover size-full rounded-2xl bg-base-200 text-transparent group-hover:scale-105 transition-discrete ease-in-out duration-300"
+          sizes="(min-width: 640px) 287px, 100vw"
+          className="object-cover size-full rounded-2xl bg-base-200 text-transparent group-hover:scale-105 transition-transform ease-in-out duration-300"
         />
       </div>
-      <div className="flex justify-between p-2 grow">
-        <div className="flex flex-col gap-4">
-          <div className="text-c-body flex flex-col gap-2 text-muted w-76">
+      <div className="flex flex-col md:flex-row gap-4 justify-between p-2 grow min-w-0">
+        <div className="flex flex-col gap-4 min-w-0">
+          <div className="text-c-body flex flex-col gap-2 text-muted w-full sm:w-76 min-w-0">
             <span className="text-c-header-md text-foreground line-clamp-2 text-ellipsis">
               {name}
             </span>
@@ -68,7 +71,7 @@ export const RestaurantItem = ({
             </div>
           )}
         </div>
-        <div className="flex flex-col justify-between items-end">
+        <div className="flex md:flex-col justify-between items-end shrink-0">
           <div className="flex items-center gap-1 text-muted">
             <StarIcon size={24} weight="duotone" />
             <span className="text-c-body font-medium">{rating}</span>

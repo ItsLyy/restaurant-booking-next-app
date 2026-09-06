@@ -11,38 +11,32 @@ type GetAllRestaurantsResponse = IRestaurantListItem[];
 export async function getAllRestaurants(): Promise<GetAllRestaurantsResponse> {
   await new Promise((resolve) => setTimeout(resolve, 2000));
   return restaurants.map((restaurant) => {
-    const restaurantTables = tables
-      .filter((table) => table.restaurantId === restaurant.id)
-      .map((table) => {
-        return {
-          ...table,
-          bookings: bookings
-            .filter((booking) => booking.tableId === table.id)
-            .map((booking) => {
-              return {
-                ...booking,
-                review: reviews.find(
-                  (review) => review.bookingId === booking.id,
-                ),
-              };
-            }),
-        };
-      });
+    const restaurantTables = tables.filter(
+      (table) => table.restaurantId === restaurant.id,
+    );
 
     const restaurantImage = restaurantPhotos.find(
       (photo) => photo.restaurantId === restaurant.id && photo.type === "cover",
     )?.url;
 
+    const restaurantBookings = bookings.filter((booking) =>
+      restaurantTables.find((table) => booking.tableId === table.id),
+    );
+
+    const restaurantReviews = reviews.filter((review) =>
+      restaurantBookings.find((booking) => review.bookingId === booking.id),
+    );
+
+    const restaurantRating = restaurantReviews.reduce(
+      (a, b) => a + b.customerRating,
+      0,
+    );
+
     return {
       ...restaurant,
-      rating:
-        restaurantTables
-          .map((table) =>
-            table.bookings
-              .map((booking) => booking.review?.customerRating ?? 0)
-              .reduce((a, b) => a + b, 0),
-          )
-          .reduce((a, b) => a + b, 0) / restaurantTables.length,
+      rating: restaurantRating
+        ? restaurantRating / restaurantReviews.length
+        : 0,
       image: restaurantImage ?? "/",
       minPrice: restaurantTables.reduce((a, b) => (a.price < b.price ? a : b))
         .price,

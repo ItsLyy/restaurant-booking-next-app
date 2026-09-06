@@ -39,8 +39,8 @@ export default async function RestaurantDetailPage({
   return (
     <section className="size-full space-y-4">
       <Breadcrumb name={restaurant.name} />
-      <div className="flex gap-4 h-full w-full">
-        <div className="w-104 shrink-0 space-y-6">
+      <div className="flex flex-col lg:flex-row gap-4 h-full w-full">
+        <div className="w-full lg:w-104 shrink-0 space-y-6">
           <Photos
             name={restaurant.name}
             slug={slug}

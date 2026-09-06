@@ -35,8 +35,23 @@ const Form = ({ action, children, ...props }: FormProps) => {
     <FormContext.Provider value={value}>
       <form action={formAction} {...props}>
         {children}
+        <FormMessage />
       </form>
     </FormContext.Provider>
+  );
+};
+
+const FormMessage = () => {
+  const { state } = useFormContext();
+  if (!state.message) return null;
+  return (
+    <p
+      className={`text-c-caption font-medium ${
+        state.success ? "text-positive" : "text-negative"
+      }`}
+    >
+      {state.message}
+    </p>
   );
 };
 
@@ -51,23 +66,31 @@ interface FormInputFieldProps extends React.InputHTMLAttributes<HTMLInputElement
 
 const FormInputField = ({
   id,
-  className = "",
+  className,
   label,
-  labelClassName = "",
+  labelClassName,
   labelRequired,
   error,
   ...props
 }: FormInputFieldProps) => {
+  const { state } = useFormContext();
+  const fieldError = error ?? state.errors?.[id]?.[0];
   return (
-    <InputField
-      id={id}
-      name={id}
-      className={`${className}`}
-      labelClassName={`${error && ""} ${labelClassName}`}
-      label={label}
-      labelRequired={labelRequired}
-      {...props}
-    />
+    <div className="flex flex-col gap-1">
+      <InputField
+        {...props}
+        id={id}
+        name={id}
+        className={className}
+        labelClassName={labelClassName}
+        label={label}
+        labelRequired={labelRequired}
+        aria-invalid={fieldError ? true : undefined}
+      />
+      {fieldError && (
+        <span className="text-c-caption text-negative">{fieldError}</span>
+      )}
+    </div>
   );
 };
 
@@ -76,8 +99,8 @@ interface FormTextAreaProps extends React.TextareaHTMLAttributes<HTMLTextAreaEle
   className?: string;
 }
 
-const FormTextArea = ({ id, className = "", ...props }: FormTextAreaProps) => {
-  return <TextArea id={id} name={id} className={`${className}`} {...props} />;
+const FormTextArea = ({ id, className, ...props }: FormTextAreaProps) => {
+  return <TextArea id={id} name={id} className={className} {...props} />;
 };
 
 interface FormSubmitButtonProps {
@@ -91,9 +114,16 @@ const FormSubmitButton = ({
   className,
   variant,
 }: FormSubmitButtonProps) => {
+  const { loading } = useFormContext();
   return (
-    <Button type="submit" className={className} variant={variant} as="button">
-      {children}
+    <Button
+      type="submit"
+      className={className}
+      variant={variant}
+      as="button"
+      disabled={loading}
+    >
+      {loading ? "Loading..." : children}
     </Button>
   );
 };

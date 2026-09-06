@@ -4,7 +4,7 @@ export const HowItWorkSection = () => {
   return (
     <section className="w-full p-6 pb-12 bg-base-200 rounded-lg space-y-4 shadow-sm shadow-black/5">
       <h2 className="text-c-header-md text-foreground">How It Works</h2>
-      <div className="flex gap-6">
+      <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
         <Steps
           number={1}
           title="Start with your account"
@@ -12,8 +12,8 @@ export const HowItWorkSection = () => {
           actionLabel="Signup"
           actionLinkTo="/signup"
         />
-        <div className="py-4">
-          <hr className="w-11 text-muted" />
+        <div className="py-2 lg:py-4">
+          <hr className="w-full lg:w-11 text-muted" />
         </div>
         <Steps
           number={2}
@@ -22,8 +22,8 @@ export const HowItWorkSection = () => {
           actionLabel="Explore Restaurants"
           actionLinkTo="/restaurants"
         />
-        <div className="py-4">
-          <hr className="w-11 text-muted" />
+        <div className="py-2 lg:py-4">
+          <hr className="w-full lg:w-11 text-muted" />
         </div>
         <Steps
           number={3}
