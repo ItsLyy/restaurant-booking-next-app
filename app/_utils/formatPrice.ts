@@ -7,5 +7,3 @@ const formatter = new Intl.NumberFormat("id-ID", {
 export function formatPrice(price: number): string {
   return formatter.format(price);
 }
-
-export default formatPrice;

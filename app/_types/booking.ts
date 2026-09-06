@@ -7,6 +7,13 @@ export interface IBooking {
   status: "pending" | "confirmed" | "cancelled" | "completed" | "no_show";
   customerId: string;
   tableId: string;
+  cancelled?: IBookingCancelled;
   createdAt?: string;
   updatedAt?: string;
+}
+
+export interface IBookingCancelled {
+  date: string;
+  by: "user" | "restaurant";
+  reason: string;
 }

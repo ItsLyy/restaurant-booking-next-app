@@ -22,6 +22,14 @@ export const Header = () => {
           >
             <MagnifyingGlassIcon weight="duotone" className="size-5" />
           </Button>
+          <Button
+            as="link"
+            href="/bookings"
+            variant="outline"
+            className="h-full py-0!"
+          >
+            Bookings
+          </Button>
           <Button as="link" href="/signin" className="h-full py-0!">
             Sign in
           </Button>

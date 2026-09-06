@@ -29,12 +29,12 @@ export const Reviews = ({ reviews, owner }: ReviewsProps) => {
           <Comment
             key={review.id}
             customerComment={review.customerComment}
-            customerName={review.customer.username}
+            customerName={`${review.customer.firstName} ${review.customer.lastName}`}
             customerCommentAt={review.customerCommentAt}
             customerRating={review.customerRating}
             customerAvatar={review.customer.avatar ?? "/"}
-            ownerAvatar={owner?.avatar ?? "/"}
-            ownerName={owner?.username}
+            ownerAvatar={owner.avatar ?? "/"}
+            ownerName={`${owner.firstName} ${owner.lastName}`}
             ownerReply={review.ownerReply}
             ownerReplyAt={review.ownerReplyAt}
           />

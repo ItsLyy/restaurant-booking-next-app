@@ -35,7 +35,7 @@ export const RestaurantItem = ({
           alt={name}
           fill
           sizes="100%"
-          className="object-cover size-full rounded-2xl bg-base-200 text-transparent group-hover:scale-105 transition-discrete ease-in-out duration-300"
+          className="object-cover size-full rounded-2xl bg-base-200 text-transparent group-hover:scale-105 transition-transform ease-in-out duration-300"
         />
       </div>
       <div className="flex justify-between p-2 grow">

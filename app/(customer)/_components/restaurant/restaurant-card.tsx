@@ -1,7 +1,8 @@
 import Image from "next/image";
+
 import { StarIcon } from "@phosphor-icons/react/dist/ssr";
 
-import formatPrice from "@utils/formatPrice";
+import { formatPrice } from "@utils";
 
 interface RestaurantCardProps {
   name: string;
@@ -27,7 +28,7 @@ const RestaurantCard = ({
           fill
           sizes="100%"
           loading="eager"
-          className="group-hover:scale-105 transition-discrete ease-in-out duration-300 bg-base-200"
+          className="group-hover:scale-105 transition-transform ease-in-out duration-300 bg-base-200"
         />
       </div>
       <div className="px-1 py-2.5 space-y-1">

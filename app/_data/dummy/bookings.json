@@ -44,6 +44,11 @@
     "status": "cancelled",
     "customerId": "user-004",
     "tableId": "table-002",
+    "cancelled": {
+      "date": "2026-05-04",
+      "by": "user",
+      "reason": "We can't arrived at the arranged date"
+    },
     "createdAt": "2026-04-28T16:00:00.000Z",
     "updatedAt": "2026-05-02T11:00:00.000Z"
   },
@@ -82,5 +87,22 @@
     "tableId": "table-006",
     "createdAt": "2026-05-05T13:00:00.000Z",
     "updatedAt": "2026-05-10T21:00:00.000Z"
+  },
+  {
+    "id": "booking-008",
+    "date": "2026-05-05",
+    "time": "19:45",
+    "partySize": 2,
+    "specialRequest": null,
+    "status": "cancelled",
+    "customerId": "user-004",
+    "tableId": "table-002",
+    "cancelled": {
+      "date": "2026-05-04",
+      "by": "restaurant",
+      "reason": "The table already been booked by the VIP member"
+    },
+    "createdAt": "2026-04-28T16:00:00.000Z",
+    "updatedAt": "2026-05-02T11:00:00.000Z"
   }
 ]
