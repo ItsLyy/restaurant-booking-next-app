@@ -3,6 +3,7 @@ import { Photos } from "./_components/photos";
 import { Menus } from "./_components/menus";
 import { RestaurantInformationHeader } from "./_components/header";
 import { Reviews } from "./_components/reviews";
+import { BookingAction } from "./_components/booking-action";
 
 import { getRestaurant } from "@data/restaurants/get-restaurant";
 
@@ -47,6 +48,7 @@ export default async function RestaurantDetailPage({
             cover={restaurant.cover}
             photos={restaurant.photos}
           />
+          <BookingAction />
         </div>
         <div className="w-full flex flex-col grow-0 p-2 gap-4 overflow-hidden">
           <RestaurantInformationHeader

@@ -1,29 +1,24 @@
 import RestaurantCard from "./restaurant-card";
 
-const RestaurantGrid = () => {
+import type { IRestaurantListItem } from "@types";
+
+interface RestaurantGridProps {
+  restaurants: IRestaurantListItem[];
+}
+
+const RestaurantGrid = ({ restaurants }: RestaurantGridProps) => {
   return (
     <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-      <RestaurantCard
-        name="Gajah Mada"
-        image="/images/restaurants/01/banners/main_banner.jpg"
-        rating={4.5}
-        minPrice={20000}
-        maxPrice={0}
-      />
-      <RestaurantCard
-        name="Gajah Mada"
-        image="/images/restaurants/01/banners/main_banner.jpg"
-        rating={4.5}
-        minPrice={20000}
-        maxPrice={250000}
-      />
-      <RestaurantCard
-        name="Gajah Mada"
-        image="/images/restaurants/01/banners/main_banner.jpg"
-        rating={4.5}
-        minPrice={200000}
-        maxPrice={0}
-      />
+      {restaurants.map((restaurant) => (
+        <RestaurantCard
+          key={restaurant.id}
+          name={restaurant.name}
+          image={restaurant.image}
+          rating={restaurant.rating}
+          minPrice={restaurant.minPrice}
+          maxPrice={restaurant.maxPrice}
+        />
+      ))}
     </div>
   );
 };

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "cat-001",
+    "name": "Japanese",
+    "slug": "japanese",
+    "restaurantIds": ["rest-001"],
+    "createdAt": "2024-01-12T10:00:00.000Z",
+    "updatedAt": "2025-03-15T08:00:00.000Z"
+  },
+  {
+    "id": "cat-002",
+    "name": "Indian",
+    "slug": "indian",
+    "restaurantIds": ["rest-002"],
+    "createdAt": "2024-02-07T11:30:00.000Z",
+    "updatedAt": "2025-04-20T09:30:00.000Z"
+  },
+  {
+    "id": "cat-003",
+    "name": "Italian",
+    "slug": "italian",
+    "restaurantIds": ["rest-003"],
+    "createdAt": "2024-03-03T14:00:00.000Z",
+    "updatedAt": "2025-05-01T10:00:00.000Z"
+  }
+]

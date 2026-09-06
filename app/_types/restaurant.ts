@@ -7,6 +7,7 @@ export interface IRestaurant {
   address: string;
   tags: string[];
   ownerId: string;
+  categoryId?: string;
   discount?: number;
   description: string;
   shortDescription?: string;
