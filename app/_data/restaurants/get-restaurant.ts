@@ -1,3 +1,5 @@
+import { cache } from "react";
+
 import restaurants from "../dummy/restaurants.json";
 import restaurantPhotos from "../dummy/restaurant_photos.json";
 import bookings from "../dummy/bookings.json";
@@ -20,16 +22,17 @@ interface Review extends IReview {
 
 interface GetRestaurantResponse extends Omit<
   IRestaurant,
-  "id" | "ownerId" | "createdAt" | "updatedAt"
+  "ownerId" | "createdAt" | "updatedAt"
 > {
   cover: string;
+  coverId: string;
   owner: Omit<IOwner, "role">;
   photos: IRestaurantPhoto[];
   menus: IRestaurantPhoto[];
   reviews: Review[];
 }
 
-export async function getRestaurant(
+export const getRestaurant = cache(async function getRestaurant(
   slug: string,
 ): Promise<GetRestaurantResponse | null> {
   const restaurant = restaurants.find((restaurant) => restaurant.slug === slug);
@@ -87,7 +90,9 @@ export async function getRestaurant(
   });
 
   return {
+    id: restaurant.id,
     cover: cover.url,
+    coverId: cover.id,
     name: restaurant.name,
     slug: restaurant.slug,
     description: restaurant.description,
@@ -104,4 +109,4 @@ export async function getRestaurant(
     menus: photos.filter((photo) => photo.type === "menu"),
     reviews: reviewWithCustomers,
   };
-}
+});

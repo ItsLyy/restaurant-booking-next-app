@@ -3,8 +3,8 @@
 import { createContext, use, useActionState, useMemo } from "react";
 
 import { Button } from "../ui/button";
+import { FileUpload } from "../ui/file-upload";
 import { InputField } from "../ui/input-field";
-import { TextArea } from "../ui/text-area";
 
 import type { FormAction, FormState } from "@types";
 
@@ -94,13 +94,34 @@ const FormInputField = ({
   );
 };
 
-interface FormTextAreaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+interface FormFileFieldProps {
   id: string;
+  label?: string;
+  accept?: string;
   className?: string;
 }
 
-const FormTextArea = ({ id, className, ...props }: FormTextAreaProps) => {
-  return <TextArea id={id} name={id} className={className} {...props} />;
+const FormFileField = ({
+  id,
+  label,
+  accept,
+  className,
+}: FormFileFieldProps) => {
+  const { state } = useFormContext();
+  const fieldError = state.errors?.[id]?.[0];
+  return (
+    <div className={`flex flex-col gap-1 ${className ?? ""}`}>
+      {label && (
+        <label htmlFor={id} className="text-c-caption font-medium">
+          {label}
+        </label>
+      )}
+      <FileUpload id={id} accept={accept} error={Boolean(fieldError)} />
+      {fieldError && (
+        <span className="text-c-caption text-negative">{fieldError}</span>
+      )}
+    </div>
+  );
 };
 
 interface FormSubmitButtonProps {
@@ -129,7 +150,7 @@ const FormSubmitButton = ({
 };
 
 Form.InputField = FormInputField;
-Form.TextArea = FormTextArea;
+Form.FileField = FormFileField;
 Form.SubmitButton = FormSubmitButton;
 
 export default Form;

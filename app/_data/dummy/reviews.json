@@ -20,5 +20,115 @@
     "bookingId": "booking-005",
     "createdAt": "2026-05-19T09:15:00.000Z",
     "updatedAt": "2026-05-19T13:00:00.000Z"
+  },
+  {
+    "id": "review-003",
+    "customerComment": "Best dim sum this side of the river — the har gow is translucent perfection.",
+    "customerRating": 5,
+    "customerCommentAt": "2026-01-10T12:00:00.000Z",
+    "ownerReply": "Thank you for visiting! We truly appreciate your kind words and hope to welcome you again soon.",
+    "ownerReplyAt": "2026-01-10T14:00:00.000Z",
+    "bookingId": "booking-028",
+    "createdAt": "2026-01-10T12:00:00.000Z",
+    "updatedAt": "2026-01-10T14:00:00.000Z"
+  },
+  {
+    "id": "review-004",
+    "customerComment": "Peking duck carved tableside and the tea ceremony was a lovely touch.",
+    "customerRating": 4,
+    "customerCommentAt": "2026-01-11T12:00:00.000Z",
+    "ownerReply": "Thank you for visiting! We truly appreciate your kind words and hope to welcome you again soon.",
+    "ownerReplyAt": "2026-01-11T14:00:00.000Z",
+    "bookingId": "booking-029",
+    "createdAt": "2026-01-11T12:00:00.000Z",
+    "updatedAt": "2026-01-11T14:00:00.000Z"
+  },
+  {
+    "id": "review-005",
+    "customerComment": "Green curry was outstanding and the spice meter is not for the faint of heart!",
+    "customerRating": 4,
+    "customerCommentAt": "2026-02-10T12:00:00.000Z",
+    "ownerReply": "Thank you for visiting! We truly appreciate your kind words and hope to welcome you again soon.",
+    "ownerReplyAt": "2026-02-10T14:00:00.000Z",
+    "bookingId": "booking-030",
+    "createdAt": "2026-02-10T12:00:00.000Z",
+    "updatedAt": "2026-02-10T14:00:00.000Z"
+  },
+  {
+    "id": "review-006",
+    "customerComment": "The steak frites alone are worth the trip — the wine list even more so.",
+    "customerRating": 5,
+    "customerCommentAt": "2026-03-10T12:00:00.000Z",
+    "ownerReply": "Thank you for visiting! We truly appreciate your kind words and hope to welcome you again soon.",
+    "ownerReplyAt": "2026-03-10T14:00:00.000Z",
+    "bookingId": "booking-031",
+    "createdAt": "2026-03-10T12:00:00.000Z",
+    "updatedAt": "2026-03-10T14:00:00.000Z"
+  },
+  {
+    "id": "review-007",
+    "customerComment": "Incredible ceviche but service was a touch slow on a packed Saturday.",
+    "customerRating": 3.5,
+    "customerCommentAt": "2026-04-10T12:00:00.000Z",
+    "ownerReply": "Thank you for visiting! We truly appreciate your kind words and hope to welcome you again soon.",
+    "ownerReplyAt": "2026-04-10T14:00:00.000Z",
+    "bookingId": "booking-032",
+    "createdAt": "2026-04-10T12:00:00.000Z",
+    "updatedAt": "2026-04-10T14:00:00.000Z"
+  },
+  {
+    "id": "review-008",
+    "customerComment": "The octopus and the atmosphere under the grapevines are unbeatable.",
+    "customerRating": 4,
+    "customerCommentAt": "2026-05-10T12:00:00.000Z",
+    "ownerReply": "Thank you for visiting! We truly appreciate your kind words and hope to welcome you again soon.",
+    "ownerReplyAt": "2026-05-10T14:00:00.000Z",
+    "bookingId": "booking-033",
+    "createdAt": "2026-05-10T12:00:00.000Z",
+    "updatedAt": "2026-05-10T14:00:00.000Z"
+  },
+  {
+    "id": "review-009",
+    "customerComment": "Charcoal BBQ done right with the best banchan rotation in town.",
+    "customerRating": 4.5,
+    "customerCommentAt": "2026-01-10T12:00:00.000Z",
+    "ownerReply": "Thank you for visiting! We truly appreciate your kind words and hope to welcome you again soon.",
+    "ownerReplyAt": "2026-01-10T14:00:00.000Z",
+    "bookingId": "booking-034",
+    "createdAt": "2026-01-10T12:00:00.000Z",
+    "updatedAt": "2026-01-10T14:00:00.000Z"
+  },
+  {
+    "id": "review-010",
+    "customerComment": "Pho broth is deep and serious — easily the best bowl I've had this year.",
+    "customerRating": 4,
+    "customerCommentAt": "2026-02-10T12:00:00.000Z",
+    "ownerReply": "Thank you for visiting! We truly appreciate your kind words and hope to welcome you again soon.",
+    "ownerReplyAt": "2026-02-10T14:00:00.000Z",
+    "bookingId": "booking-035",
+    "createdAt": "2026-02-10T12:00:00.000Z",
+    "updatedAt": "2026-02-10T14:00:00.000Z"
+  },
+  {
+    "id": "review-011",
+    "customerComment": "45-day dry-aged ribeye cooked flawlessly, and the whiskey list is enormous.",
+    "customerRating": 5,
+    "customerCommentAt": "2026-03-10T12:00:00.000Z",
+    "ownerReply": "Thank you for visiting! We truly appreciate your kind words and hope to welcome you again soon.",
+    "ownerReplyAt": "2026-03-10T14:00:00.000Z",
+    "bookingId": "booking-036",
+    "createdAt": "2026-03-10T12:00:00.000Z",
+    "updatedAt": "2026-03-10T14:00:00.000Z"
+  },
+  {
+    "id": "review-012",
+    "customerComment": "Pandan waffles and cold brew made my entire morning.",
+    "customerRating": 4,
+    "customerCommentAt": "2026-04-10T12:00:00.000Z",
+    "ownerReply": "Thank you for visiting! We truly appreciate your kind words and hope to welcome you again soon.",
+    "ownerReplyAt": "2026-04-10T14:00:00.000Z",
+    "bookingId": "booking-037",
+    "createdAt": "2026-04-10T12:00:00.000Z",
+    "updatedAt": "2026-04-10T14:00:00.000Z"
   }
 ]

@@ -7,6 +7,7 @@ export interface IRestaurant {
   address: string;
   tags: string[];
   ownerId: string;
+  categoryId?: string;
   discount?: number;
   description: string;
   shortDescription?: string;
@@ -25,20 +26,13 @@ export interface IRestaurantPhoto {
   updatedAt?: string;
 }
 
-export interface IRestaurantHour {
-  id: string;
-  dayOfWeek: number;
-  openTime: string;
-  closeTime: string;
-  restaurantId: string;
-}
-
 export interface ITable {
   id: string;
   name: string;
   price: number;
   category: string;
   floor: number;
+  capacity: number;
   restaurantId: string;
   createdAt?: string;
   updatedAt?: string;

@@ -14,7 +14,16 @@ export const Footer = () => {
         </Link>
         <div className="flex flex-col gap-2 items-start sm:items-end">
           <div className="flex w-fit text-c-ref items-center gap-1">
-            <span>Explore</span>·<span>For Owners</span>·<span>Privacy</span>·
+            <Link className="hover:text-accent-100" href="/restaurants">
+              Explore
+            </Link>
+            <span aria-hidden="true">·</span>
+            <Link className="hover:text-accent-100" href="/signup">
+              For Owners
+            </Link>
+            <span aria-hidden="true">·</span>
+            <span>Privacy</span>
+            <span aria-hidden="true">·</span>
             <span>Terms</span>
           </div>
           <span className="text-c-header-md text-foreground">

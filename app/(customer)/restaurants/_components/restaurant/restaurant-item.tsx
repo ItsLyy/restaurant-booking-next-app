@@ -32,7 +32,7 @@ export const RestaurantItem = ({
       href={`/restaurants/${slug}`}
       className="flex flex-col sm:flex-row gap-4 sm:gap-6 w-full group"
     >
-      <div className="relative w-full sm:w-71.75 aspect-[3/2] shrink-0 rounded-2xl overflow-hidden">
+      <div className="relative w-full sm:w-71.75 aspect-3/2 shrink-0 rounded-2xl overflow-hidden">
         <Image
           src={image}
           alt={name}

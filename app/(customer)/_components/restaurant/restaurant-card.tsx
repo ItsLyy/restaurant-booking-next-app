@@ -1,10 +1,12 @@
 import Image from "next/image";
+import Link from "next/link";
 
 import { StarIcon } from "@phosphor-icons/react/dist/ssr";
 
 import { formatPrice } from "@utils";
 
 interface RestaurantCardProps {
+  slug: string;
   name: string;
   image: string;
   rating: number;
@@ -13,6 +15,7 @@ interface RestaurantCardProps {
 }
 
 const RestaurantCard = ({
+  slug,
   name,
   image,
   rating,
@@ -20,15 +23,14 @@ const RestaurantCard = ({
   maxPrice = 0,
 }: RestaurantCardProps) => {
   return (
-    <div className="group cursor-pointer">
-      <div className="relative w-full aspect-[3/2] overflow-hidden rounded-2xl">
+    <Link href={`/restaurants/${slug}`} className="group block">
+      <div className="relative w-full aspect-3/2 overflow-hidden rounded-2xl">
         <Image
           src={image}
           alt={name}
           fill
           sizes="(min-width: 1024px) 33vw, 50vw"
-          loading="eager"
-          className="group-hover:scale-105 transition-transform ease-in-out duration-300 bg-base-200"
+          className="group-hover:scale-105 transition-transform ease-in-out duration-300 bg-base-200 box-border object-cover object-center"
         />
       </div>
       <div className="px-1 py-2.5 space-y-1">
@@ -44,7 +46,7 @@ const RestaurantCard = ({
           </span>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 
