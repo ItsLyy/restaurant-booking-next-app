@@ -13,6 +13,7 @@ const CategoryGrid = ({ categories }: CategoryGridProps) => {
         <CategoryCard
           key={category.id}
           name={category.name}
+          slug={category.slug}
           image={category.image}
         />
       ))}

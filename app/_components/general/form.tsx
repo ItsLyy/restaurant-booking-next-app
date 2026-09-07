@@ -3,6 +3,7 @@
 import { createContext, use, useActionState, useMemo } from "react";
 
 import { Button } from "../ui/button";
+import { FileUpload } from "../ui/file-upload";
 import { InputField } from "../ui/input-field";
 import { TextArea } from "../ui/text-area";
 
@@ -103,6 +104,36 @@ const FormTextArea = ({ id, className, ...props }: FormTextAreaProps) => {
   return <TextArea id={id} name={id} className={className} {...props} />;
 };
 
+interface FormFileFieldProps {
+  id: string;
+  label?: string;
+  accept?: string;
+  className?: string;
+}
+
+const FormFileField = ({
+  id,
+  label,
+  accept,
+  className,
+}: FormFileFieldProps) => {
+  const { state } = useFormContext();
+  const fieldError = state.errors?.[id]?.[0];
+  return (
+    <div className={`flex flex-col gap-1 ${className ?? ""}`}>
+      {label && (
+        <label htmlFor={id} className="text-c-caption font-medium">
+          {label}
+        </label>
+      )}
+      <FileUpload id={id} accept={accept} error={Boolean(fieldError)} />
+      {fieldError && (
+        <span className="text-c-caption text-negative">{fieldError}</span>
+      )}
+    </div>
+  );
+};
+
 interface FormSubmitButtonProps {
   children: React.ReactNode;
   className?: string;
@@ -130,6 +161,7 @@ const FormSubmitButton = ({
 
 Form.InputField = FormInputField;
 Form.TextArea = FormTextArea;
+Form.FileField = FormFileField;
 Form.SubmitButton = FormSubmitButton;
 
 export default Form;

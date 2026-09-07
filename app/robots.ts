@@ -1,0 +1,14 @@
+import { SITE_URL } from "@libs";
+
+import type { MetadataRoute } from "next";
+
+export default function robots(): MetadataRoute.Robots {
+  return {
+    rules: {
+      userAgent: "*",
+      allow: "/",
+      disallow: ["/bookings", "/signin", "/signup", "/otp"],
+    },
+    sitemap: `${SITE_URL}/sitemap.xml`,
+  };
+}

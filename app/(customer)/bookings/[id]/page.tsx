@@ -10,6 +10,16 @@ import { getBooking } from "@data/bookings/get-booking";
 
 import { resolvePaymentStatus } from "@utils";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Booking",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
+
 export default async function BookingDetailPage({
   params,
 }: {

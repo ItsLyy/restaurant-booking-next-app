@@ -3,6 +3,7 @@ export type {
   IRestaurantHour,
   IRestaurantPhoto,
   IRestaurantListItem,
+  ITable,
 } from "./restaurant";
 export type { IUser, IOfficer, IOwner, IOTPToken } from "./user";
 export type { IPayment } from "./payment";

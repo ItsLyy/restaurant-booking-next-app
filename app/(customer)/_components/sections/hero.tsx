@@ -8,12 +8,12 @@ export const HeroSection = () => {
   return (
     <section className="flex flex-col md:flex-row items-center gap-8 w-full">
       <div className="flex-1 justify-center flex flex-col gap-2">
-        <span className="text-c-header-lg text-foreground">
+        <h1 className="text-c-header-lg text-foreground">
           Your next great meal, one tap away.
-        </span>
-        <span className="text-c-body">
+        </h1>
+        <p className="text-c-body">
           Find, book, and enjoy the best restaurants around you.
-        </span>
+        </p>
         <div className="mt-8 flex flex-col sm:flex-row gap-2">
           <Button as="link" href="/restaurants">
             Browse Restaurants
@@ -27,7 +27,7 @@ export const HeroSection = () => {
         <div className="relative aspect-[3/2] w-full">
           <Image
             src={heroBanner}
-            alt="Hero"
+            alt="Dining table with a meal"
             fill
             priority
             sizes="(min-width: 768px) 50vw, 100vw"

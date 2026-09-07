@@ -40,6 +40,7 @@ export interface ITable {
   price: number;
   category: string;
   floor: number;
+  capacity: number;
   restaurantId: string;
   createdAt?: string;
   updatedAt?: string;

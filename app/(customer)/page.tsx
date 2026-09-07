@@ -10,6 +10,13 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   description: "Delicious Dining & Easy Reservations",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "RES.BOOK",
+    description: "Delicious Dining & Easy Reservations",
+  },
 };
 
 export default function HomePage() {

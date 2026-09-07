@@ -1,5 +1,7 @@
 import { DM_Sans, Playfair_Display } from "next/font/google";
 
+import { SITE_URL } from "@libs";
+
 import type { Metadata } from "next";
 
 import "./globals.css";
@@ -15,11 +17,19 @@ const playfairDisplay = Playfair_Display({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "RES.BOOK",
     template: "%s | RES.BOOK",
   },
   description: "A book system for restaurants in your area.",
+  openGraph: {
+    siteName: "RES.BOOK",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
 };
 
 export default function RootLayout({

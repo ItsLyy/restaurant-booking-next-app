@@ -7,7 +7,7 @@ export const OwnerActionSection = () => {
     <section className="relative text-base-100 bg-base-200 rounded-lg w-full overflow-hidden">
       <Image
         src={banner}
-        alt="Owner Action"
+        alt="Restaurant owner offering a partnership"
         className="object-cover"
         fill
         sizes="100%"

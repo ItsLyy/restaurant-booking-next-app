@@ -9,6 +9,10 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "My Bookings",
   description: "View your restaurant bookings.",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default async function BookingsPage() {

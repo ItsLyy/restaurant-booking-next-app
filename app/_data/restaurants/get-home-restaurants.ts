@@ -4,11 +4,14 @@ import { toRestaurantListItem } from "./_helpers";
 
 import type { IRestaurantListItem } from "@types";
 
+const HOME_COUNT = 6;
+
 export async function getPopularRestaurants(): Promise<IRestaurantListItem[]> {
   await new Promise((resolve) => setTimeout(resolve, 1000));
   return restaurants
     .map(toRestaurantListItem)
-    .sort((a, b) => b.rating - a.rating);
+    .sort((a, b) => b.rating - a.rating)
+    .slice(0, HOME_COUNT);
 }
 
 export async function getForYouRestaurants(): Promise<IRestaurantListItem[]> {
@@ -21,7 +24,7 @@ export async function getForYouRestaurants(): Promise<IRestaurantListItem[]> {
     }
   }
 
-  return restaurantsWithDiscount.sort(
-    (a, b) => (b.discount ?? 0) - (a.discount ?? 0),
-  );
+  return restaurantsWithDiscount
+    .sort((a, b) => (b.discount ?? 0) - (a.discount ?? 0))
+    .slice(0, HOME_COUNT);
 }

@@ -3,7 +3,11 @@
     "id": "cat-001",
     "name": "Japanese",
     "slug": "japanese",
-    "restaurantIds": ["rest-001"],
+    "restaurantIds": [
+      "rest-001",
+      "rest-013",
+      "rest-025"
+    ],
     "createdAt": "2024-01-12T10:00:00.000Z",
     "updatedAt": "2025-03-15T08:00:00.000Z"
   },
@@ -11,7 +15,11 @@
     "id": "cat-002",
     "name": "Indian",
     "slug": "indian",
-    "restaurantIds": ["rest-002"],
+    "restaurantIds": [
+      "rest-002",
+      "rest-014",
+      "rest-026"
+    ],
     "createdAt": "2024-02-07T11:30:00.000Z",
     "updatedAt": "2025-04-20T09:30:00.000Z"
   },
@@ -19,8 +27,111 @@
     "id": "cat-003",
     "name": "Italian",
     "slug": "italian",
-    "restaurantIds": ["rest-003"],
+    "restaurantIds": [
+      "rest-003",
+      "rest-015",
+      "rest-027"
+    ],
     "createdAt": "2024-03-03T14:00:00.000Z",
     "updatedAt": "2025-05-01T10:00:00.000Z"
+  },
+  {
+    "id": "cat-004",
+    "name": "Chinese",
+    "slug": "chinese",
+    "restaurantIds": [
+      "rest-004",
+      "rest-016"
+    ],
+    "createdAt": "2024-04-01T10:00:00.000Z",
+    "updatedAt": "2024-04-01T10:00:00.000Z"
+  },
+  {
+    "id": "cat-005",
+    "name": "Thai",
+    "slug": "thai",
+    "restaurantIds": [
+      "rest-005",
+      "rest-017"
+    ],
+    "createdAt": "2024-04-01T10:00:00.000Z",
+    "updatedAt": "2024-04-01T10:00:00.000Z"
+  },
+  {
+    "id": "cat-006",
+    "name": "French",
+    "slug": "french",
+    "restaurantIds": [
+      "rest-006",
+      "rest-018"
+    ],
+    "createdAt": "2024-04-01T10:00:00.000Z",
+    "updatedAt": "2024-04-01T10:00:00.000Z"
+  },
+  {
+    "id": "cat-007",
+    "name": "Mexican",
+    "slug": "mexican",
+    "restaurantIds": [
+      "rest-007",
+      "rest-019"
+    ],
+    "createdAt": "2024-04-01T10:00:00.000Z",
+    "updatedAt": "2024-04-01T10:00:00.000Z"
+  },
+  {
+    "id": "cat-008",
+    "name": "Mediterranean",
+    "slug": "mediterranean",
+    "restaurantIds": [
+      "rest-008",
+      "rest-020"
+    ],
+    "createdAt": "2024-04-01T10:00:00.000Z",
+    "updatedAt": "2024-04-01T10:00:00.000Z"
+  },
+  {
+    "id": "cat-009",
+    "name": "Korean",
+    "slug": "korean",
+    "restaurantIds": [
+      "rest-009",
+      "rest-021"
+    ],
+    "createdAt": "2024-04-01T10:00:00.000Z",
+    "updatedAt": "2024-04-01T10:00:00.000Z"
+  },
+  {
+    "id": "cat-010",
+    "name": "Vietnamese",
+    "slug": "vietnamese",
+    "restaurantIds": [
+      "rest-010",
+      "rest-022"
+    ],
+    "createdAt": "2024-04-01T10:00:00.000Z",
+    "updatedAt": "2024-04-01T10:00:00.000Z"
+  },
+  {
+    "id": "cat-011",
+    "name": "Grill & Steakhouse",
+    "slug": "grill-and-steakhouse",
+    "restaurantIds": [
+      "rest-011",
+      "rest-023"
+    ],
+    "createdAt": "2024-04-01T10:00:00.000Z",
+    "updatedAt": "2024-04-01T10:00:00.000Z"
+  },
+  {
+    "id": "cat-012",
+    "name": "Cafe & Dessert",
+    "slug": "cafe-and-dessert",
+    "restaurantIds": [
+      "rest-012",
+      "rest-024"
+    ],
+    "createdAt": "2024-04-01T10:00:00.000Z",
+    "updatedAt": "2024-04-01T10:00:00.000Z"
   }
 ]

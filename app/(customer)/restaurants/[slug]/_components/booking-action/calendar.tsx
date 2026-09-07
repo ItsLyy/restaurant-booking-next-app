@@ -1,64 +1,142 @@
+"use client";
+
+import { useState } from "react";
+
 import { CaretLeftIcon, CaretRightIcon } from "@phosphor-icons/react/dist/ssr";
+
 import { Badge } from "./badge";
 
-export const Calendar = () => {
+interface CalendarProps {
+  selectedDate: string | null;
+  onSelect: (date: string | null) => void;
+  getAvailableTimes: (date: string) => string[];
+}
+
+interface CalendarDay {
+  date: string | null;
+  day: number;
+  key: string;
+}
+
+const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const MONTHS = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
+const pad = (value: number) => value.toString().padStart(2, "0");
+
+const toDateString = (date: Date) =>
+  `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+
+const getCalendarGrid = (year: number, month: number): CalendarDay[] => {
+  const firstOfMonth = new Date(year, month, 1);
+  const startIndex = (firstOfMonth.getDay() + 6) % 7;
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  const cells: CalendarDay[] = [];
+  for (let index = 0; index < startIndex; index++) {
+    cells.push({ date: null, day: 0, key: `empty-${index}` });
+  }
+  for (let day = 1; day <= daysInMonth; day++) {
+    const date = new Date(year, month, day);
+    cells.push({ date: toDateString(date), day, key: `day-${day}` });
+  }
+  return cells;
+};
+
+export const Calendar = ({
+  selectedDate,
+  onSelect,
+  getAvailableTimes,
+}: CalendarProps) => {
+  const today = new Date();
+  const [viewYear, setViewYear] = useState(today.getFullYear());
+  const [viewMonth, setViewMonth] = useState(today.getMonth());
+
+  const cells = getCalendarGrid(viewYear, viewMonth);
+  const startOfToday = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate(),
+  );
+
+  const canGoNext =
+    viewYear < today.getFullYear() + 1 ||
+    (viewYear === today.getFullYear() + 1 && viewMonth < 11);
+
+  const moveMonth = (direction: number) => {
+    const next = new Date(viewYear, viewMonth + direction, 1);
+    setViewYear(next.getFullYear());
+    setViewMonth(next.getMonth());
+    onSelect(null);
+  };
+
+  const isPast = (cell: CalendarDay) => {
+    if (!cell.date) return true;
+    const date = new Date(`${cell.date}T00:00:00`);
+    return date.getTime() < startOfToday.getTime();
+  };
+
   return (
-    <div className="px-6 py-4 flex flex-col gap-4 border-b border-muted h-93">
+    <div className="px-6 py-4 flex flex-col gap-4 border-b border-muted h-90">
       <div className="w-full flex justify-between items-center">
-        <button type="button" aria-label="Previous month" className="group">
-          <CaretLeftIcon className="size-6 text-foreground disabled:text-muted" />
+        <button
+          type="button"
+          aria-label="Previous month"
+          className="group"
+          onClick={() => moveMonth(-1)}
+        >
+          <CaretLeftIcon className="size-6 text-foreground" />
         </button>
-        <span className="text-foreground text-c-normal">April 2026</span>
-        <button type="button" aria-label="Next month" className="group">
-          <CaretRightIcon className="size-6 text-foreground group-disabled:text-muted" />
+        <span className="text-foreground text-c-normal">
+          {MONTHS[viewMonth]} {viewYear}
+        </span>
+        <button
+          type="button"
+          aria-label="Next month"
+          className={`group ${canGoNext ? "" : "opacity-40 cursor-not-allowed"}`}
+          disabled={!canGoNext}
+          onClick={() => moveMonth(1)}
+        >
+          <CaretRightIcon className="size-6 text-foreground" />
         </button>
       </div>
-      <div className="flex flex-col gap-2 size-full">
-        <div className="grid grid-cols-7 gap-2 *:text-center *:w-full *:text-foreground text-c-caption">
-          <span>Mon</span>
-          <span>Tue</span>
-          <span>Wed</span>
-          <span>Thu</span>
-          <span>Fri</span>
-          <span>Sat</span>
-          <span>Sun</span>
+      <div className="flex flex-col gap-2 h-full">
+        <div className="grid grid-cols-7 gap-1.5 *:text-center *:w-full *:text-foreground text-c-caption">
+          {DAYS.map((day) => (
+            <span key={day}>{day}</span>
+          ))}
         </div>
-        <div className="w-full grid grid-cols-7 grid-rows-5 gap-2 size-full">
-          <Badge disabled>30</Badge>
-          <Badge disabled>31</Badge>
-          <Badge>1</Badge>
-          <Badge>2</Badge>
-          <Badge>3</Badge>
-          <Badge>4</Badge>
-          <Badge>5</Badge>
-          <Badge>6</Badge>
-          <Badge>7</Badge>
-          <Badge>8</Badge>
-          <Badge>9</Badge>
-          <Badge>10</Badge>
-          <Badge>11</Badge>
-          <Badge>12</Badge>
-          <Badge>13</Badge>
-          <Badge>14</Badge>
-          <Badge>15</Badge>
-          <Badge>16</Badge>
-          <Badge>17</Badge>
-          <Badge>18</Badge>
-          <Badge>19</Badge>
-          <Badge>20</Badge>
-          <Badge>21</Badge>
-          <Badge>22</Badge>
-          <Badge>23</Badge>
-          <Badge>24</Badge>
-          <Badge>25</Badge>
-          <Badge>26</Badge>
-          <Badge>27</Badge>
-          <Badge>28</Badge>
-          <Badge>29</Badge>
-          <Badge>30</Badge>
-          <Badge disabled>1</Badge>
-          <Badge disabled>2</Badge>
-          <Badge disabled>3</Badge>
+        <div className="w-full grid grid-cols-7 gap-1.5 h-full">
+          {cells.map((cell) => {
+            if (!cell.date) {
+              return <Badge key={cell.key} hidden />;
+            }
+            const disabled =
+              isPast(cell) || getAvailableTimes(cell.date).length === 0;
+            const active = selectedDate === cell.date;
+            return (
+              <Badge
+                key={cell.key}
+                onClick={() => onSelect(cell.date ?? null)}
+                disabled={disabled}
+                active={active}
+              >
+                {cell.day}
+              </Badge>
+            );
+          })}
         </div>
       </div>
     </div>
