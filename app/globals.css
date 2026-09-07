@@ -19,7 +19,7 @@
   .text-d-header-lg    { @apply text-xl font-semibold; }
   .text-d-header-md    { @apply text-base font-semibold; }
   .text-d-header-card  { @apply text-[13px] font-medium; }
-  .text-d-header-table { @apply text-sm uppercase tracking-wider font-medium text-muted; }
+  .text-d-header-table { @apply text-xs uppercase text-muted; }
   .text-d-stat         { @apply text-[28px] font-semibold; }
   .text-d-body         { @apply text-sm text-muted; }
   .text-d-caption      { @apply text-xs text-muted; }
