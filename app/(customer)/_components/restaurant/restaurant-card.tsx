@@ -24,7 +24,7 @@ const RestaurantCard = ({
 }: RestaurantCardProps) => {
   return (
     <Link href={`/restaurants/${slug}`} className="group block">
-      <div className="relative w-full aspect-[3/2] overflow-hidden rounded-2xl">
+      <div className="relative w-full aspect-3/2 overflow-hidden rounded-2xl">
         <Image
           src={image}
           alt={name}

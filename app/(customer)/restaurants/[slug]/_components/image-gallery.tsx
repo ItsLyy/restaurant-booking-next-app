@@ -60,7 +60,7 @@ export const ImageGallery = ({
 
   return (
     <div className="flex flex-col gap-3 w-full">
-      <div className="relative w-full h-96 sm:h-[32rem] rounded-2xl overflow-hidden bg-base-200 flex items-center justify-center">
+      <div className="relative w-full h-96 sm:h-128 rounded-2xl overflow-hidden bg-base-200 flex items-center justify-center">
         <Image
           key={image.url}
           src={image.url}
