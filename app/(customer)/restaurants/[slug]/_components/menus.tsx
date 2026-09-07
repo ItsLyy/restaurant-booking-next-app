@@ -20,9 +20,9 @@ export const Menus = ({ slug, name, menus }: MenusProps) => {
         >
           <Image
             src={menu.url}
-            alt={`Menu-${index + 1}`}
+            alt={`Menu of ${name} ${index + 1}`}
             fill
-            sizes="100%"
+            sizes="128px"
             className="w-full h-full object-cover transition hover:scale-105"
           />
         </Link>

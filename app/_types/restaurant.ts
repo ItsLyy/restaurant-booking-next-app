@@ -26,14 +26,6 @@ export interface IRestaurantPhoto {
   updatedAt?: string;
 }
 
-export interface IRestaurantHour {
-  id: string;
-  dayOfWeek: number;
-  openTime: string;
-  closeTime: string;
-  restaurantId: string;
-}
-
 export interface ITable {
   id: string;
   name: string;

@@ -15,7 +15,7 @@ export const Avatar = ({ src, alt, className }: AvatarProps) => {
         src={src}
         alt={alt}
         fill
-        sizes="100%"
+        sizes="44px"
         className={`text-transparent object-cover object-center`}
       />
     </div>

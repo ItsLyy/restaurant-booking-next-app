@@ -9,6 +9,7 @@ import type { IRestaurantListItem } from "@types";
 import type { RestaurantQuery } from "@libs";
 
 const FLIGHT_QUERY_KEYS = [
+  "search",
   "category",
   "pmin",
   "pmax",
@@ -29,11 +30,10 @@ const queryKeyOf = (query: RestaurantQuery) => {
 };
 
 const flightUrl = (query: RestaurantQuery, page: number) => {
-  const queryKey = queryKeyOf(query);
-  return `/api/restaurants?${new URLSearchParams({
-    size: String(PAGE_SIZE),
-    page: String(page),
-  }).toString()}${queryKey ? `&${queryKey}` : ""}`;
+  const params = new URLSearchParams(queryKeyOf(query));
+  params.set("size", String(PAGE_SIZE));
+  params.set("page", String(page));
+  return `/api/restaurants?${params.toString()}`;
 };
 
 interface RestaurantListItemData {
@@ -65,9 +65,7 @@ export const RestaurantListInfinite = ({
     loadingRef.current = true;
     setLoading(true);
     try {
-      const res = await fetch(flightUrl(query, nextPageRef.current), {
-        cache: "no-store",
-      });
+      const res = await fetch(flightUrl(query, nextPageRef.current));
       if (!res.ok) {
         finishedRef.current = true;
         return;

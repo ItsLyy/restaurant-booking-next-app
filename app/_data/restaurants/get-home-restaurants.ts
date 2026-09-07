@@ -1,30 +1,28 @@
-import restaurants from "@data/dummy/restaurants.json";
-
-import { toRestaurantListItem } from "./_helpers";
+import { getAllRestaurants } from "./get-all-restaurants";
 
 import type { IRestaurantListItem } from "@types";
 
 const HOME_COUNT = 6;
 
+const demoDelay = (ms: number) =>
+  process.env.NODE_ENV === "production"
+    ? Promise.resolve()
+    : new Promise((resolve) => setTimeout(resolve, ms));
+
 export async function getPopularRestaurants(): Promise<IRestaurantListItem[]> {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  const restaurants = await getAllRestaurants();
+  await demoDelay(1000);
   return restaurants
-    .map(toRestaurantListItem)
+    .slice()
     .sort((a, b) => b.rating - a.rating)
     .slice(0, HOME_COUNT);
 }
 
 export async function getForYouRestaurants(): Promise<IRestaurantListItem[]> {
-  await new Promise((resolve) => setTimeout(resolve, 1500));
-  const restaurantsWithDiscount: IRestaurantListItem[] = [];
-  for (const restaurant of restaurants) {
-    const restaurantListItem = toRestaurantListItem(restaurant);
-    if (restaurantListItem.discount) {
-      restaurantsWithDiscount.push(restaurantListItem);
-    }
-  }
-
-  return restaurantsWithDiscount
+  const restaurants = await getAllRestaurants();
+  await demoDelay(1500);
+  return restaurants
+    .filter((restaurant) => (restaurant.discount ?? 0) > 0)
     .sort((a, b) => (b.discount ?? 0) - (a.discount ?? 0))
     .slice(0, HOME_COUNT);
 }

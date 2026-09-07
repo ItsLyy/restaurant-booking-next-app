@@ -12,7 +12,8 @@ const Categories = async () => {
 
 export const CategoriesFoodSection = () => {
   return (
-    <section className="p-2">
+    <section className="p-2 space-y-2">
+      <h2 className="text-c-header-md text-foreground">Browse by Cuisine</h2>
       <Suspense fallback={<CategoryGridSkeleton />}>
         <Categories />
       </Suspense>

@@ -1,3 +1,5 @@
+import { cache } from "react";
+
 import restaurants from "../dummy/restaurants.json";
 import restaurantPhotos from "../dummy/restaurant_photos.json";
 import bookings from "../dummy/bookings.json";
@@ -30,7 +32,7 @@ interface GetRestaurantResponse extends Omit<
   reviews: Review[];
 }
 
-export async function getRestaurant(
+export const getRestaurant = cache(async function getRestaurant(
   slug: string,
 ): Promise<GetRestaurantResponse | null> {
   const restaurant = restaurants.find((restaurant) => restaurant.slug === slug);
@@ -107,4 +109,4 @@ export async function getRestaurant(
     menus: photos.filter((photo) => photo.type === "menu"),
     reviews: reviewWithCustomers,
   };
-}
+});

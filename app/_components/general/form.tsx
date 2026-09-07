@@ -5,7 +5,6 @@ import { createContext, use, useActionState, useMemo } from "react";
 import { Button } from "../ui/button";
 import { FileUpload } from "../ui/file-upload";
 import { InputField } from "../ui/input-field";
-import { TextArea } from "../ui/text-area";
 
 import type { FormAction, FormState } from "@types";
 
@@ -95,15 +94,6 @@ const FormInputField = ({
   );
 };
 
-interface FormTextAreaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
-  id: string;
-  className?: string;
-}
-
-const FormTextArea = ({ id, className, ...props }: FormTextAreaProps) => {
-  return <TextArea id={id} name={id} className={className} {...props} />;
-};
-
 interface FormFileFieldProps {
   id: string;
   label?: string;
@@ -160,7 +150,6 @@ const FormSubmitButton = ({
 };
 
 Form.InputField = FormInputField;
-Form.TextArea = FormTextArea;
 Form.FileField = FormFileField;
 Form.SubmitButton = FormSubmitButton;
 

@@ -9,13 +9,20 @@ import { OwnerActionSection } from "./_components/sections/owner-action";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  description: "Delicious Dining & Easy Reservations",
+  title: {
+    absolute: "RES.BOOK",
+  },
+  description: "Delicious dining and easy reservations, one tap away.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
     title: "RES.BOOK",
-    description: "Delicious Dining & Easy Reservations",
+    description: "Delicious dining and easy reservations, one tap away.",
+  },
+  twitter: {
+    title: "RES.BOOK",
+    description: "Delicious dining and easy reservations, one tap away.",
   },
 };
 

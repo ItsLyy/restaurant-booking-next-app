@@ -29,7 +29,7 @@ export const HeroSection = () => {
             src={heroBanner}
             alt="Dining table with a meal"
             fill
-            priority
+            preload
             sizes="(min-width: 768px) 50vw, 100vw"
             className="object-cover rounded-xl"
           />

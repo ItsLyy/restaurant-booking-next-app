@@ -2,7 +2,7 @@ import { DM_Sans, Playfair_Display } from "next/font/google";
 
 import { SITE_URL } from "@libs";
 
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 
 import "./globals.css";
 
@@ -22,14 +22,25 @@ export const metadata: Metadata = {
     default: "RES.BOOK",
     template: "%s | RES.BOOK",
   },
-  description: "A book system for restaurants in your area.",
+  description:
+    "Discover, compare, and book tables at the best restaurants in your area.",
   openGraph: {
     siteName: "RES.BOOK",
     type: "website",
+    title: "RES.BOOK",
+    description:
+      "Discover, compare, and book tables at the best restaurants in your area.",
   },
   twitter: {
     card: "summary_large_image",
+    title: "RES.BOOK",
+    description:
+      "Discover, compare, and book tables at the best restaurants in your area.",
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#f7f3ef",
 };
 
 export default function RootLayout({
@@ -42,6 +53,8 @@ export default function RootLayout({
       lang="en"
       className={`${dmSans.variable} ${playfairDisplay.variable} font-dm-sans bg-base-100 h-full text-c-body antialiased`}
     >
+      <link rel="preconnect" href="https://images.unsplash.com" />
+      <link rel="preconnect" href="https://randomuser.me" />
       <body className="min-h-svh flex flex-col">{children}</body>
     </html>
   );

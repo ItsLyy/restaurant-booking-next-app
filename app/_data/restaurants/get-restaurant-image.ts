@@ -1,3 +1,5 @@
+import { cache } from "react";
+
 import restaurants from "../dummy/restaurants.json";
 import restaurantPhotos from "../dummy/restaurant_photos.json";
 
@@ -11,7 +13,7 @@ export interface RestaurantImageGallery {
 
 const POST_COUNT = 3;
 
-export async function getRestaurantImage(
+export const getRestaurantImage = cache(async function getRestaurantImage(
   slug: string,
   imageId: string,
 ): Promise<RestaurantImageGallery | null> {
@@ -45,4 +47,4 @@ export async function getRestaurantImage(
     image: photo,
     images,
   };
-}
+});

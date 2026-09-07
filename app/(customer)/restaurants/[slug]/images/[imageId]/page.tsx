@@ -29,21 +29,27 @@ export async function generateMetadata({
 
   const label = gallery.image.type === "menu" ? "Menu" : "Photo";
   const title = `${gallery.restaurant.name} - ${label}`;
+  const description =
+    gallery.image.type === "menu"
+      ? `View the menu of ${gallery.restaurant.name}.`
+      : `Browse photos of ${gallery.restaurant.name}.`;
 
   return {
     title,
-    description: title,
+    description,
     alternates: {
       canonical: `/restaurants/${slug}/images/${imageId}`,
     },
     openGraph: {
       type: "website",
       title,
+      description,
       images: [{ url: gallery.image.url, alt: title }],
     },
     twitter: {
       card: "summary_large_image",
       title,
+      description,
       images: [gallery.image.url],
     },
   };
@@ -66,6 +72,11 @@ export default async function ImageDetailPage({
 
   return (
     <section className="size-full flex flex-col gap-4">
+      <h1 className="sr-only">
+        {gallery.image.type === "menu"
+          ? `Menu of ${gallery.restaurant.name}`
+          : `Photo of ${gallery.restaurant.name}`}
+      </h1>
       <Link
         href={restaurantHref}
         className="inline-flex items-center gap-1 w-fit text-c-body text-muted hover:text-accent-100"

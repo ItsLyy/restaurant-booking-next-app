@@ -26,5 +26,9 @@ export async function GET(request: NextRequest) {
 
   const result = await getRestaurantPage(query, page, pageSize);
 
-  return Response.json(result);
+  return Response.json(result, {
+    headers: {
+      "Cache-Control": "public, max-age=300, s-maxage=3600, stale-while-revalidate=60",
+    },
+  });
 }

@@ -19,7 +19,8 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const isInteractive = (query: RestaurantQuery) =>
   Boolean(
-    query.category ||
+    query.search ||
+      query.category ||
       query.pmin !== undefined ||
       query.pmax !== undefined ||
       query.minRating !== undefined ||
@@ -27,6 +28,11 @@ const isInteractive = (query: RestaurantQuery) =>
       query.sort ||
       query.order,
   );
+
+const demoDelayFor = (query: RestaurantQuery, page: number) =>
+  process.env.NODE_ENV === "production" || page !== 1 || isInteractive(query)
+    ? Promise.resolve()
+    : delay(FIRST_PAINT_MS);
 
 export async function getRestaurantPage(
   query: RestaurantQuery,
@@ -36,7 +42,7 @@ export async function getRestaurantPage(
   const [restaurants, categories] = await Promise.all([
     getAllRestaurants(),
     getCategories(),
-    page === 1 && !isInteractive(query) ? delay(FIRST_PAINT_MS) : Promise.resolve(),
+    demoDelayFor(query, page),
   ]);
 
   const filtered = filterRestaurants(restaurants, categories, query);

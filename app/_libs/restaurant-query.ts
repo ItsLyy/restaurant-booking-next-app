@@ -4,6 +4,7 @@ export type RestaurantOrder = "asc" | "desc";
 export const PAGE_SIZE = 8;
 
 export interface RestaurantQuery {
+  search?: string;
   category?: string;
   pmin?: number;
   pmax?: number;
@@ -14,6 +15,7 @@ export interface RestaurantQuery {
 }
 
 const QUERY_KEYS = [
+  "search",
   "category",
   "pmin",
   "pmax",
@@ -42,7 +44,10 @@ export function parseRestaurantsQuery(searchParams: SearchParams): RestaurantQue
   const sortValue = first(searchParams.sort);
   const orderValue = first(searchParams.order);
 
+  const search = first(searchParams.search)?.trim();
+
   return {
+    search: search ? search : undefined,
     category: first(searchParams.category),
     pmin: toNumber(first(searchParams.pmin)),
     pmax: toNumber(first(searchParams.pmax)),

@@ -61,6 +61,13 @@ export default async function RestaurantDetailPage({
 
   const { busyTablesByTime, slotsByDay, tables } = await getRestaurantAvailability(slug);
 
+  const averageRating = restaurant.reviews.length
+    ? restaurant.reviews.reduce(
+        (sum, review) => sum + review.customerRating,
+        0,
+      ) / restaurant.reviews.length
+    : undefined;
+
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Restaurant",
@@ -74,6 +81,24 @@ export default async function RestaurantDetailPage({
       addressCountry: restaurant.country,
     },
     ...(restaurant.tags?.length ? { servesCuisine: restaurant.tags } : {}),
+    ...(averageRating !== undefined
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: averageRating.toFixed(1),
+            reviewCount: restaurant.reviews.length,
+          },
+        }
+      : {}),
+    ...(restaurant.lat !== undefined && restaurant.lng !== undefined
+      ? {
+          geo: {
+            "@type": "GeoCoordinates",
+            latitude: restaurant.lat,
+            longitude: restaurant.lng,
+          },
+        }
+      : {}),
   };
 
   const structuredDataHtml = JSON.stringify(structuredData)
@@ -96,7 +121,7 @@ export default async function RestaurantDetailPage({
             cover={restaurant.cover}
             coverId={restaurant.coverId}
             photos={restaurant.photos}
-            priority
+            preload
           />
           <BookingAction
             restaurantId={restaurant.id}

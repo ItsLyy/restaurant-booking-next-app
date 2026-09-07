@@ -12,11 +12,24 @@ export function filterRestaurants(
     categoryIds = category ? new Set(category.restaurantIds) : new Set();
   }
 
+  const searchTerms = query.search?.toLowerCase().trim();
   const { pmin, pmax, minRating, hasDiscount, sort, order } = query;
   const direction = order === "desc" ? -1 : 1;
 
   const filtered = restaurants.filter((restaurant) => {
     if (categoryIds && !categoryIds.has(restaurant.id)) return false;
+    if (searchTerms) {
+      const haystack = [
+        restaurant.name,
+        restaurant.shortDescription,
+        restaurant.description,
+        restaurant.city,
+        restaurant.country,
+        restaurant.address,
+        ...(restaurant.tags ?? []),
+      ].join(" ").toLowerCase();
+      if (!haystack.includes(searchTerms)) return false;
+    }
     if (pmin !== undefined && (restaurant.maxPrice ?? restaurant.minPrice) < pmin)
       return false;
     if (pmax !== undefined && restaurant.minPrice > pmax) return false;

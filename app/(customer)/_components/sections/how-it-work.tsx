@@ -30,6 +30,7 @@ export const HowItWorkSection = () => {
           title="Just arrive and enjoy"
           content="Your table is ready. No waiting, no hassle — just a great meal ahead."
           actionLabel="View my Booking"
+          actionLinkTo="/bookings"
         />
       </div>
     </section>

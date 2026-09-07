@@ -68,7 +68,7 @@ export const ImageGallery = ({
           fill
           sizes="(min-width: 1024px) 960px, 100vw"
           className="text-transparent object-contain object-center rise-in"
-          priority
+          preload
         />
         {index > 0 && (
           <button

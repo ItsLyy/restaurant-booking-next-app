@@ -11,7 +11,7 @@ interface PhotosProps {
   photos: ImageProps[];
   slug: string;
   name: string;
-  priority?: boolean;
+  preload?: boolean;
 }
 
 export const Photos = ({
@@ -20,7 +20,7 @@ export const Photos = ({
   photos,
   slug,
   name,
-  priority = false,
+  preload = false,
 }: PhotosProps) => {
   return (
     <div className="space-y-4">
@@ -33,7 +33,7 @@ export const Photos = ({
           src={cover}
           alt={`Photo of ${name}`}
           fill
-          priority={priority}
+          preload={preload}
           sizes="(min-width: 1024px) 416px, 100vw"
           className="text-transparent object-cover object-center transition hover:scale-105"
         />
@@ -72,7 +72,7 @@ export const Photos = ({
   );
 };
 
-export const PhotoOtherLink = ({
+const PhotoOtherLink = ({
   photo,
   totalPhotos,
   alt,

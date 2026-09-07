@@ -18,7 +18,7 @@ const CategoryCard = ({ name, slug, image }: CategoryCardProps) => {
         alt={name}
         className="object-cover object-center bg-base-200 text-transparent group-hover:scale-105 transition-transform ease-in-out duration-300 scroll-smooth"
         fill
-        sizes="100%"
+        sizes="163px"
       />
       <div className="size-full p-3 bg-black/60 flex items-end absolute top-0 left-0 right-0 bottom-0">
         <span className="w-[50%] inline-block text-c-normal text-base-100">

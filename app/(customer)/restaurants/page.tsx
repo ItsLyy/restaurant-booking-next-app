@@ -20,10 +20,21 @@ import type { Metadata } from "next";
 type SearchParamsRecord = Record<string, string | string[] | undefined>;
 
 export const metadata: Metadata = {
-  title: "Browse",
-  description: "Browse restaurants.",
+  title: "Explore Restaurants",
+  description:
+    "Browse restaurants by cuisine, price, and rating, then book a table in seconds.",
   alternates: {
     canonical: "/restaurants",
+  },
+  openGraph: {
+    title: "Explore Restaurants",
+    description:
+      "Browse restaurants by cuisine, price, and rating, then book a table in seconds.",
+  },
+  twitter: {
+    title: "Explore Restaurants",
+    description:
+      "Browse restaurants by cuisine, price, and rating, then book a table in seconds.",
   },
 };
 
@@ -99,7 +110,7 @@ export default async function RestaurantsPage({
   return (
     <section>
       <div className="p-6 flex flex-col sm:flex-row justify-center items-stretch sm:items-center gap-2">
-        <Searchbar />
+        <Searchbar defaultValue={query.search} />
         <div className="flex justify-center items-stretch gap-2 flex-wrap">
           <Suspense fallback={<FilterFallback query={query} />}>
             <FilterWithSuspense query={query} searchParams={rawParams} />

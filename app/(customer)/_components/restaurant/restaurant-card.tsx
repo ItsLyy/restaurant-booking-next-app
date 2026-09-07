@@ -30,7 +30,6 @@ const RestaurantCard = ({
           alt={name}
           fill
           sizes="(min-width: 1024px) 33vw, 50vw"
-          loading="eager"
           className="group-hover:scale-105 transition-transform ease-in-out duration-300 bg-base-200 box-border object-cover object-center"
         />
       </div>
