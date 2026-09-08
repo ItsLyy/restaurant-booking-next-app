@@ -11,12 +11,22 @@ interface TableBadgeProps {
  * positive: Available
  */
 
-export const TableBadge = ({ tableName, variant = "positive" }: TableBadgeProps) => {
+export const TableBadge = ({
+  tableName,
+  variant = "positive",
+}: TableBadgeProps) => {
   return (
     <div
-      className={`size-11 rounded-sm flex justify-center items-center ${VARIANT_STYLES[variant].container}`}
+      className={`size-11 rounded-sm flex justify-center items-center overflow-hidden ${VARIANT_STYLES[variant].container}`}
     >
-      <span className="text-d-caption text-inherit">{tableName}</span>
+      <div className="flex w-max shrink-0 whitespace-nowrap marquee motion-reduce:animate-none">
+        <span className="text-d-caption text-inherit px-1 py-1">
+          {tableName}
+        </span>
+        <span aria-hidden className="text-d-caption text-inherit px-1 py-1">
+          {tableName}
+        </span>
+      </div>
     </div>
   );
 };

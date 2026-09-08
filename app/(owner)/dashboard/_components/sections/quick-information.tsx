@@ -10,6 +10,8 @@ import { Card } from "../card";
 
 import { formatPrice } from "@utils/formatPrice";
 
+import type { DashboardBooking } from "../../_data/dashboard";
+
 interface Stat {
   label: string;
   value: string;
@@ -17,31 +19,40 @@ interface Stat {
   className: string;
 }
 
-const STATS: Stat[] = [
-  {
-    label: "Total Booking",
-    value: "49",
-    icon: UsersIcon,
-    className: "w-50 shrink-0",
-  },
-  {
-    label: "Pending Confirmation",
-    value: "49",
-    icon: HandDepositIcon,
-    className: "w-50 shrink-0",
-  },
-  {
-    label: "Revenue Today",
-    value: formatPrice(200000),
-    icon: MoneyWavyIcon,
-    className: "w-full",
-  },
-];
+export const QuickInformation = ({
+  bookings,
+}: {
+  bookings: DashboardBooking[];
+}) => {
+  const totalBooking = bookings.length;
+  const pending = bookings.filter(
+    (booking) => booking.status === "pending",
+  ).length;
 
-export const QuickInformation = () => {
+  const stats: Stat[] = [
+    {
+      label: "Total Booking",
+      value: String(totalBooking),
+      icon: UsersIcon,
+      className: "w-50 shrink-0",
+    },
+    {
+      label: "Pending Confirmation",
+      value: String(pending),
+      icon: HandDepositIcon,
+      className: "w-50 shrink-0",
+    },
+    {
+      label: "Revenue Today",
+      value: formatPrice(200000),
+      icon: MoneyWavyIcon,
+      className: "w-full",
+    },
+  ];
+
   return (
     <div className="flex gap-4 w-full h-30 shrink-0">
-      {STATS.map((stat) => {
+      {stats.map((stat) => {
         const Icon = stat.icon;
 
         return (

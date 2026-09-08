@@ -7,6 +7,7 @@ import { Check } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@components";
 
 import { toBookingCode } from "@data/bookings/booking-code";
+import { isBookingTooSoon } from "@data/bookings/booking-deadline";
 
 import { createBookingAction } from "./_actions/booking-action";
 import { Calendar } from "./calendar";
@@ -44,8 +45,10 @@ const getAvailableTimes = (
   date: string,
 ) => {
   const slots = slotsByDay[getDayOfWeek(date)] ?? [];
-  return slots.filter((time) =>
-    getFreeTables(tables, busyTablesByTime, date, time).length > 0,
+  return slots.filter(
+    (time) =>
+      !isBookingTooSoon(date, time) &&
+      getFreeTables(tables, busyTablesByTime, date, time).length > 0,
   );
 };
 
@@ -74,27 +77,24 @@ export const BookingAction = ({
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [selectedPartySize, setSelectedPartySize] = useState<number | null>(null);
-  const [localBusyTablesByTime, setLocalBusyTablesByTime] = useState<
-    Record<string, Record<string, string[]>>
-  >(() => ({ ...busyTablesByTime }));
   const [bookingCode, setBookingCode] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [bookingError, setBookingError] = useState<string | null>(null);
 
   const availableTimes = selectedDate
-    ? getAvailableTimes(slotsByDay, tables, localBusyTablesByTime, selectedDate)
+    ? getAvailableTimes(slotsByDay, tables, busyTablesByTime, selectedDate)
     : [];
 
   const handleAvailableTimes = useCallback(
     (date: string) =>
-      getAvailableTimes(slotsByDay, tables, localBusyTablesByTime, date),
-    [slotsByDay, tables, localBusyTablesByTime],
+      getAvailableTimes(slotsByDay, tables, busyTablesByTime, date),
+    [slotsByDay, tables, busyTablesByTime],
   );
 
   const hasSelectedSlot = !!selectedDate && !!selectedTime;
 
   const maxParty = hasSelectedSlot
-    ? getMaxPartySize(tables, localBusyTablesByTime, selectedDate, selectedTime)
+    ? getMaxPartySize(tables, busyTablesByTime, selectedDate, selectedTime)
     : 0;
 
   const partyOptions: number[] = [];
@@ -122,7 +122,7 @@ export const BookingAction = ({
     setSelectedTime(time);
     if (!selectedDate) return;
 
-    const max = getMaxPartySize(tables, localBusyTablesByTime, selectedDate, time);
+    const max = getMaxPartySize(tables, busyTablesByTime, selectedDate, time);
     if (selectedPartySize !== null && selectedPartySize > max) {
       setSelectedPartySize(null);
     }
@@ -140,14 +140,6 @@ export const BookingAction = ({
         date: selectedDate,
         time: selectedTime,
         partySize: selectedPartySize,
-      });
-
-      setLocalBusyTablesByTime((current) => {
-        const byDate = { ...(current[selectedDate] ?? {}) };
-        const busy = new Set(byDate[selectedTime] ?? []);
-        busy.add(result.booking.tableId);
-        byDate[selectedTime] = [...busy];
-        return { ...current, [selectedDate]: byDate };
       });
 
       setBookingCode(toBookingCode(result.booking.id));
@@ -180,10 +172,10 @@ export const BookingAction = ({
           <div className="size-12 rounded-full bg-positive/20 text-positive flex items-center justify-center">
             <Check className="size-6" />
           </div>
-          <p className="text-c-header-md text-foreground">Booking Confirmed!</p>
+          <p className="text-c-header-md text-foreground">Booking Requested!</p>
           <p className="text-c-body text-muted">
-            Your reservation at <span className="text-foreground">{restaurantName}</span> has
-            been requested.
+            Your reservation at <span className="text-foreground">{restaurantName}</span> is
+            awaiting confirmation by the restaurant.
           </p>
           <dl className="space-y-1 text-c-body">
             <div className="flex justify-between">

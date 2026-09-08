@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useEffectEvent } from "react";
 
 import { CaretLeftIcon, CaretRightIcon } from "@phosphor-icons/react/dist/ssr";
 
@@ -42,14 +42,18 @@ export const ImageGallery = ({
     [images, router, slug],
   );
 
+  const navigateFromKey = useEffectEvent((nextIndex: number) => {
+    goTo(nextIndex);
+  });
+
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "ArrowLeft") goTo(index - 1);
-      if (event.key === "ArrowRight") goTo(index + 1);
+      if (event.key === "ArrowLeft") navigateFromKey(index - 1);
+      if (event.key === "ArrowRight") navigateFromKey(index + 1);
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [goTo, index]);
+  }, [index]);
 
   if (!image) return null;
 

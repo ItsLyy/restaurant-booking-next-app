@@ -4,6 +4,7 @@ import restaurants from "@data/dummy/restaurants.json";
 import tables from "@data/dummy/tables.json";
 
 import { toBookingCode } from "./booking-code";
+import { getEffectiveBookingStatus } from "./booking-deadline";
 
 import type { IBooking, IPayment } from "@types";
 
@@ -26,7 +27,10 @@ export async function getAllBookings(): Promise<BookingListItem[]> {
     ) as IPayment | undefined;
 
     return {
-      booking: booking as IBooking,
+      booking: {
+        ...(booking as IBooking),
+        status: getEffectiveBookingStatus(booking as IBooking, payment),
+      },
       bookingCode: toBookingCode(booking.id),
       restaurantName: restaurant?.name ?? "Restaurant",
       restaurantSlug: restaurant?.slug ?? "",

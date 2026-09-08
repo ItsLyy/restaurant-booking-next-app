@@ -50,7 +50,7 @@ export const FileUpload = ({ id, accept, error }: FileUploadProps) => {
     }
   };
 
-  const onDrop = (event: React.DragEvent<HTMLDivElement>) => {
+  const onDrop = (event: React.DragEvent<HTMLLabelElement>) => {
     event.preventDefault();
     setDragging(false);
     const dropped = event.dataTransfer.files?.[0] ?? null;
@@ -71,21 +71,8 @@ export const FileUpload = ({ id, accept, error }: FileUploadProps) => {
   }
 
   return (
-    <div
-      role="button"
-      tabIndex={0}
-      aria-label={
-        file
-          ? `Change upload, ${file.name} is selected`
-          : "Upload a file, click or drag and drop"
-      }
-      onClick={() => inputRef.current?.click()}
-      onKeyDown={(event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          inputRef.current?.click();
-        }
-      }}
+    <label
+      htmlFor={id}
       onDragOver={(event) => {
         event.preventDefault();
         setDragging(true);
@@ -100,6 +87,11 @@ export const FileUpload = ({ id, accept, error }: FileUploadProps) => {
         name={id}
         type="file"
         accept={accept}
+        aria-label={
+          file
+            ? `Change upload, ${file.name} is selected`
+            : "Upload a file, click or drag and drop"
+        }
         aria-invalid={error ? true : undefined}
         className="sr-only"
         onChange={(event) => setFile(event.target.files?.[0] ?? null)}
@@ -151,7 +143,7 @@ export const FileUpload = ({ id, accept, error }: FileUploadProps) => {
           <XIcon weight="bold" className="size-4" aria-hidden="true" />
         </button>
       )}
-    </div>
+    </label>
   );
 };
 

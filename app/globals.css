@@ -55,3 +55,16 @@
 @utility rise-in {
   animation: rise-in 0.45s ease-out both;
 }
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@utility marquee {
+  animation: marquee 4s linear infinite;
+}

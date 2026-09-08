@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import restaurants from "@data/dummy/restaurants.json";
 
 import {
+  BookingLeadTimeError,
   BookingSlotUnavailableError,
   BookingWriteError,
   createBooking,
@@ -42,11 +43,13 @@ export async function createBookingAction(
       revalidatePath(`/restaurants/${restaurant.slug}`, "page");
     }
     revalidatePath("/bookings", "page");
+    revalidatePath("/dashboard", "page");
 
     return { booking };
   } catch (error) {
     if (
       error instanceof BookingSlotUnavailableError ||
+      error instanceof BookingLeadTimeError ||
       error instanceof RestaurantNotFoundError ||
       error instanceof RestaurantNoTablesError ||
       error instanceof BookingWriteError

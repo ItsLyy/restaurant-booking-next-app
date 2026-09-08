@@ -2,8 +2,11 @@ import bookings from "../dummy/bookings.json";
 import restaurants from "../dummy/restaurants.json";
 import restaurantHours from "../dummy/restaurant_hours.json";
 import tables from "../dummy/tables.json";
+import payments from "../dummy/payments.json";
 
-import type { ITable } from "@types";
+import { getEffectiveBookingStatus } from "../bookings/booking-deadline";
+
+import type { IBooking, ITable } from "@types";
 
 export interface RestaurantAvailability {
   slotsByDay: Record<number, string[]>;
@@ -63,9 +66,18 @@ export async function getRestaurantAvailability(
     );
   }
 
+  const paymentByBookingId = new Map(
+    payments.map((item) => [item.bookingId, item] as const),
+  );
   const busySetBySlot = new Map<string, Set<string>>();
   for (const booking of bookings) {
     if (booking.status === "cancelled" || booking.status === "no_show") {
+      continue;
+    }
+    const payment = paymentByBookingId.get(booking.id) as
+      | import("@types").IPayment
+      | undefined;
+    if (getEffectiveBookingStatus(booking as IBooking, payment) === "cancelled") {
       continue;
     }
     if (!restaurantTableIds.has(booking.tableId)) {

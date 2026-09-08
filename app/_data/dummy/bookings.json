@@ -1,17 +1,5 @@
 [
   {
-    "id": "booking-001",
-    "date": "2026-06-10",
-    "time": "19:00",
-    "partySize": 2,
-    "specialRequest": "Window seat if possible, celebrating anniversary",
-    "status": "confirmed",
-    "customerId": "user-001",
-    "tableId": "table-001",
-    "createdAt": "2026-05-20T10:00:00.000Z",
-    "updatedAt": "2026-05-20T10:15:00.000Z"
-  },
-  {
     "id": "booking-002",
     "date": "2026-05-15",
     "time": "20:00",
@@ -34,23 +22,6 @@
     "tableId": "table-007",
     "createdAt": "2026-05-22T09:30:00.000Z",
     "updatedAt": "2026-05-22T09:30:00.000Z"
-  },
-  {
-    "id": "booking-004",
-    "date": "2026-05-05",
-    "time": "19:30",
-    "partySize": 2,
-    "specialRequest": null,
-    "status": "cancelled",
-    "customerId": "user-004",
-    "tableId": "table-002",
-    "cancelled": {
-      "date": "2026-05-04",
-      "by": "user",
-      "reason": "We can't arrived at the arranged date"
-    },
-    "createdAt": "2026-04-28T16:00:00.000Z",
-    "updatedAt": "2026-05-02T11:00:00.000Z"
   },
   {
     "id": "booking-005",
@@ -89,23 +60,6 @@
     "updatedAt": "2026-05-10T21:00:00.000Z"
   },
   {
-    "id": "booking-008",
-    "date": "2026-05-05",
-    "time": "19:45",
-    "partySize": 2,
-    "specialRequest": null,
-    "status": "cancelled",
-    "customerId": "user-004",
-    "tableId": "table-002",
-    "cancelled": {
-      "date": "2026-05-04",
-      "by": "restaurant",
-      "reason": "The table already been booked by the VIP member"
-    },
-    "createdAt": "2026-04-28T16:00:00.000Z",
-    "updatedAt": "2026-05-02T11:00:00.000Z"
-  },
-  {
     "id": "booking-009",
     "date": "2026-09-08",
     "time": "12:00",
@@ -117,202 +71,125 @@
     "updatedAt": "2026-09-06T14:50:03.503Z"
   },
   {
-    "id": "booking-010",
-    "date": "2026-09-06",
-    "time": "13:30",
-    "partySize": 4,
-    "status": "confirmed",
-    "customerId": "user-001",
-    "tableId": "table-001",
-    "createdAt": "2026-09-06T14:59:02.330Z",
-    "updatedAt": "2026-09-06T14:59:02.330Z"
-  },
-  {
-    "id": "booking-011",
-    "date": "2026-09-10",
-    "time": "18:00",
-    "partySize": 4,
-    "status": "confirmed",
-    "customerId": "user-001",
-    "tableId": "table-001",
-    "createdAt": "2026-09-06T15:16:00.765Z",
-    "updatedAt": "2026-09-06T15:16:00.765Z"
-  },
-  {
-    "id": "booking-012",
-    "date": "2026-09-12",
-    "time": "13:30",
-    "partySize": 4,
-    "status": "confirmed",
-    "customerId": "user-001",
-    "tableId": "table-001",
-    "createdAt": "2026-09-07T02:55:19.025Z",
-    "updatedAt": "2026-09-07T02:55:19.025Z"
-  },
-  {
     "id": "booking-013",
-    "date": "2026-09-09",
-    "time": "11:30",
-    "partySize": 2,
-    "status": "confirmed",
-    "customerId": "user-001",
-    "tableId": "table-001",
-    "createdAt": "2026-09-07T03:02:07.104Z",
-    "updatedAt": "2026-09-07T03:02:07.104Z"
-  },
-  {
-    "id": "booking-014",
-    "date": "2026-09-09",
-    "time": "11:30",
-    "partySize": 3,
-    "status": "confirmed",
-    "customerId": "user-001",
-    "tableId": "table-002",
-    "createdAt": "2026-09-07T03:08:47.812Z",
-    "updatedAt": "2026-09-07T03:08:47.812Z"
-  },
-  {
-    "id": "booking-015",
-    "date": "2026-09-09",
+    "date": "2026-09-08",
     "time": "11:30",
     "partySize": 5,
     "status": "confirmed",
     "customerId": "user-001",
-    "tableId": "table-003",
-    "createdAt": "2026-09-07T03:09:06.833Z",
-    "updatedAt": "2026-09-07T03:09:06.833Z"
-  },
-  {
-    "id": "booking-016",
-    "date": "2026-09-07",
-    "time": "11:30",
-    "partySize": 10,
-    "status": "confirmed",
-    "customerId": "user-001",
-    "tableId": "table-003",
-    "createdAt": "2026-09-07T03:09:45.367Z",
-    "updatedAt": "2026-09-07T03:09:45.367Z"
-  },
-  {
-    "id": "booking-017",
-    "date": "2026-09-07",
-    "time": "11:30",
-    "partySize": 6,
-    "status": "confirmed",
-    "customerId": "user-001",
     "tableId": "table-001",
-    "createdAt": "2026-09-07T03:09:55.623Z",
-    "updatedAt": "2026-09-07T03:09:55.623Z"
+    "createdAt": "2026-09-06T10:00:00.000Z",
+    "updatedAt": "2026-09-06T10:00:00.000Z"
   },
   {
-    "id": "booking-018",
-    "date": "2026-09-07",
+    "id": "booking-014",
+    "date": "2026-09-08",
     "time": "11:30",
-    "partySize": 4,
-    "status": "confirmed",
-    "customerId": "user-001",
-    "tableId": "table-002",
-    "createdAt": "2026-09-07T03:10:01.940Z",
-    "updatedAt": "2026-09-07T03:10:01.940Z"
-  },
-  {
-    "id": "booking-019",
-    "date": "2026-09-07",
-    "time": "12:00",
     "partySize": 3,
     "status": "confirmed",
     "customerId": "user-001",
     "tableId": "table-002",
-    "createdAt": "2026-09-07T03:10:10.164Z",
-    "updatedAt": "2026-09-07T03:10:10.164Z"
+    "createdAt": "2026-09-06T10:00:00.000Z",
+    "updatedAt": "2026-09-06T10:00:00.000Z"
+  },
+  {
+    "id": "booking-015",
+    "date": "2026-09-08",
+    "time": "11:30",
+    "partySize": 8,
+    "status": "confirmed",
+    "customerId": "user-001",
+    "tableId": "table-003",
+    "createdAt": "2026-09-06T10:00:00.000Z",
+    "updatedAt": "2026-09-06T10:00:00.000Z"
+  },
+  {
+    "id": "booking-016",
+    "date": "2026-09-08",
+    "time": "12:30",
+    "partySize": 2,
+    "status": "pending",
+    "customerId": "user-001",
+    "tableId": "table-001",
+    "createdAt": "2026-09-06T10:00:00.000Z",
+    "updatedAt": "2026-09-06T10:00:00.000Z"
+  },
+  {
+    "id": "booking-017",
+    "date": "2026-09-08",
+    "time": "13:00",
+    "partySize": 3,
+    "status": "pending",
+    "customerId": "user-001",
+    "tableId": "table-002",
+    "createdAt": "2026-09-06T10:00:00.000Z",
+    "updatedAt": "2026-09-06T10:00:00.000Z"
+  },
+  {
+    "id": "booking-018",
+    "date": "2026-09-08",
+    "time": "13:00",
+    "partySize": 6,
+    "status": "pending",
+    "customerId": "user-001",
+    "tableId": "table-003",
+    "createdAt": "2026-09-06T10:00:00.000Z",
+    "updatedAt": "2026-09-06T10:00:00.000Z"
+  },
+  {
+    "id": "booking-019",
+    "date": "2026-09-08",
+    "time": "19:00",
+    "partySize": 4,
+    "status": "confirmed",
+    "customerId": "user-001",
+    "tableId": "table-001",
+    "createdAt": "2026-09-06T10:00:00.000Z",
+    "updatedAt": "2026-09-06T10:00:00.000Z"
   },
   {
     "id": "booking-020",
-    "date": "2026-09-07",
-    "time": "12:00",
-    "partySize": 10,
+    "date": "2026-09-08",
+    "time": "19:00",
+    "partySize": 2,
     "status": "confirmed",
     "customerId": "user-001",
-    "tableId": "table-003",
-    "createdAt": "2026-09-07T03:10:17.346Z",
-    "updatedAt": "2026-09-07T03:10:17.346Z"
+    "tableId": "table-002",
+    "createdAt": "2026-09-06T10:00:00.000Z",
+    "updatedAt": "2026-09-06T10:00:00.000Z"
   },
   {
     "id": "booking-021",
-    "date": "2026-09-07",
-    "time": "12:00",
-    "partySize": 6,
-    "status": "confirmed",
+    "date": "2026-09-12",
+    "time": "18:00",
+    "partySize": 2,
+    "status": "pending",
     "customerId": "user-001",
-    "tableId": "table-001",
-    "createdAt": "2026-09-07T03:10:54.895Z",
-    "updatedAt": "2026-09-07T03:10:54.895Z"
+    "tableId": "table-002",
+    "createdAt": "2026-09-08T03:15:00.000Z",
+    "updatedAt": "2026-09-08T03:15:00.000Z"
   },
   {
     "id": "booking-022",
-    "date": "2026-09-07",
-    "time": "12:30",
-    "partySize": 10,
-    "status": "confirmed",
-    "customerId": "user-001",
-    "tableId": "table-003",
-    "createdAt": "2026-09-07T03:11:01.994Z",
-    "updatedAt": "2026-09-07T03:11:01.994Z"
-  },
-  {
-    "id": "booking-023",
-    "date": "2026-09-07",
-    "time": "12:30",
+    "date": "2026-09-10",
+    "time": "19:00",
     "partySize": 6,
     "status": "confirmed",
     "customerId": "user-001",
     "tableId": "table-001",
-    "createdAt": "2026-09-07T03:11:09.572Z",
-    "updatedAt": "2026-09-07T03:11:09.572Z"
+    "createdAt": "2026-09-08T03:30:00.000Z",
+    "updatedAt": "2026-09-08T03:30:00.000Z"
   },
   {
-    "id": "booking-024",
-    "date": "2026-09-07",
+    "id": "booking-023",
+    "date": "2026-09-09",
     "time": "12:30",
     "partySize": 4,
     "status": "confirmed",
     "customerId": "user-001",
-    "tableId": "table-002",
-    "createdAt": "2026-09-07T03:11:19.868Z",
-    "updatedAt": "2026-09-07T03:11:19.868Z"
-  },
-  {
-    "id": "booking-025",
-    "date": "2026-09-07",
-    "time": "13:00",
-    "partySize": 10,
-    "status": "confirmed",
-    "customerId": "user-001",
     "tableId": "table-003",
-    "createdAt": "2026-09-07T03:15:47.526Z",
-    "updatedAt": "2026-09-07T03:15:47.526Z"
-  },
-  {
-    "id": "booking-026",
-    "date": "2026-09-07",
-    "time": "13:00",
-    "partySize": 1,
-    "status": "confirmed",
-    "customerId": "user-001",
-    "tableId": "table-002",
-    "createdAt": "2026-09-07T03:15:54.295Z",
-    "updatedAt": "2026-09-07T03:15:54.295Z"
-  },
-  {
-    "id": "booking-027",
-    "date": "2026-09-07",
-    "time": "13:00",
-    "partySize": 6,
-    "status": "confirmed",
-    "customerId": "user-001",
-    "tableId": "table-001",
-    "createdAt": "2026-09-07T03:16:00.957Z",
-    "updatedAt": "2026-09-07T03:16:00.957Z"
+    "createdAt": "2026-09-08T03:45:00.000Z",
+    "updatedAt": "2026-09-08T03:45:00.000Z"
   },
   {
     "id": "booking-028",
@@ -433,5 +310,27 @@
     "tableId": "table-034",
     "createdAt": "2026-04-01T10:00:00.000Z",
     "updatedAt": "2026-04-10T12:00:00.000Z"
+  },
+  {
+    "id": "booking-038",
+    "date": "2026-09-27",
+    "time": "12:00",
+    "partySize": 5,
+    "status": "pending",
+    "customerId": "user-001",
+    "tableId": "table-005",
+    "createdAt": "2026-09-08T05:13:06.728Z",
+    "updatedAt": "2026-09-08T05:13:06.728Z"
+  },
+  {
+    "id": "booking-039",
+    "date": "2026-09-27",
+    "time": "11:00",
+    "partySize": 10,
+    "status": "pending",
+    "customerId": "user-001",
+    "tableId": "table-003",
+    "createdAt": "2026-09-08T04:30:00.000Z",
+    "updatedAt": "2026-09-08T04:30:00.000Z"
   }
 ]
