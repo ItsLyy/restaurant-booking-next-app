@@ -79,6 +79,7 @@ export default async function BookingDetailPage({
           restaurantName={restaurantName}
           restaurantSlug={restaurantSlug}
           restaurantAddress={restaurantAddress}
+          bookingId={booking.id}
         />
       </div>
     </section>

@@ -1,17 +1,7 @@
 [
   {
-    "id": "payment-001",
-    "price": 90,
-    "status": "unpaid",
-    "deadline": "2026-05-23T23:59:59.000Z",
-    "gatewayToken": "tok_sandbox_aB1cD2eF3gH4iJ5kL6mN",
-    "bookingId": "booking-001",
-    "createdAt": "2026-05-20T10:15:00.000Z",
-    "updatedAt": "2026-05-20T10:15:00.000Z"
-  },
-  {
     "id": "payment-002",
-    "price": 48,
+    "price": 10000,
     "status": "paid",
     "deadline": "2026-05-13T23:59:59.000Z",
     "gatewayToken": "tok_sandbox_zY9xW8vU7tS6rQ5pO4nM",
@@ -21,7 +11,7 @@
   },
   {
     "id": "payment-003",
-    "price": 54,
+    "price": 12000,
     "status": "unpaid",
     "deadline": "2026-05-29T23:59:59.000Z",
     "gatewayToken": "tok_sandbox_mN8lK7jI6hG5fE4dC3bA",
@@ -30,18 +20,8 @@
     "updatedAt": "2026-05-22T09:30:00.000Z"
   },
   {
-    "id": "payment-004",
-    "price": 30,
-    "status": "refunded",
-    "deadline": "2026-05-01T23:59:59.000Z",
-    "gatewayToken": "tok_sandbox_pQ9rS0tU1vW2xY3zA4bC",
-    "bookingId": "booking-004",
-    "createdAt": "2026-04-28T16:15:00.000Z",
-    "updatedAt": "2026-05-03T10:00:00.000Z"
-  },
-  {
     "id": "payment-005",
-    "price": 108,
+    "price": 18000,
     "status": "paid",
     "deadline": "2026-05-15T23:59:59.000Z",
     "gatewayToken": "tok_sandbox_hI4jK5lM6nO7pQ8rS9tU",
@@ -51,7 +31,7 @@
   },
   {
     "id": "payment-006",
-    "price": 80,
+    "price": 40000,
     "status": "unpaid",
     "deadline": "2026-05-31T23:59:59.000Z",
     "gatewayToken": "tok_sandbox_jK5lM6nO7pQ8rS9tU0vW",
@@ -61,7 +41,7 @@
   },
   {
     "id": "payment-007",
-    "price": 22,
+    "price": 22000,
     "status": "failed",
     "deadline": "2026-05-08T23:59:59.000Z",
     "gatewayToken": "tok_sandbox_lM6nO7pQ8rS9tU0vW1xY",
@@ -70,13 +50,73 @@
     "updatedAt": "2026-05-08T00:01:00.000Z"
   },
   {
-    "id": "payment-008",
+    "id": "payment-009",
+    "price": 25000,
+    "status": "paid",
+    "deadline": "2026-09-06T16:00:00.000Z",
+    "gatewayToken": "tok_sandbox_booking-013",
+    "bookingId": "booking-013",
+    "createdAt": "2026-09-06T10:00:00.000Z",
+    "updatedAt": "2026-09-06T10:00:00.000Z"
+  },
+  {
+    "id": "payment-010",
     "price": 15000,
-    "status": "unrefunded",
-    "deadline": "2026-05-02T23:59:59.000Z",
-    "gatewayToken": "tok_sandbox_aA1bB2cC3dD4eE5fF6gG",
-    "bookingId": "booking-008",
-    "createdAt": "2026-04-28T16:15:00.000Z",
-    "updatedAt": "2026-05-03T10:00:00.000Z"
+    "status": "unpaid",
+    "deadline": "2026-09-09T07:00:00.000Z",
+    "gatewayToken": "tok_sandbox_booking-014",
+    "bookingId": "booking-014",
+    "createdAt": "2026-09-06T10:00:00.000Z",
+    "updatedAt": "2026-09-06T10:00:00.000Z"
+  },
+  {
+    "id": "payment-011",
+    "price": 35000,
+    "status": "unpaid",
+    "deadline": "2026-09-07T07:00:00.000Z",
+    "gatewayToken": "tok_sandbox_booking-015",
+    "bookingId": "booking-015",
+    "createdAt": "2026-09-06T10:00:00.000Z",
+    "updatedAt": "2026-09-06T10:00:00.000Z"
+  },
+  {
+    "id": "payment-012",
+    "price": 25000,
+    "status": "paid",
+    "deadline": "2026-09-06T16:00:00.000Z",
+    "gatewayToken": "tok_sandbox_booking-019",
+    "bookingId": "booking-019",
+    "createdAt": "2026-09-06T10:00:00.000Z",
+    "updatedAt": "2026-09-06T10:00:00.000Z"
+  },
+  {
+    "id": "payment-013",
+    "price": 15000,
+    "status": "unpaid",
+    "deadline": "2026-09-09T12:00:00.000Z",
+    "gatewayToken": "tok_sandbox_booking-020",
+    "bookingId": "booking-020",
+    "createdAt": "2026-09-06T10:00:00.000Z",
+    "updatedAt": "2026-09-06T10:00:00.000Z"
+  },
+  {
+    "id": "payment-014",
+    "price": 25000,
+    "status": "unpaid",
+    "deadline": "2026-09-09T12:00:00.000Z",
+    "gatewayToken": "tok_sandbox_booking-022",
+    "bookingId": "booking-022",
+    "createdAt": "2026-09-06T10:00:00.000Z",
+    "updatedAt": "2026-09-06T10:00:00.000Z"
+  },
+  {
+    "id": "payment-015",
+    "price": 35000,
+    "status": "paid",
+    "deadline": "2026-09-08T12:00:00.000Z",
+    "gatewayToken": "tok_sandbox_booking-023",
+    "bookingId": "booking-023",
+    "createdAt": "2026-09-06T10:00:00.000Z",
+    "updatedAt": "2026-09-06T10:00:00.000Z"
   }
 ]

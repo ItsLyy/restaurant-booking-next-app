@@ -3,8 +3,11 @@ import path from "path";
 
 import restaurants from "@data/dummy/restaurants.json";
 import tables from "@data/dummy/tables.json";
+import payments from "@data/dummy/payments.json";
 
-import type { IBooking, ITable } from "@types";
+import { getEffectiveBookingStatus, isBookingTooSoon } from "./booking-deadline";
+
+import type { IBooking, IPayment, ITable } from "@types";
 
 export interface CreateBookingInput {
   restaurantId: string;
@@ -20,7 +23,7 @@ const BOOKINGS_FILE_PATH = path.join(
 );
 
 const CUSTOMER_ID = "user-001";
-const CONFIRMED_STATUS = "confirmed";
+const INITIAL_STATUS = "pending";
 
 export class RestaurantNotFoundError extends Error {
   name = "RestaurantNotFoundError";
@@ -32,6 +35,10 @@ export class RestaurantNoTablesError extends Error {
 
 export class BookingSlotUnavailableError extends Error {
   name = "BookingSlotUnavailableError";
+}
+
+export class BookingLeadTimeError extends Error {
+  name = "BookingLeadTimeError";
 }
 
 export class BookingWriteError extends Error {
@@ -78,6 +85,12 @@ export async function createBooking(
     throw new RestaurantNotFoundError("The restaurant does not exist.");
   }
 
+  if (isBookingTooSoon(date, time)) {
+    throw new BookingLeadTimeError(
+      "Bookings must be made at least 12 hours in advance.",
+    );
+  }
+
   const restaurantTables = findRestaurantTables(restaurantId);
   if (restaurantTables.length === 0) {
     throw new RestaurantNoTablesError("This restaurant has no bookable tables yet.");
@@ -85,9 +98,19 @@ export async function createBooking(
 
   const bookings = readBookings();
 
+  const paymentByBookingId = new Map(
+    payments.map((item) => [item.bookingId, item] as const),
+  );
+
   const busyTableIds = new Set<string>();
   for (const booking of bookings) {
     if (booking.status === "cancelled" || booking.status === "no_show") {
+      continue;
+    }
+    const payment = paymentByBookingId.get(booking.id) as
+      | IPayment
+      | undefined;
+    if (getEffectiveBookingStatus(booking, payment) === "cancelled") {
       continue;
     }
     if (booking.date !== date || booking.time !== time) {
@@ -124,7 +147,7 @@ export async function createBooking(
     time,
     partySize,
     ...(specialRequest ? { specialRequest } : {}),
-    status: CONFIRMED_STATUS,
+    status: INITIAL_STATUS,
     customerId: CUSTOMER_ID,
     tableId: bestTable.id,
     createdAt: now,

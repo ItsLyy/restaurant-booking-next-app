@@ -9,6 +9,7 @@ import { IBooking, IPayment } from "@types";
 interface GeneralProps {
   bookingStatus: IBooking["status"];
   paymentStatus: IPayment["status"];
+  bookingId: string;
 }
 
 interface FooterProps extends GeneralProps {
@@ -25,6 +26,7 @@ export const Footer = ({
   restaurantName,
   restaurantSlug,
   restaurantAddress,
+  bookingId,
 }: FooterProps) => {
   return (
     <footer className="space-y-2">
@@ -35,6 +37,7 @@ export const Footer = ({
         restaurantName={restaurantName}
         restaurantSlug={restaurantSlug}
         restaurantAddress={restaurantAddress}
+        bookingId={bookingId}
       />
     </footer>
   );
@@ -47,9 +50,12 @@ const CallToActions = ({
   restaurantName,
   restaurantSlug,
   restaurantAddress,
+  bookingId,
 }: FooterProps) => {
   if (bookingStatus === "confirmed" && paymentStatus === "unpaid")
-    return <ConfirmUnpaidState paymentPrice={paymentPrice} />;
+    return (
+      <ConfirmUnpaidState bookingId={bookingId} paymentPrice={paymentPrice} />
+    );
   else if (bookingStatus === "confirmed" && paymentStatus === "paid")
     return (
       <ConfirmPaidState
