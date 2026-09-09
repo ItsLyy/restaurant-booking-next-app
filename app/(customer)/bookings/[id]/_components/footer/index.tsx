@@ -59,6 +59,7 @@ const CallToActions = ({
   else if (bookingStatus === "confirmed" && paymentStatus === "paid")
     return (
       <ConfirmPaidState
+        bookingId={bookingId}
         restaurantName={restaurantName}
         restaurantSlug={restaurantSlug}
         restaurantAddress={restaurantAddress}
@@ -68,5 +69,5 @@ const CallToActions = ({
     return <CompletedState restaurantSlug={restaurantSlug} />;
   else if (bookingStatus === "cancelled" || bookingStatus === "no_show")
     return <FailedState restaurantSlug={restaurantSlug} />;
-  return <PendingState />;
+  return <PendingState bookingId={bookingId} />;
 };

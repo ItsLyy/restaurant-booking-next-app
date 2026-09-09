@@ -32,7 +32,7 @@ export const Button = ({
   switch (variant) {
     case "outline":
       variantClassName =
-        "bg-transparent border-2 border-accent-100 text-accent-100";
+        "bg-transparent border border-accent-100 text-accent-100";
       break;
     default:
       variantClassName = "bg-accent-100 text-base-100";

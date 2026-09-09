@@ -1,11 +1,9 @@
-import { Button } from "@components";
+import { CancelBookingButton } from "./cancel-booking-button";
 
-export const PendingState = () => {
-  return (
-    <>
-      <Button className="w-full border! rounded-2xl!" variant="outline">
-        Cancel Booking
-      </Button>
-    </>
-  );
+export const PendingState = ({
+  bookingId,
+}: {
+  bookingId: string;
+}) => {
+  return <CancelBookingButton bookingId={bookingId} paid={false} />;
 };

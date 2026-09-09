@@ -332,5 +332,29 @@
     "tableId": "table-003",
     "createdAt": "2026-09-08T04:30:00.000Z",
     "updatedAt": "2026-09-08T04:30:00.000Z"
+  },
+  {
+    "id": "booking-040",
+    "date": "2026-09-07",
+    "time": "19:00",
+    "partySize": 4,
+    "specialRequest": null,
+    "status": "confirmed",
+    "customerId": "user-002",
+    "tableId": "table-001",
+    "createdAt": "2026-09-02T08:00:00.000Z",
+    "updatedAt": "2026-09-02T08:05:00.000Z"
+  },
+  {
+    "id": "booking-041",
+    "date": "2026-09-06",
+    "time": "20:00",
+    "partySize": 2,
+    "specialRequest": null,
+    "status": "confirmed",
+    "customerId": "user-003",
+    "tableId": "table-002",
+    "createdAt": "2026-09-01T07:00:00.000Z",
+    "updatedAt": "2026-09-01T07:05:00.000Z"
   }
 ]

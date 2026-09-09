@@ -14,6 +14,7 @@ interface StatusDescriptionProps {
   paymentPrice: number;
   paymentStatus: IPayment["status"];
   cancelledDate?: string;
+  cancelledReason?: string;
 }
 
 export const StatusDescription = ({
@@ -25,6 +26,7 @@ export const StatusDescription = ({
   bookingStatus,
   paymentStatus,
   cancelledDate,
+  cancelledReason,
   paymentPrice,
 }: StatusDescriptionProps) => {
   return (
@@ -69,6 +71,9 @@ export const StatusDescription = ({
         />
         {cancelledDate && bookingStatus === "cancelled" && (
           <ListItem label="Cancelled On" value={formatDate(cancelledDate)} />
+        )}
+        {cancelledReason && bookingStatus === "cancelled" && (
+          <ListItem label="Reason" value={cancelledReason} />
         )}
       </ul>
     </Card>

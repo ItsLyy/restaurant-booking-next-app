@@ -14,6 +14,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Booking",
+  description: "View the status and details of your restaurant booking.",
   robots: {
     index: false,
     follow: false,
@@ -71,6 +72,7 @@ export default async function BookingDetailPage({
           paymentPrice={paymentPrice}
           paymentStatus={paymentStatus}
           cancelledDate={booking.cancelled?.date}
+          cancelledReason={booking.cancelled?.reason}
         />
         <Footer
           bookingStatus={booking.status}
