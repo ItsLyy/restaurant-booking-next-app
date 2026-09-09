@@ -1,5 +1,6 @@
 "use client";
 
+import { createPortal } from "react-dom";
 import { useState } from "react";
 
 import { useRouter } from "next/navigation";
@@ -44,11 +45,42 @@ const menuItemBase =
 export const BookingRowActions = ({ booking }: BookingRowActionsProps) => {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+  const [menuAnchor, setMenuAnchor] = useState<{
+    top: number;
+    right: number;
+  } | null>(null);
   const [pendingAction, setPendingAction] = useState<RowAction>(null);
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
 
   const closeMenu = () => setIsOpen(false);
+
+  const toggleMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (isOpen) {
+      setIsOpen(false);
+      return;
+    }
+    const rect = event.currentTarget.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const desiredRight = viewportWidth - rect.right;
+    // Clamp so the menu (w-44 ≈ 176px) stays fully inside the viewport.
+    const right = Math.min(
+      Math.max(desiredRight, 8),
+      Math.max(viewportWidth - 176 - 8, 8),
+    );
+    const itemCount =
+      1 +
+      (booking.status === "pending" || booking.status === "confirmed" ? 2 : 0);
+    const menuHeight = itemCount * 34 + 10;
+    // Bottom rows: open upward when there is not enough room below.
+    const openUp =
+      rect.bottom + menuHeight + 12 > viewportHeight &&
+      rect.top - menuHeight - 12 >= 8;
+    const top = openUp ? rect.top - menuHeight - 6 : rect.bottom + 6;
+    setMenuAnchor({ top, right });
+    setIsOpen(true);
+  };
 
   const requestAction = (action: Exclude<RowAction, null>) => {
     setActionError(null);
@@ -98,65 +130,75 @@ export const BookingRowActions = ({ booking }: BookingRowActionsProps) => {
         aria-label={`Actions for booking ${booking.code}`}
         aria-haspopup="menu"
         aria-expanded={isOpen}
-        onClick={() => setIsOpen((open) => !open)}
+        onClick={toggleMenu}
         className="cursor-pointer rounded-md p-1 hover:bg-accent-200/10"
       >
         <ChecksIcon className="size-4 text-accent-100" />
       </button>
 
-      {isOpen && (
-        <>
-          <div aria-hidden className="fixed inset-0 z-10" onClick={closeMenu} />
-          <div
-            role="menu"
-            className="absolute right-0 top-6 z-20 w-44 border border-muted rounded-lg bg-base-100 shadow-lg p-1"
-          >
-            <a
-              href={`/bookings/${booking.id}`}
-              className={`${menuItemBase} text-foreground hover:bg-accent-200/10`}
+      {isOpen &&
+        menuAnchor &&
+        createPortal(
+          <>
+            <div aria-hidden className="fixed inset-0 z-10" onClick={closeMenu} />
+            <div
+              role="menu"
+              style={{
+                position: "fixed",
+                top: menuAnchor.top,
+                right: menuAnchor.right,
+                zIndex: 20,
+              }}
+              className="w-44 border border-muted rounded-lg bg-base-100 shadow-lg p-1"
             >
-              <EyeIcon className="size-4 text-accent-100" />
-              View booking
-            </a>
-            {booking.status === "pending" && (
-              <button
-                type="button"
-                role="menuitem"
-                disabled={busy}
-                onClick={() => requestAction("confirm")}
-                className={`${menuItemBase} text-foreground hover:bg-positive/10`}
+              <a
+                href={`/bookings/${booking.id}`}
+                className={`${menuItemBase} text-foreground hover:bg-accent-200/10`}
               >
-                <CheckCircleIcon className="size-4 text-positive" />
-                Confirm booking
-              </button>
-            )}
-            {booking.status === "confirmed" && (
-              <button
-                type="button"
-                role="menuitem"
-                disabled={busy}
-                onClick={() => requestAction("complete")}
-                className={`${menuItemBase} text-foreground hover:bg-positive/10`}
-              >
-                <ChecksIcon className="size-4 text-positive" />
-                Mark as completed
-              </button>
-            )}
-            {(booking.status === "pending" || booking.status === "confirmed") && (
-              <button
-                type="button"
-                role="menuitem"
-                disabled={busy}
-                onClick={() => requestAction("reject")}
-                className={`${menuItemBase} text-negative hover:bg-negative/10`}
-              >
-                <XCircleIcon className="size-4 text-negative" />
-                Reject booking
-              </button>
-            )}
-          </div>
-        </>
-      )}
+                <EyeIcon className="size-4 text-accent-100" />
+                View booking
+              </a>
+              {booking.status === "pending" && (
+                <button
+                  type="button"
+                  role="menuitem"
+                  disabled={busy}
+                  onClick={() => requestAction("confirm")}
+                  className={`${menuItemBase} text-foreground hover:bg-positive/10`}
+                >
+                  <CheckCircleIcon className="size-4 text-positive" />
+                  Confirm booking
+                </button>
+              )}
+              {booking.status === "confirmed" && (
+                <button
+                  type="button"
+                  role="menuitem"
+                  disabled={busy}
+                  onClick={() => requestAction("complete")}
+                  className={`${menuItemBase} text-foreground hover:bg-positive/10`}
+                >
+                  <ChecksIcon className="size-4 text-positive" />
+                  Mark as completed
+                </button>
+              )}
+              {(booking.status === "pending" ||
+                booking.status === "confirmed") && (
+                <button
+                  type="button"
+                  role="menuitem"
+                  disabled={busy}
+                  onClick={() => requestAction("reject")}
+                  className={`${menuItemBase} text-negative hover:bg-negative/10`}
+                >
+                  <XCircleIcon className="size-4 text-negative" />
+                  Reject booking
+                </button>
+              )}
+            </div>
+          </>,
+          document.body,
+        )}
 
       <ConfirmDialog
         open={action !== null}

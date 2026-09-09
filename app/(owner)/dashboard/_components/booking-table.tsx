@@ -27,11 +27,15 @@ export const BookingTable = ({
   bookings: DashboardBooking[];
 }) => {
   if (bookings.length === 0) {
-    return <p className="text-muted text-d-caption text-center py-10">No bookings to show.</p>;
+    return (
+      <p className="text-muted text-d-caption text-center py-10">
+        No bookings to show.
+      </p>
+    );
   }
 
   return (
-    <div className="flex-1 min-h-0 border border-muted rounded-lg px-4 pb-12 overflow-y-auto scrollbar-hidden box-border">
+    <div className="flex-1 min-h-0 border border-muted rounded-lg px-4 overflow-y-auto scrollbar-hidden box-border">
       <table className="w-full border-separate border-spacing-y-4">
         <thead>
           <tr>
