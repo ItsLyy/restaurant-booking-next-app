@@ -13,6 +13,7 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 
 import { BookingActionDialog } from "../../_components/booking-action-dialog";
+import { useRowMenu } from "../../_components/use-row-menu";
 
 import {
   completeBookingAction,
@@ -42,43 +43,10 @@ const menuItemBase =
 
 export const BookingRowActions = ({ booking }: BookingRowActionsProps) => {
   const router = useRouter();
-  const [isOpen, setIsOpen] = useState(false);
-  const [menuAnchor, setMenuAnchor] = useState<{
-    top: number;
-    right: number;
-  } | null>(null);
+  const { isOpen, anchor, toggleMenu, closeMenu } = useRowMenu();
   const [pendingAction, setPendingAction] = useState<RowAction>(null);
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
-
-  const closeMenu = () => setIsOpen(false);
-
-  const toggleMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
-    if (isOpen) {
-      setIsOpen(false);
-      return;
-    }
-    const rect = event.currentTarget.getBoundingClientRect();
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
-    const desiredRight = viewportWidth - rect.right;
-    // Clamp so the menu (w-44 ≈ 176px) stays fully inside the viewport.
-    const right = Math.min(
-      Math.max(desiredRight, 8),
-      Math.max(viewportWidth - 176 - 8, 8),
-    );
-    const itemCount =
-      1 +
-      (booking.status === "pending" || booking.status === "confirmed" ? 2 : 0);
-    const menuHeight = itemCount * 34 + 10;
-    // Bottom rows: open upward when there is not enough room below.
-    const openUp =
-      rect.bottom + menuHeight + 12 > viewportHeight &&
-      rect.top - menuHeight - 12 >= 8;
-    const top = openUp ? rect.top - menuHeight - 6 : rect.bottom + 6;
-    setMenuAnchor({ top, right });
-    setIsOpen(true);
-  };
 
   const requestAction = (action: Exclude<RowAction, null>) => {
     setActionError(null);
@@ -120,14 +88,23 @@ export const BookingRowActions = ({ booking }: BookingRowActionsProps) => {
         aria-label={`Actions for booking ${booking.code}`}
         aria-haspopup="menu"
         aria-expanded={isOpen}
-        onClick={toggleMenu}
+        onClick={(event) =>
+          toggleMenu(
+            event,
+            1 +
+              (booking.status === "pending" || booking.status === "confirmed"
+                ? 2
+                : 0),
+          )
+        }
         className="cursor-pointer rounded-md p-1 hover:bg-accent-200/10"
       >
         <ChecksIcon className="size-4 text-accent-100" />
       </button>
 
       {isOpen &&
-        menuAnchor &&
+        anchor &&
+        typeof document !== "undefined" &&
         createPortal(
           <>
             <div aria-hidden className="fixed inset-0 z-10" onClick={closeMenu} />
@@ -135,8 +112,8 @@ export const BookingRowActions = ({ booking }: BookingRowActionsProps) => {
               role="menu"
               style={{
                 position: "fixed",
-                top: menuAnchor.top,
-                right: menuAnchor.right,
+                top: anchor.top,
+                right: anchor.right,
                 zIndex: 20,
               }}
               className="w-44 border border-muted rounded-lg bg-base-100 shadow-lg p-1"

@@ -14,6 +14,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Booking",
+  description: "View the status and details of your restaurant booking.",
   robots: {
     index: false,
     follow: false,
