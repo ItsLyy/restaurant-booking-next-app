@@ -9,7 +9,6 @@ import { createManualBookingAction } from "../../../_actions/booking-actions";
 interface ManualBookingFormProps {
   defaultDate: string;
   tables: { id: string; name: string; capacity: number }[];
-  customers: { id: string; name: string }[];
 }
 
 const inputBase =
@@ -18,7 +17,6 @@ const inputBase =
 export const ManualBookingForm = ({
   defaultDate,
   tables,
-  customers,
 }: ManualBookingFormProps) => {
   const [state, formAction, pending] = useActionState(
     createManualBookingAction,
@@ -27,6 +25,11 @@ export const ManualBookingForm = ({
 
   return (
     <form action={formAction} className="grid grid-cols-2 gap-4">
+      <p className="col-span-2 text-d-caption text-muted">
+        The customer will be filled in automatically from the account that
+        creates this booking (owner or officer).
+      </p>
+
       <div className="flex flex-col gap-1">
         <label htmlFor="date" className="text-c-caption font-medium">
           Date<span className="text-negative">*</span>
@@ -69,21 +72,6 @@ export const ManualBookingForm = ({
         />
       </div>
       <div className="flex flex-col gap-1">
-        <label htmlFor="customerId" className="text-c-caption font-medium">
-          Customer<span className="text-negative">*</span>
-        </label>
-        <select id="customerId" name="customerId" required defaultValue="" className={inputBase}>
-          <option value="" disabled>
-            Select customer
-          </option>
-          {customers.map((customer) => (
-            <option key={customer.id} value={customer.id}>
-              {customer.name}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div className="flex flex-col gap-1 col-span-2">
         <label htmlFor="tableId" className="text-c-caption font-medium">
           Table<span className="text-negative">*</span>
         </label>
@@ -128,7 +116,11 @@ export const ManualBookingForm = ({
         >
           Cancel
         </Button>
-        <Button type="submit" disabled={pending} className="rounded-md! h-10! px-4!">
+        <Button
+          type="submit"
+          disabled={pending}
+          className="rounded-md! h-10! px-4!"
+        >
           {pending ? "Creating…" : "Create booking"}
         </Button>
       </div>

@@ -5,8 +5,9 @@ import rawOwners from "../../../_data/dummy/owners.json";
 import rawTables from "../../../_data/dummy/tables.json";
 import rawRestaurants from "../../../_data/dummy/restaurants.json";
 import rawUsers from "../../../_data/dummy/users.json";
+import rawOfficers from "../../../_data/dummy/officers.json";
 
-import { getEffectiveBookingStatus } from "../../../_data/bookings/booking-deadline";
+import { getEffectiveBookingStatus, isPendingVisibleOn } from "../../../_data/bookings/booking-deadline";
 
 import type {
   IBooking,
@@ -45,6 +46,22 @@ function readPayments(): IPayment[] {
 
 const OWNER_ID = "owner-001";
 const RESTAURANT_ID = "rest-001";
+
+interface Person {
+  id: string;
+  firstName: string;
+  lastName: string;
+}
+
+const PEOPLE: Person[] = [
+  ...(rawOwners as Person[]),
+  ...(rawOfficers as Person[]),
+  ...USERS.map((user) => ({
+    id: user.id,
+    firstName: user.firstName,
+    lastName: user.lastName,
+  })),
+];
 
 export interface DashboardBooking {
   id: string;
@@ -113,30 +130,6 @@ export const getDashboardData = () => {
     payments.map((item) => [item.bookingId, item] as const),
   );
 
-  const bookings: DashboardBooking[] = upcoming
-    .map((booking) => {
-      const customer = USERS.find((user) => user.id === booking.customerId);
-      const payment = paymentByBookingId.get(booking.id);
-
-      const effectiveStatus = getEffectiveBookingStatus(booking, payment);
-
-      if (effectiveStatus === "cancelled") return null;
-
-      return {
-        id: booking.id,
-        date: booking.date,
-        time: toTime(booking.time),
-        guest: customer
-          ? `${customer.firstName} ${customer.lastName}`
-          : "Unknown guest",
-        party: booking.partySize,
-        table: getTableName(booking.tableId),
-        status: effectiveStatus === "confirmed" ? "confirmed" : "pending",
-        isPaid: payment?.status === "paid",
-      } satisfies DashboardBooking;
-    })
-    .filter((booking): booking is DashboardBooking => booking !== null);
-
   const today = (() => {
     const now = new Date();
     return [
@@ -146,12 +139,39 @@ export const getDashboardData = () => {
     ].join("-");
   })();
 
-  const visibleBookings = bookings.filter((booking) => {
-    // Pending requests: shown from the day the request is made (not only today).
-    if (booking.status === "pending") return booking.date >= today;
-    // Confirmed bookings (paid or unpaid): only appear on their booking day.
-    return booking.date === today;
-  });
+  const visibleBookings: DashboardBooking[] = [];
+  for (const booking of upcoming) {
+    const customer = PEOPLE.find((user) => user.id === booking.customerId);
+    const payment = paymentByBookingId.get(booking.id);
+
+    const effectiveStatus = getEffectiveBookingStatus(booking, payment);
+
+    if (effectiveStatus === "cancelled") continue;
+
+    const status = effectiveStatus === "confirmed" ? "confirmed" : "pending";
+
+    // Pending requests: exist from the day they were placed until the day
+    // before the reserved date (never on the reserved date itself).
+    if (status === "pending") {
+      if (!isPendingVisibleOn(booking, today)) continue;
+    } else if (booking.date !== today) {
+      // Confirmed bookings (paid or unpaid): only appear on their booking day.
+      continue;
+    }
+
+    visibleBookings.push({
+      id: booking.id,
+      date: booking.date,
+      time: toTime(booking.time),
+      guest: customer
+        ? `${customer.firstName} ${customer.lastName}`
+        : "Unknown guest",
+      party: booking.partySize,
+      table: getTableName(booking.tableId),
+      status,
+      isPaid: payment?.status === "paid",
+    } satisfies DashboardBooking);
+  }
 
   const tablesByFloor = new Map<number, DashboardTable[]>();
   for (const table of restaurantTables) {

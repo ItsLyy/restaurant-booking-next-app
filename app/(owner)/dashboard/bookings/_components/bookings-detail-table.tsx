@@ -4,6 +4,8 @@ import { BookingBadge } from "../../_components/booking-badge";
 
 import { BookingRowActions } from "./booking-row-actions";
 
+import { formatShortDate } from "@utils/formatDate";
+
 import type { DetailedBooking } from "../_data/bookings";
 import type { Variant } from "../../_components/variant-styles";
 
@@ -26,8 +28,10 @@ const getBookingVariant = (status: DetailedBooking["status"]): Variant => {
 
 export const BookingDetailTable = ({
   bookings,
+  viewDate,
 }: {
   bookings: DetailedBooking[];
+  viewDate: string;
 }) => {
   return (
     <div className="overflow-x-auto rounded-lg border border-muted">
@@ -56,7 +60,10 @@ export const BookingDetailTable = ({
             </tr>
           ) : (
             bookings.map((booking) => (
-              <tr key={booking.id} className="border-b border-muted/50 last:border-b-0">
+              <tr
+                key={booking.id}
+                className="border-b border-muted/50 last:border-b-0"
+              >
                 <td className={cell}>
                   <Link
                     href={`/bookings/${booking.id}`}
@@ -65,7 +72,14 @@ export const BookingDetailTable = ({
                     {booking.code}
                   </Link>
                 </td>
-                <td className={cell}>{booking.time}</td>
+                <td className={cell}>
+                  {booking.time}
+                  {booking.date !== viewDate ? (
+                    <span className="ml-1 text-d-caption text-muted">
+                      ({formatShortDate(booking.date)})
+                    </span>
+                  ) : null}
+                </td>
                 <td className={cell}>{booking.guest}</td>
                 <td className={cell}>{booking.party}</td>
                 <td className={cell}>{booking.table}</td>

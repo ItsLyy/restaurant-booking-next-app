@@ -4,14 +4,32 @@ import path from "path";
 import { toBookingCode } from "@data/bookings/booking-code";
 import rawTables from "@data/dummy/tables.json";
 import rawUsers from "@data/dummy/users.json";
+import rawOwners from "@data/dummy/owners.json";
+import rawOfficers from "@data/dummy/officers.json";
 import { formatTime } from "@utils";
 
-import { getEffectiveBookingStatus } from "../../../../_data/bookings/booking-deadline";
+import { getEffectiveBookingStatus, isPendingVisibleOn } from "../../../../_data/bookings/booking-deadline";
 
 import type { IBooking, IPayment, ITable, IUser } from "@types";
 
 const TABLES = rawTables as ITable[];
 const USERS = rawUsers as IUser[];
+
+interface Person {
+  id: string;
+  firstName: string;
+  lastName: string;
+}
+
+const PEOPLE: Person[] = [
+  ...USERS.map((user) => ({
+    id: user.id,
+    firstName: user.firstName,
+    lastName: user.lastName,
+  })),
+  ...(rawOwners as Person[]),
+  ...(rawOfficers as Person[]),
+];
 
 const BOOKINGS_FILE_PATH = path.join(
   process.cwd(),
@@ -112,16 +130,32 @@ export const getBookingsData = (
     payments.map((item) => [item.bookingId, item] as const),
   );
 
-  const selected = raw
-    .filter(
-      (booking) =>
-        booking.date === date && tableIds.has(booking.tableId),
-    )
-    .sort((a, b) => a.time.localeCompare(b.time));
+  const selected: IBooking[] = [];
+  for (const booking of raw) {
+    if (!tableIds.has(booking.tableId)) continue;
+    const payment = paymentByBookingId.get(booking.id);
+    const status = deriveStatus(booking, payment, untilToday);
+
+    if (status === "cancelled") {
+      if (booking.date === date) selected.push(booking);
+      continue;
+    }
+    if (booking.date === date) {
+      const sameDayRequest =
+        booking.createdAt?.split("T")[0] === booking.date;
+      if (status === "pending" && !sameDayRequest) continue;
+      selected.push(booking);
+      continue;
+    }
+    if (status === "pending" && isPendingVisibleOn(booking, date)) {
+      selected.push(booking);
+    }
+  }
+  selected.sort((a, b) => a.time.localeCompare(b.time));
 
   const bookings = selected
     .map((booking) => {
-      const guest = USERS.find((user) => user.id === booking.customerId);
+      const guest = PEOPLE.find((user) => user.id === booking.customerId);
       const payment = paymentByBookingId.get(booking.id);
       const status = deriveStatus(booking, payment, untilToday);
       const table = TABLES.find((item) => item.id === booking.tableId);

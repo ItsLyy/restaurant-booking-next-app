@@ -46,7 +46,7 @@ export default async function DashboardBookingsPage({
         </div>
         <BookingsSummary bookings={bookings} counts={counts} />
         <BookingTableFilter current={filter} counts={counts} date={date} query={query} />
-        <BookingDetailTable bookings={filteredBookings} />
+        <BookingDetailTable bookings={filteredBookings} viewDate={date} />
       </Card>
     </section>
   );

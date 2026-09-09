@@ -6,7 +6,6 @@ import path from "path";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import rawUsers from "@data/dummy/users.json";
 import tables from "@data/dummy/tables.json";
 
 import {
@@ -106,6 +105,15 @@ export async function confirmBookingAction(id: string): Promise<IBooking> {
   const paymentByBookingId = new Map(
     readPayments().map((payment) => [payment.bookingId, payment]),
   );
+
+  if (
+    getEffectiveBookingStatus(booking, paymentByBookingId.get(id)) !== "pending"
+  ) {
+    throw new Error(
+      "This booking was auto-cancelled because it was not confirmed within 72 hours.",
+    );
+  }
+
   const conflictingBooking = bookings.find(
     (item) =>
       item.id !== id &&
@@ -203,6 +211,7 @@ export interface ManualBookingState {
 }
 
 const RESTAURANT_ID = "rest-001";
+const MANUAL_BOOKING_ACTOR_ID = "owner-001";
 
 export async function createManualBookingAction(
   _prevState: ManualBookingState,
@@ -212,7 +221,6 @@ export async function createManualBookingAction(
   const time = String(formData.get("time") ?? "").trim();
   const partySize = Number(formData.get("partySize"));
   const tableId = String(formData.get("tableId") ?? "");
-  const customerId = String(formData.get("customerId") ?? "");
   const specialRequest = String(formData.get("specialRequest") ?? "").trim();
 
   const todayClock = new Date();
@@ -239,9 +247,6 @@ export async function createManualBookingAction(
         error: "Booking time must be later than the current time.",
       };
     }
-  }
-  if (!customerId) {
-    return { ok: false, error: "Please choose a customer." };
   }
   const table = tables.find(
     (item) => item.id === tableId && item.restaurantId === RESTAURANT_ID,
@@ -280,11 +285,6 @@ export async function createManualBookingAction(
     }
   }
 
-  const customers = rawUsers as Array<{ id: string }>;
-  if (!customers.some((user) => user.id === customerId)) {
-    return { ok: false, error: "Unknown customer selected." };
-  }
-
   const now = new Date().toISOString();
   const bookings = readBookings();
   const id = buildNextBookingId(bookings);
@@ -295,7 +295,7 @@ export async function createManualBookingAction(
     time,
     partySize,
     status: "confirmed",
-    customerId,
+    customerId: MANUAL_BOOKING_ACTOR_ID,
     tableId,
     specialRequest: specialRequest || undefined,
     createdAt: now,
