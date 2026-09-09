@@ -10,7 +10,13 @@ import { formatTime } from "@utils";
 
 import { getEffectiveBookingStatus, isPendingVisibleOn } from "../../../../_data/bookings/booking-deadline";
 
-import type { IBooking, IPayment, ITable, IUser } from "@types";
+import type {
+  IBooking,
+  IBookingCancelled,
+  IPayment,
+  ITable,
+  IUser,
+} from "@types";
 
 const TABLES = rawTables as ITable[];
 const USERS = rawUsers as IUser[];
@@ -196,3 +202,81 @@ export const getBookingsCounts = (
   completed: bookings.filter((item) => item.status === "completed").length,
   cancelled: bookings.filter((item) => item.status === "cancelled").length,
 });
+
+export interface DetailedBookingInfo {
+  id: string;
+  code: string;
+  date: string;
+  time: string;
+  guest: string;
+  party: number;
+  table: string;
+  status: DetailStatus;
+  specialRequest: string | null;
+  isPaid: boolean;
+  price: number | null;
+  paymentDeadline: string | null;
+  createdAt: string;
+  updatedAt: string | null;
+  cancelled: IBookingCancelled | null;
+}
+
+export const getBookingInfo = (id: string): DetailedBookingInfo | null => {
+  const raw: IBooking[] = JSON.parse(
+    readFileSync(BOOKINGS_FILE_PATH, "utf8"),
+  ) as IBooking[];
+  const booking = raw.find((item) => item.id === id);
+  if (!booking) return null;
+
+  const table = TABLES.find((item) => item.id === booking.tableId);
+  if (!table || table.restaurantId !== RESTAURANT_ID) return null;
+
+  const payments: IPayment[] = JSON.parse(
+    readFileSync(PAYMENTS_FILE_PATH, "utf8"),
+  ) as IPayment[];
+  const payment = payments.find((item) => item.bookingId === id);
+
+  const guest = PEOPLE.find((user) => user.id === booking.customerId);
+
+  const status = deriveStatus(booking, payment, todayString());
+
+  let cancelled: IBookingCancelled | null = null;
+  if (status === "cancelled") {
+    if (booking.cancelled) {
+      cancelled = booking.cancelled;
+    } else {
+      const overdue =
+        payment !== undefined &&
+        payment.status === "unpaid" &&
+        payment.deadline !== undefined &&
+        payment.deadline < new Date().toISOString();
+      cancelled = {
+        date: todayString(),
+        by: "restaurant",
+        reason: overdue
+          ? "Payment deadline passed. The booking was automatically cancelled."
+          : "The booking was not confirmed within 72 hours and was automatically cancelled.",
+      };
+    }
+  }
+
+  return {
+    id: booking.id,
+    code: toBookingCode(booking.id),
+    date: booking.date,
+    time: formatTime(booking.time),
+    guest: guest
+      ? `${guest.firstName} ${guest.lastName}`
+      : "Unknown guest",
+    party: booking.partySize,
+    table: table.name,
+    status,
+    specialRequest: booking.specialRequest ?? null,
+    isPaid: payment?.status === "paid",
+    price: payment?.price ?? null,
+    paymentDeadline: payment?.deadline ?? null,
+    createdAt: booking.createdAt ?? "",
+    updatedAt: booking.updatedAt ?? null,
+    cancelled,
+  };
+};

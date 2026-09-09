@@ -28,6 +28,9 @@ export const QuickInformation = ({
   const pending = bookings.filter(
     (booking) => booking.status === "pending",
   ).length;
+  const revenue = bookings
+    .filter((booking) => booking.isPaid && booking.status === "confirmed")
+    .reduce((sum, booking) => sum + (booking.price ?? 0), 0);
 
   const stats: Stat[] = [
     {
@@ -44,7 +47,7 @@ export const QuickInformation = ({
     },
     {
       label: "Revenue Today",
-      value: formatPrice(200000),
+      value: formatPrice(revenue),
       icon: MoneyWavyIcon,
       className: "w-full",
     },

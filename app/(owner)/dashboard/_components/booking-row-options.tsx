@@ -11,9 +11,9 @@ import {
   XCircleIcon,
 } from "@phosphor-icons/react/dist/ssr";
 
-import { formatShortDate } from "@utils/formatDate";
+import { BookingActionDialog } from "./booking-action-dialog";
 
-import { ConfirmDialog } from "./confirm-dialog";
+import { toBookingCode } from "@data/bookings/booking-code";
 
 import {
   confirmBookingAction,
@@ -77,7 +77,7 @@ export const BookingRowOptions = ({ booking }: BookingRowOptionsProps) => {
     setPendingAction(null);
   };
 
-  const runAction = async () => {
+  const runAction = async (reason?: string) => {
     if (!pendingAction || busy) return;
     setBusy(true);
     setActionError(null);
@@ -85,7 +85,7 @@ export const BookingRowOptions = ({ booking }: BookingRowOptionsProps) => {
       if (pendingAction === "confirm") {
         await confirmBookingAction(booking.id);
       } else {
-        await rejectBookingAction(booking.id);
+        await rejectBookingAction(booking.id, reason);
       }
       setPendingAction(null);
       setBusy(false);
@@ -99,9 +99,6 @@ export const BookingRowOptions = ({ booking }: BookingRowOptionsProps) => {
       );
     }
   };
-
-  const isConfirm = pendingAction === "confirm";
-  const slot = `${formatShortDate(booking.date)} · ${booking.time} · ${booking.table}`;
 
   return (
     <div className="relative">
@@ -162,36 +159,21 @@ export const BookingRowOptions = ({ booking }: BookingRowOptionsProps) => {
           document.body,
         )}
 
-      <ConfirmDialog
+      <BookingActionDialog
         open={pendingAction !== null}
-        title={isConfirm ? "Confirm booking" : "Reject booking"}
-        message={
-          isConfirm ? (
-            <>
-              Confirm the reservation for{" "}
-              <span className="text-foreground">
-                {booking.guest} ({booking.party} people)
-              </span>{" "}
-              on&nbsp;{slot}? This reserves the table and starts a 6-hour
-              payment window.
-            </>
-          ) : (
-            <>
-              Reject the reservation for{" "}
-              <span className="text-foreground">
-                {booking.guest} ({booking.party} people)
-              </span>{" "}
-              on&nbsp;{slot}? The booking will be cancelled and the table stays
-              available.
-            </>
-          )
-        }
-        confirmLabel={isConfirm ? "Confirm booking" : "Reject booking"}
-        confirmVariant={isConfirm ? "default" : "danger"}
+        action={pendingAction ?? "confirm"}
+        booking={{
+          code: toBookingCode(booking.id),
+          date: booking.date,
+          time: booking.time,
+          guest: booking.guest,
+          party: booking.party,
+          table: booking.table,
+        }}
         busy={busy}
         error={actionError}
-        onConfirm={() => {
-          void runAction();
+        onConfirm={(reason) => {
+          void runAction(reason);
         }}
         onCancel={cancelAction}
       />

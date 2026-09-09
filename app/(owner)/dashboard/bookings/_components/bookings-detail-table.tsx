@@ -66,7 +66,7 @@ export const BookingDetailTable = ({
               >
                 <td className={cell}>
                   <Link
-                    href={`/bookings/${booking.id}`}
+                    href={`/dashboard/bookings/${booking.id}`}
                     className="text-accent-100 hover:underline"
                   >
                     {booking.code}

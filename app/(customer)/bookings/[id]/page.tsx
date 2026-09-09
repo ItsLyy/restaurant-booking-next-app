@@ -71,6 +71,7 @@ export default async function BookingDetailPage({
           paymentPrice={paymentPrice}
           paymentStatus={paymentStatus}
           cancelledDate={booking.cancelled?.date}
+          cancelledReason={booking.cancelled?.reason}
         />
         <Footer
           bookingStatus={booking.status}

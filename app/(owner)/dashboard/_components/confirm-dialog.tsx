@@ -14,6 +14,7 @@ interface ConfirmDialogProps {
   error?: string | null;
   onConfirm: () => void;
   onCancel: () => void;
+  children?: React.ReactNode;
 }
 
 export const ConfirmDialog = ({
@@ -26,6 +27,7 @@ export const ConfirmDialog = ({
   error,
   onConfirm,
   onCancel,
+  children,
 }: ConfirmDialogProps) => {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
@@ -54,6 +56,7 @@ export const ConfirmDialog = ({
         <div id="confirm-dialog-message" className="mt-2 text-d-body text-muted">
           {message}
         </div>
+        {children}
         {error ? (
           <p className="mt-3 text-d-body text-negative" role="alert">
             {error}

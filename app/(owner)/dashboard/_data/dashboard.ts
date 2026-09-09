@@ -72,6 +72,7 @@ export interface DashboardBooking {
   table: string;
   status: "confirmed" | "pending";
   isPaid: boolean;
+  price: number | null;
 }
 
 export interface DashboardTable {
@@ -170,6 +171,7 @@ export const getDashboardData = () => {
       table: getTableName(booking.tableId),
       status,
       isPaid: payment?.status === "paid",
+      price: payment?.price ?? null,
     } satisfies DashboardBooking);
   }
 

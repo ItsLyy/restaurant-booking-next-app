@@ -1,10 +1,14 @@
 import { Button } from "@components";
 
+import { CancelBookingButton } from "./cancel-booking-button";
+
 export const ConfirmPaidState = ({
+  bookingId,
   restaurantName,
   restaurantSlug,
   restaurantAddress,
 }: {
+  bookingId: string;
   restaurantName: string;
   restaurantSlug: string;
   restaurantAddress: string;
@@ -27,9 +31,7 @@ export const ConfirmPaidState = ({
       >
         View Restaurant
       </Button>
-      <Button className="w-full border! rounded-2xl!" variant="outline">
-        Cancel Booking
-      </Button>
+      <CancelBookingButton bookingId={bookingId} paid />
     </>
   );
 };

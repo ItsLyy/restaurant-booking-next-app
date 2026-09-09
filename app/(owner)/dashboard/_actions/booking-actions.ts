@@ -158,7 +158,10 @@ export async function confirmBookingAction(id: string): Promise<IBooking> {
   return confirmed;
 }
 
-export async function rejectBookingAction(id: string): Promise<IBooking> {
+export async function rejectBookingAction(
+  id: string,
+  reason?: string,
+): Promise<IBooking> {
   const bookings = readBookings();
   const index = findBookingIndex(bookings, id);
   const booking = bookings[index];
@@ -167,13 +170,15 @@ export async function rejectBookingAction(id: string): Promise<IBooking> {
     throw new Error("Booking is already cancelled.");
   }
 
+  const cancelledReason = reason?.trim() || "Rejected by the restaurant.";
+
   return saveBooking(bookings, {
     ...booking,
     status: "cancelled",
     cancelled: {
       date: new Date().toISOString().slice(0, 10),
       by: "restaurant",
-      reason: "Rejected by the restaurant.",
+      reason: cancelledReason,
     },
     updatedAt: new Date().toISOString(),
   });

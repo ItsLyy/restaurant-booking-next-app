@@ -12,9 +12,7 @@ import {
   XCircleIcon,
 } from "@phosphor-icons/react/dist/ssr";
 
-import { formatShortDate } from "@utils/formatDate";
-
-import { ConfirmDialog } from "../../_components/confirm-dialog";
+import { BookingActionDialog } from "../../_components/booking-action-dialog";
 
 import {
   completeBookingAction,
@@ -93,13 +91,14 @@ export const BookingRowActions = ({ booking }: BookingRowActionsProps) => {
     setPendingAction(null);
   };
 
-  const runAction = async () => {
+  const runAction = async (reason?: string) => {
     if (!pendingAction || busy) return;
     setBusy(true);
     setActionError(null);
     try {
       if (pendingAction === "confirm") await confirmBookingAction(booking.id);
-      else if (pendingAction === "reject") await rejectBookingAction(booking.id);
+      else if (pendingAction === "reject")
+        await rejectBookingAction(booking.id, reason);
       else await completeBookingAction(booking.id);
       setPendingAction(null);
       setBusy(false);
@@ -113,15 +112,6 @@ export const BookingRowActions = ({ booking }: BookingRowActionsProps) => {
       );
     }
   };
-
-  const slot = `${formatShortDate(booking.date)} · ${booking.time} · ${booking.table}`;
-  const action = pendingAction;
-  const dialogTitle =
-    action === "confirm"
-      ? "Confirm booking"
-      : action === "reject"
-        ? "Reject booking"
-        : "Mark as completed";
 
   return (
     <div className="relative inline-block text-left">
@@ -152,7 +142,7 @@ export const BookingRowActions = ({ booking }: BookingRowActionsProps) => {
               className="w-44 border border-muted rounded-lg bg-base-100 shadow-lg p-1"
             >
               <a
-                href={`/bookings/${booking.id}`}
+                href={`/dashboard/bookings/${booking.id}`}
                 className={`${menuItemBase} text-foreground hover:bg-accent-200/10`}
               >
                 <EyeIcon className="size-4 text-accent-100" />
@@ -200,43 +190,21 @@ export const BookingRowActions = ({ booking }: BookingRowActionsProps) => {
           document.body,
         )}
 
-      <ConfirmDialog
-        open={action !== null}
-        title={dialogTitle}
-        message={
-          action === "confirm" ? (
-            <>
-              Confirm the reservation for{" "}
-              <span className="text-foreground">
-                {booking.guest} ({booking.party} people)
-              </span>{" "}
-              on&nbsp;{slot}? This reserves the table and starts a 6-hour payment
-              window.
-            </>
-          ) : action === "reject" ? (
-            <>
-              Reject the reservation for{" "}
-              <span className="text-foreground">
-                {booking.guest} ({booking.party} people)
-              </span>{" "}
-              on&nbsp;{slot}? The booking will be cancelled and the table stays
-              available.
-            </>
-          ) : (
-            <>
-              Mark the booking{" "}
-              <span className="text-foreground">{booking.code}</span> for{" "}
-              <span className="text-foreground">{booking.guest}</span> on
-              &nbsp;{slot} as completed?
-            </>
-          )
-        }
-        confirmLabel={dialogTitle}
-        confirmVariant={action === "reject" ? "danger" : "default"}
+      <BookingActionDialog
+        open={pendingAction !== null}
+        action={pendingAction ?? "confirm"}
+        booking={{
+          code: booking.code,
+          date: booking.date,
+          time: booking.time,
+          guest: booking.guest,
+          party: booking.party,
+          table: booking.table,
+        }}
         busy={busy}
         error={actionError}
-        onConfirm={() => {
-          void runAction();
+        onConfirm={(reason) => {
+          void runAction(reason);
         }}
         onCancel={cancelAction}
       />

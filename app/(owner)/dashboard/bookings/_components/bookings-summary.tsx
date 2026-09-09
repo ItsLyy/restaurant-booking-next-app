@@ -14,7 +14,8 @@ export const BookingsSummary = ({ bookings, counts }: BookingsSummaryProps) => {
   const revenue = bookings
     .filter(
       (booking) =>
-        booking.status === "confirmed" || booking.status === "completed",
+        booking.isPaid &&
+        (booking.status === "confirmed" || booking.status === "completed"),
     )
     .reduce((sum, booking) => sum + (booking.price ?? 0), 0);
 
