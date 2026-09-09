@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { useRouter } from "next/navigation";
+
 import {
   CheckCircleIcon,
   DotsThreeVerticalIcon,
@@ -12,30 +14,24 @@ import { formatShortDate } from "@utils/formatDate";
 
 import { ConfirmDialog } from "./confirm-dialog";
 
-import type { DashboardBooking } from "../_data/dashboard";
+import {
+  confirmBookingAction,
+  rejectBookingAction,
+} from "../_actions/booking-actions";
 
-export interface ActionState {
-  ok: boolean;
-  error?: string;
-}
+import type { DashboardBooking } from "../_data/dashboard";
 
 interface BookingRowOptionsProps {
   booking: DashboardBooking;
-  busy: boolean;
-  onConfirm: () => Promise<ActionState>;
-  onReject: () => Promise<ActionState>;
 }
 
 type PendingAction = "confirm" | "reject" | null;
 
-export const BookingRowOptions = ({
-  booking,
-  busy,
-  onConfirm,
-  onReject,
-}: BookingRowOptionsProps) => {
+export const BookingRowOptions = ({ booking }: BookingRowOptionsProps) => {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState<PendingAction>(null);
+  const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
 
   const closeMenu = () => setIsOpen(false);
@@ -53,13 +49,24 @@ export const BookingRowOptions = ({
 
   const runAction = async () => {
     if (!pendingAction || busy) return;
+    setBusy(true);
     setActionError(null);
-    const result =
-      pendingAction === "confirm" ? await onConfirm() : await onReject();
-    if (result.ok) {
+    try {
+      if (pendingAction === "confirm") {
+        await confirmBookingAction(booking.id);
+      } else {
+        await rejectBookingAction(booking.id);
+      }
       setPendingAction(null);
-    } else {
-      setActionError(result.error ?? "Something went wrong. Please try again.");
+      setBusy(false);
+      router.refresh();
+    } catch (error) {
+      setBusy(false);
+      setActionError(
+        error instanceof Error
+          ? error.message
+          : "Something went wrong. Please try again.",
+      );
     }
   };
 
