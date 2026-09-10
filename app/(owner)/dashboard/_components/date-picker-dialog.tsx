@@ -9,7 +9,17 @@ import { CalendarBlankIcon } from "@phosphor-icons/react/dist/ssr";
 
 import { formatDate } from "@utils";
 
-export const DatePickerButton = ({ date }: { date: string }) => {
+interface DatePickerButtonProps {
+  date: string;
+  pathname: string;
+  params: Record<string, string>;
+}
+
+export const DatePickerButton = ({
+  date,
+  pathname,
+  params,
+}: DatePickerButtonProps) => {
   const router = useRouter();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [open, setOpen] = useState(false);
@@ -31,9 +41,11 @@ export const DatePickerButton = ({ date }: { date: string }) => {
 
   const goToDate = () => {
     if (!value) return;
-    const params = new URLSearchParams(window.location.search);
-    params.set("date", value);
-    router.push(`/dashboard/bookings?${params.toString()}`, { scroll: false });
+    const query = new URLSearchParams({ ...params, date: value });
+    router.push(
+      query.toString() ? `${pathname}?${query.toString()}` : pathname,
+      { scroll: false },
+    );
     setOpen(false);
   };
 
@@ -56,7 +68,10 @@ export const DatePickerButton = ({ date }: { date: string }) => {
         className="m-auto bg-transparent p-0 open:flex open:items-center open:justify-center [&::backdrop]:bg-black/40"
       >
         <div className="w-72 max-w-[90vw] rounded-xl border border-muted bg-base-100 shadow-lg text-foreground p-5">
-          <h2 id="date-picker-title" className="text-d-header-card text-foreground">
+          <h2
+            id="date-picker-title"
+            className="text-d-header-card text-foreground"
+          >
             Pick a date
           </h2>
           <div className="mt-3">

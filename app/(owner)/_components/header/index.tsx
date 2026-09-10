@@ -11,7 +11,7 @@ export const Header = ({
   owner: DashboardOwner;
 }) => {
   return (
-    <header className="shrink-0 pb-1 pt-6 px-4 flex justify-between items-end w-full">
+    <header className="shrink-0 pb-1 pt-6 px-4 flex justify-between items-end w-full min-w-0">
       <Breadcrumb restaurantName={restaurant.name} />
       <UserProfile owner={owner} />
     </header>

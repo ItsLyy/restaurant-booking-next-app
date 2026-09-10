@@ -70,6 +70,7 @@ export interface DashboardBooking {
   guest: string;
   party: number;
   table: string;
+  tableId: string;
   status: "confirmed" | "pending";
   isPaid: boolean;
   price: number | null;
@@ -169,6 +170,7 @@ export const getDashboardData = () => {
         : "Unknown guest",
       party: booking.partySize,
       table: getTableName(booking.tableId),
+      tableId: booking.tableId,
       status,
       isPaid: payment?.status === "paid",
       price: payment?.price ?? null,

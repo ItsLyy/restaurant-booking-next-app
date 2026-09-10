@@ -70,35 +70,62 @@ export default async function RestaurantDetailPage({
 
   const structuredData = {
     "@context": "https://schema.org",
-    "@type": "Restaurant",
-    name: restaurant.name,
-    image: [restaurant.cover],
-    url: `${SITE_URL}/restaurants/${restaurant.slug}`,
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: restaurant.address,
-      addressLocality: restaurant.city,
-      addressCountry: restaurant.country,
-    },
-    ...(restaurant.tags?.length ? { servesCuisine: restaurant.tags } : {}),
-    ...(averageRating !== undefined
-      ? {
-          aggregateRating: {
-            "@type": "AggregateRating",
-            ratingValue: averageRating.toFixed(1),
-            reviewCount: restaurant.reviews.length,
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: `${SITE_URL}/`,
           },
-        }
-      : {}),
-    ...(restaurant.lat !== undefined && restaurant.lng !== undefined
-      ? {
-          geo: {
-            "@type": "GeoCoordinates",
-            latitude: restaurant.lat,
-            longitude: restaurant.lng,
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Restaurants",
+            item: `${SITE_URL}/restaurants`,
           },
-        }
-      : {}),
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: restaurant.name,
+            item: `${SITE_URL}/restaurants/${restaurant.slug}`,
+          },
+        ],
+      },
+      {
+        "@type": "Restaurant",
+        name: restaurant.name,
+        image: [restaurant.cover],
+        url: `${SITE_URL}/restaurants/${restaurant.slug}`,
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: restaurant.address,
+          addressLocality: restaurant.city,
+          addressCountry: restaurant.country,
+        },
+        ...(restaurant.tags?.length ? { servesCuisine: restaurant.tags } : {}),
+        ...(averageRating !== undefined
+          ? {
+              aggregateRating: {
+                "@type": "AggregateRating",
+                ratingValue: averageRating.toFixed(1),
+                reviewCount: restaurant.reviews.length,
+              },
+            }
+          : {}),
+        ...(restaurant.lat !== undefined && restaurant.lng !== undefined
+          ? {
+              geo: {
+                "@type": "GeoCoordinates",
+                latitude: restaurant.lat,
+                longitude: restaurant.lng,
+              },
+            }
+          : {}),
+      },
+    ],
   };
 
   const structuredDataHtml = JSON.stringify(structuredData)
@@ -125,7 +152,6 @@ export default async function RestaurantDetailPage({
           />
           <BookingAction
             restaurantId={restaurant.id}
-            restaurantName={restaurant.name}
             slotsByDay={slotsByDay}
             tables={tables}
             busyTablesByTime={busyTablesByTime}

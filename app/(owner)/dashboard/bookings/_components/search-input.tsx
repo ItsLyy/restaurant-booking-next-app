@@ -18,6 +18,7 @@ export const SearchInput = ({ initialQuery }: { initialQuery: string }) => {
       const params = new URLSearchParams(window.location.search);
       if (query.trim()) params.set("q", query.trim());
       else params.delete("q");
+      params.delete("page");
       router.replace(`/dashboard/bookings?${params.toString()}`, {
         scroll: false,
       });

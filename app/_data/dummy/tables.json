@@ -889,5 +889,137 @@
     "createdAt": "2024-04-01T11:00:00.000Z",
     "updatedAt": "2024-04-01T11:00:00.000Z",
     "capacity": 10
+  },
+  {
+    "id": "table-100",
+    "name": "Hanami Veranda",
+    "price": 28000,
+    "category": "outdoor",
+    "floor": 1,
+    "restaurantId": "rest-001",
+    "createdAt": "2026-08-15T09:00:00.000Z",
+    "updatedAt": "2026-08-15T09:00:00.000Z",
+    "capacity": 8
+  },
+  {
+    "id": "table-101",
+    "name": "Iroha Counter",
+    "price": 32000,
+    "category": "counter",
+    "floor": 2,
+    "restaurantId": "rest-001",
+    "createdAt": "2026-08-15T09:00:00.000Z",
+    "updatedAt": "2026-08-15T09:00:00.000Z",
+    "capacity": 4
+  },
+  {
+    "id": "table-102",
+    "name": "Kiku Garden",
+    "price": 12000,
+    "category": "standard",
+    "floor": 1,
+    "restaurantId": "rest-001",
+    "createdAt": "2026-08-15T09:00:00.000Z",
+    "updatedAt": "2026-08-15T09:00:00.000Z",
+    "capacity": 2
+  },
+  {
+    "id": "table-103",
+    "name": "Sakura Terrace",
+    "price": 26000,
+    "category": "outdoor",
+    "floor": 3,
+    "restaurantId": "rest-001",
+    "createdAt": "2026-08-15T09:00:00.000Z",
+    "updatedAt": "2026-08-15T09:00:00.000Z",
+    "capacity": 6
+  },
+  {
+    "id": "table-104",
+    "name": "Tsuru Lounge",
+    "price": 30000,
+    "category": "lounge",
+    "floor": 3,
+    "restaurantId": "rest-001",
+    "createdAt": "2026-08-15T09:00:00.000Z",
+    "updatedAt": "2026-08-15T09:00:00.000Z",
+    "capacity": 10
+  },
+  {
+    "id": "table-105",
+    "name": "Ume Booth",
+    "price": 20000,
+    "category": "booth",
+    "floor": 2,
+    "restaurantId": "rest-001",
+    "createdAt": "2026-08-15T09:00:00.000Z",
+    "updatedAt": "2026-08-15T09:00:00.000Z",
+    "capacity": 4
+  },
+  {
+    "id": "table-106",
+    "name": "Kabuki Room",
+    "price": 45000,
+    "category": "private",
+    "floor": 2,
+    "restaurantId": "rest-001",
+    "createdAt": "2026-08-15T09:00:00.000Z",
+    "updatedAt": "2026-08-15T09:00:00.000Z",
+    "capacity": 12
+  },
+  {
+    "id": "table-107",
+    "name": "Matcha Corner",
+    "price": 13000,
+    "category": "standard",
+    "floor": 1,
+    "restaurantId": "rest-001",
+    "createdAt": "2026-08-15T09:00:00.000Z",
+    "updatedAt": "2026-08-15T09:00:00.000Z",
+    "capacity": 2
+  },
+  {
+    "id": "table-108",
+    "name": "Ryokan Suite",
+    "price": 42000,
+    "category": "private",
+    "floor": 3,
+    "restaurantId": "rest-001",
+    "createdAt": "2026-08-15T09:00:00.000Z",
+    "updatedAt": "2026-08-15T09:00:00.000Z",
+    "capacity": 8
+  },
+  {
+    "id": "table-109",
+    "name": "Enso Bar Rail",
+    "price": 22000,
+    "category": "bar",
+    "floor": 2,
+    "restaurantId": "rest-001",
+    "createdAt": "2026-08-15T09:00:00.000Z",
+    "updatedAt": "2026-08-15T09:00:00.000Z",
+    "capacity": 10
+  },
+  {
+    "id": "table-110",
+    "name": "Garden View B",
+    "price": 15000,
+    "category": "standard",
+    "floor": 1,
+    "restaurantId": "rest-001",
+    "createdAt": "2026-08-15T09:00:00.000Z",
+    "updatedAt": "2026-08-15T09:00:00.000Z",
+    "capacity": 4
+  },
+  {
+    "id": "table-111",
+    "name": "Shogun Vault",
+    "price": 50000,
+    "category": "vip",
+    "floor": 3,
+    "restaurantId": "rest-001",
+    "createdAt": "2026-08-15T09:00:00.000Z",
+    "updatedAt": "2026-08-15T09:00:00.000Z",
+    "capacity": 4
   }
 ]

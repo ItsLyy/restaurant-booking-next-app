@@ -1,6 +1,11 @@
 "use client";
 
+import { useEffect } from "react";
 import { useActionState } from "react";
+
+import { useRouter } from "next/navigation";
+
+import { toast } from "sonner";
 
 import { Button } from "@components";
 
@@ -18,10 +23,18 @@ export const ManualBookingForm = ({
   defaultDate,
   tables,
 }: ManualBookingFormProps) => {
+  const router = useRouter();
   const [state, formAction, pending] = useActionState(
     createManualBookingAction,
     { ok: false },
   );
+
+  useEffect(() => {
+    if (!state.ok) return;
+    toast.success("Manual booking created for the restaurant.");
+    // react-doctor-disable-next-line nextjs-no-client-side-redirect
+    router.push(`/dashboard/bookings${state.date ? `?date=${state.date}` : ""}`);
+  }, [state.ok, state.date, router]);
 
   return (
     <form action={formAction} className="grid grid-cols-2 gap-4">

@@ -1,4 +1,5 @@
 import { DM_Sans, Playfair_Display } from "next/font/google";
+import { Toaster } from "sonner";
 
 import { SITE_URL } from "@libs";
 
@@ -55,7 +56,16 @@ export default function RootLayout({
     >
       <link rel="preconnect" href="https://images.unsplash.com" />
       <link rel="preconnect" href="https://randomuser.me" />
-      <body className="min-h-svh flex flex-col">{children}</body>
+      <body className="min-h-svh flex flex-col">
+        {children}
+        <Toaster
+          richColors
+          closeButton
+          position="top-center"
+          offset={{ top: "1.25rem" }}
+          toastOptions={{ className: "border border-muted!" }}
+        />
+      </body>
     </html>
   );
 }

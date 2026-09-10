@@ -13,7 +13,9 @@ interface AsButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   as?: "button";
   type?: "button" | "submit" | "reset";
 }
-interface AsLinkProps extends LinkProps {
+interface AsLinkProps
+  extends LinkProps,
+    Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "href"> {
   as?: "link";
 }
 

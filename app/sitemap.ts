@@ -38,6 +38,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     {
       url: `${SITE_URL}/restaurants`,
+      lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.8,
     },
