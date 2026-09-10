@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState, useTransition } from "react";
 
+import { toast } from "sonner";
+
 import { Button } from "@components";
 
 import { cancelBookingAction } from "../../_actions/cancel-booking";
@@ -42,12 +44,15 @@ export const CancelBookingButton = ({
     startTransition(async () => {
       try {
         await cancelBookingAction(bookingId, reasonRef.current?.value ?? "");
+        toast.success("Booking cancelled. Your table has been released.");
+        closeDialog();
       } catch (error) {
-        setError(
+        const message =
           error instanceof Error
             ? error.message
-            : "Could not cancel the booking right now.",
-        );
+            : "Could not cancel the booking right now.";
+        setError(message);
+        toast.error(message);
       }
     });
   };

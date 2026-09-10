@@ -5,6 +5,8 @@ import { useState } from "react";
 
 import { useRouter } from "next/navigation";
 
+import { toast } from "sonner";
+
 import {
   CheckCircleIcon,
   DotsThreeVerticalIcon,
@@ -54,19 +56,22 @@ export const BookingRowOptions = ({ booking }: BookingRowOptionsProps) => {
     try {
       if (pendingAction === "confirm") {
         await confirmBookingAction(booking.id);
+        toast.success(`Booking ${toBookingCode(booking.id)} confirmed.`);
       } else {
         await rejectBookingAction(booking.id, reason);
+        toast.success(`Booking ${toBookingCode(booking.id)} rejected.`);
       }
       setPendingAction(null);
       setBusy(false);
       router.refresh();
     } catch (error) {
-      setBusy(false);
-      setActionError(
+      const message =
         error instanceof Error
           ? error.message
-          : "Something went wrong. Please try again.",
-      );
+          : "Something went wrong. Please try again.";
+      setBusy(false);
+      setActionError(message);
+      toast.error(message);
     }
   };
 

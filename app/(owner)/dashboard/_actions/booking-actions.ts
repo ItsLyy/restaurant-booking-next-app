@@ -4,7 +4,6 @@ import { readFileSync, writeFileSync } from "fs";
 import path from "path";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 import tables from "@data/dummy/tables.json";
 
@@ -213,6 +212,7 @@ export async function completeBookingAction(id: string): Promise<IBooking> {
 export interface ManualBookingState {
   ok: boolean;
   error?: string;
+  date?: string;
 }
 
 const RESTAURANT_ID = "rest-001";
@@ -323,5 +323,6 @@ export async function createManualBookingAction(
 
   revalidatePath("/dashboard", "page");
   revalidatePath("/dashboard/bookings", "page");
-  redirect(`/dashboard/bookings?date=${date}`);
+
+  return { ok: true, date };
 }

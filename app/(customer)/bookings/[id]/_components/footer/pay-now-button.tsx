@@ -2,6 +2,8 @@
 
 import { useState, useTransition } from "react";
 
+import { toast } from "sonner";
+
 import { Button } from "@components";
 
 import { formatPrice } from "@utils";
@@ -23,8 +25,11 @@ export const PayNowButton = ({
     startTransition(async () => {
       try {
         await payBookingAction(bookingId);
+        toast.success("Payment successful. Enjoy your meal!");
       } catch {
-        setError("Could not process the payment right now.");
+        const message = "Could not process the payment right now.";
+        setError(message);
+        toast.error(message);
       }
     });
   };

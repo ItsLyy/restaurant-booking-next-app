@@ -69,6 +69,7 @@ export default async function BookingDetailPage({
           bookingTable={tableName}
           bookingTime={booking.time}
           bookingStatus={booking.status}
+          bookingSpecialRequest={booking.specialRequest}
           paymentPrice={paymentPrice}
           paymentStatus={paymentStatus}
           cancelledDate={booking.cancelled?.date}

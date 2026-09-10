@@ -11,6 +11,7 @@ interface StatusDescriptionProps {
   bookingTable: string;
   bookingPartySize: number;
   bookingStatus: IBooking["status"];
+  bookingSpecialRequest?: string;
   paymentPrice: number;
   paymentStatus: IPayment["status"];
   cancelledDate?: string;
@@ -24,6 +25,7 @@ export const StatusDescription = ({
   bookingTable,
   bookingTime,
   bookingStatus,
+  bookingSpecialRequest,
   paymentStatus,
   cancelledDate,
   cancelledReason,
@@ -58,6 +60,9 @@ export const StatusDescription = ({
           value={`${bookingPartySize} People`}
           isMuted={bookingStatus === "cancelled" || bookingStatus === "no_show"}
         />
+        {bookingSpecialRequest ? (
+          <ListItem label="Special Note" value={bookingSpecialRequest} />
+        ) : null}
         <ListItem
           label="Payment"
           value={formatPrice(paymentPrice)}

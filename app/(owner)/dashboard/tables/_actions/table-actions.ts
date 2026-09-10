@@ -4,7 +4,6 @@ import { readFileSync, writeFileSync } from "fs";
 import path from "path";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 import { TABLE_CATEGORIES } from "../_data/table-meta";
 
@@ -99,5 +98,6 @@ export async function createTableAction(
 
   revalidatePath("/dashboard", "page");
   revalidatePath("/dashboard/tables", "page");
-  redirect("/dashboard/tables");
+
+  return { ok: true };
 }

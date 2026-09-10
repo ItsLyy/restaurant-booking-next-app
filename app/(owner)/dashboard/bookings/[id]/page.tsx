@@ -5,6 +5,7 @@ import { ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr";
 
 import { Card } from "../../_components/card";
 import { BookingBadge } from "../../_components/booking-badge";
+import { InfoCard, InfoRow } from "../../_components/info-card";
 import { BookingDetailActions } from "./_components/booking-detail-actions";
 
 import { getBookingInfo } from "../_data/bookings";
@@ -26,32 +27,6 @@ const getStatusVariant = (status: DetailStatus): Variant => {
       return "positive";
   }
 };
-
-const InfoRow = ({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) => (
-  <div className="flex items-start justify-between gap-4 py-2 border-b border-muted/50 last:border-b-0">
-    <span className="text-d-caption text-muted shrink-0">{label}</span>
-    <span className="text-d-body text-foreground text-right">{children}</span>
-  </div>
-);
-
-const InfoCard = ({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) => (
-  <div className="border border-muted rounded-lg p-4">
-    <h3 className="text-d-header-md text-foreground mb-2">{title}</h3>
-    {children}
-  </div>
-);
 
 export default async function DashboardBookingDetailPage({
   params,

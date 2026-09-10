@@ -1,6 +1,11 @@
 "use client";
 
+import { useEffect } from "react";
 import { useActionState } from "react";
+
+import { useRouter } from "next/navigation";
+
+import { toast } from "sonner";
 
 import { Button } from "@components";
 
@@ -24,9 +29,17 @@ const placesForCategory = (category: string): string =>
   category === "outdoor" || category === "private" ? category : "indoor";
 
 export const AddTableForm = ({ defaultFloor }: AddTableFormProps) => {
+  const router = useRouter();
   const [state, formAction, pending] = useActionState(createTableAction, {
     ok: false,
   });
+
+  useEffect(() => {
+    if (!state.ok) return;
+    toast.success("Table added to your restaurant layout.");
+    // react-doctor-disable-next-line nextjs-no-client-side-redirect
+    router.push("/dashboard/tables");
+  }, [state.ok, router]);
 
   return (
     <form action={formAction} className="grid grid-cols-2 gap-4 max-w-2xl">
