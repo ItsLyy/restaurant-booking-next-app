@@ -21,7 +21,7 @@ export const UserProfile = ({ owner }: { owner: DashboardOwner }) => {
   const name = `${owner.firstName} ${owner.lastName}`;
 
   return (
-    <div className="py-4 relative">
+    <div className="py-4 relative shrink-0">
       <button
         type="button"
         aria-haspopup="menu"
@@ -29,7 +29,7 @@ export const UserProfile = ({ owner }: { owner: DashboardOwner }) => {
         onClick={() => setIsOpen((open) => !open)}
         className="flex items-center gap-4 cursor-pointer"
       >
-        <div className="flex flex-col items-end">
+        <div className="hidden sm:flex flex-col items-end">
           <span className="text-foreground text-d-caption">{name}</span>
           <span className="text-muted text-d-caption">Owner</span>
         </div>

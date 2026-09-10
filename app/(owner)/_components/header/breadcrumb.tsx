@@ -14,11 +14,11 @@ export const Breadcrumb = ({ restaurantName }: { restaurantName: string }) => {
     ROUTE_TITLES[pathname] ?? (segment ? toTitleCase(segment) : "Overview");
 
   return (
-    <div className="flex flex-col">
-      <span className="text-foreground text-d-caption">
+    <div className="flex flex-col min-w-0">
+      <span className="text-foreground text-d-caption truncate">
         {restaurantName} / <span className="text-muted">{title}</span>
       </span>
-      <h1 className="text-d-header-lg text-foreground leading-tight">
+      <h1 className="text-d-header-lg text-foreground leading-tight truncate">
         {title}
       </h1>
     </div>

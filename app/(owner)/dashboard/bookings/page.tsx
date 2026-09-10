@@ -41,7 +41,14 @@ export default async function DashboardBookingsPage({
       <Card className="size-full flex flex-col gap-4">
         <Header date={date} />
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <DateFilter date={date} filter={filter} query={query} />
+          <DateFilter
+            date={date}
+            pathname="/dashboard/bookings"
+            params={{
+              ...(filter !== "all" ? { status: filter } : {}),
+              ...(query ? { q: query } : {}),
+            }}
+          />
           <SearchInput initialQuery={typeof q === "string" ? q : ""} />
         </div>
         <BookingsSummary bookings={bookings} counts={counts} />
