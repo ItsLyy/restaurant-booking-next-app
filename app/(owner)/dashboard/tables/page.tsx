@@ -9,18 +9,22 @@ import { TablesSummary } from "./_components/tables-summary";
 
 import { getTablesData, normalizeDate } from "./_data/tables";
 import { parsePlaceFilter, parseStatusFilter } from "./_components/filters";
+import { getDashboardRole } from "@libs/session";
 
 export default async function DashboardTablesPage({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const {
+  const [role, {
     date: dateParam,
     place,
     status,
     page: pageParam,
-  } = await searchParams;
+  }] = await Promise.all([
+    getDashboardRole(),
+    searchParams,
+  ]);
 
   const date = normalizeDate(dateParam);
   const placeFilter = parsePlaceFilter(place);
@@ -49,7 +53,7 @@ export default async function DashboardTablesPage({
   return (
     <section className="px-4 pt-3 pb-6 size-full flex">
       <Card className="flex flex-col gap-4 size-full">
-        <Header />
+        <Header canManage={role === "owner"} />
         <DateFilter
           date={date}
           pathname="/dashboard/tables"

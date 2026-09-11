@@ -5,8 +5,10 @@ import { Card } from "../../_components/card";
 
 import { tablesCountByFloor } from "./_data/options";
 import { AddTableForm } from "./_components/add-table-form";
+import { requireOwner } from "@libs/session";
 
 export default async function AddTablePage() {
+  await requireOwner();
   const { defaultFloor } = tablesCountByFloor();
 
   return (

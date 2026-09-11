@@ -18,6 +18,20 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/officer/:path*",
+        destination: "/dashboard/:path*",
+        permanent: true,
+      },
+      {
+        source: "/officer",
+        destination: "/dashboard",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

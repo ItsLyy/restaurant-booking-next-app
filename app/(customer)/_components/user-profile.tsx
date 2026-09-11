@@ -1,18 +1,18 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+
 import {
   CalendarCheckIcon,
   CaretDownIcon,
-  ShieldCheckIcon,
-  SignOutIcon,
   StorefrontIcon,
   UserCircleIcon,
 } from "@phosphor-icons/react/dist/ssr";
 
-import { Avatar, Badge } from "@components";
+import { Avatar } from "@components/general/avatar";
+import { UserMenuPanel } from "@components/general/user-menu";
+
+import type { UserMenuLink } from "@components/general/user-menu";
 
 interface CustomerUserProfileProps {
   customer: {
@@ -24,7 +24,7 @@ interface CustomerUserProfileProps {
   };
 }
 
-const MENU_ITEMS = [
+const MENU_ITEMS: UserMenuLink[] = [
   {
     label: "My Profile",
     href: "/profile",
@@ -38,12 +38,6 @@ const MENU_ITEMS = [
     description: "View reservation history",
   },
   {
-    label: "Dietary Preferences",
-    href: "/profile",
-    icon: ShieldCheckIcon,
-    description: "Allergies & restrictions",
-  },
-  {
     label: "Become restaurant owner",
     href: "/signup",
     icon: StorefrontIcon,
@@ -51,12 +45,9 @@ const MENU_ITEMS = [
   },
 ];
 
-export const CustomerUserProfile = ({
-  customer,
-}: CustomerUserProfileProps) => {
+export const CustomerUserProfile = ({ customer }: CustomerUserProfileProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const pathname = usePathname();
 
   const fullName = `${customer.firstName} ${customer.lastName}`.trim();
 
@@ -117,84 +108,20 @@ export const CustomerUserProfile = ({
         />
       </button>
 
-      {isOpen && (
-        <div
-          role="menu"
-          className="rise-in absolute right-0 mt-2 w-64 border border-muted/50 rounded-2xl bg-base-100 shadow-xl p-1.5 z-30"
-        >
-          {/* User Identity Header Card */}
-          <div className="px-3 py-2.5 mb-1 rounded-xl bg-base-200/80 border border-muted/30 flex items-center gap-3">
-            <Avatar
-              src={customer.avatar ?? ""}
-              alt={fullName}
-              className="size-10! rounded-xl!"
-            />
-            <div className="flex flex-col min-w-0">
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs font-semibold text-foreground truncate">
-                  {fullName}
-                </span>
-                <Badge variant="default" className="text-[10px] px-1.5 py-0">
-                  Diner
-                </Badge>
-              </div>
-              <span className="text-[11px] text-muted truncate">
-                {customer.email ?? (customer.username ? `@${customer.username}` : "")}
-              </span>
-            </div>
-          </div>
-
-          {/* Navigation Items */}
-          <div className="flex flex-col gap-0.5">
-            {MENU_ITEMS.map((item) => {
-              const Icon = item.icon;
-              const isActive = pathname === item.href;
-
-              return (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  role="menuitem"
-                  onClick={() => setIsOpen(false)}
-                  className={`flex items-start gap-2.5 px-3 py-2 rounded-xl text-xs transition-colors ${
-                    isActive
-                      ? "bg-accent-100/10 text-accent-100 font-semibold"
-                      : "text-foreground hover:bg-base-200 text-muted/90 hover:text-foreground"
-                  }`}
-                >
-                  <Icon
-                    weight={isActive ? "fill" : "bold"}
-                    className={`size-4 mt-0.5 shrink-0 ${
-                      isActive ? "text-accent-100" : "text-muted"
-                    }`}
-                  />
-                  <div className="flex flex-col min-w-0">
-                    <span className="font-medium text-foreground truncate">
-                      {item.label}
-                    </span>
-                    <span className="text-[10px] text-muted truncate">
-                      {item.description}
-                    </span>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-
-          {/* Divider & Sign Out */}
-          <div className="mt-1 pt-1 border-t border-muted/30">
-            <Link
-              href="/"
-              role="menuitem"
-              onClick={() => setIsOpen(false)}
-              className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-negative hover:bg-negative/10 font-medium transition-colors"
-            >
-              <SignOutIcon weight="bold" className="size-4 shrink-0" />
-              <span>Log out</span>
-            </Link>
-          </div>
-        </div>
-      )}
+      {isOpen ? (
+        <UserMenuPanel
+          items={MENU_ITEMS}
+          identity={{
+            name: fullName,
+            avatar: customer.avatar ?? "",
+            badge: "Diner",
+            subtitle:
+              customer.email ??
+              (customer.username ? `@${customer.username}` : ""),
+          }}
+          onClose={() => setIsOpen(false)}
+        />
+      ) : null}
     </div>
   );
 };

@@ -2,6 +2,8 @@
 
 import { createContext, use, useActionState, useMemo } from "react";
 
+import { CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
+
 import { Button } from "../ui/button";
 import { FileUpload } from "../ui/file-upload";
 import { InputField } from "../ui/input-field";
@@ -62,6 +64,8 @@ interface FormInputFieldProps extends React.InputHTMLAttributes<HTMLInputElement
   labelClassName?: string;
   labelRequired?: boolean;
   error?: string;
+  leftSlot?: React.ReactNode;
+  rightSlot?: React.ReactNode;
 }
 
 const FormInputField = ({
@@ -71,6 +75,8 @@ const FormInputField = ({
   labelClassName,
   labelRequired,
   error,
+  leftSlot,
+  rightSlot,
   ...props
 }: FormInputFieldProps) => {
   const { state } = useFormContext();
@@ -85,6 +91,8 @@ const FormInputField = ({
         labelClassName={labelClassName}
         label={label}
         labelRequired={labelRequired}
+        leftSlot={leftSlot}
+        rightSlot={rightSlot}
         aria-invalid={fieldError ? true : undefined}
       />
       {fieldError && (
@@ -144,7 +152,14 @@ const FormSubmitButton = ({
       as="button"
       disabled={loading}
     >
-      {loading ? "Loading..." : children}
+      {loading ? (
+        <span className="inline-flex items-center justify-center gap-2">
+          <CircleNotchIcon className="size-4 animate-spin" />
+          Loading…
+        </span>
+      ) : (
+        children
+      )}
     </Button>
   );
 };

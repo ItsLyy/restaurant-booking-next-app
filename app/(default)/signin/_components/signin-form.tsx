@@ -2,7 +2,10 @@
 
 import Link from "next/link";
 
+import { LockSimpleIcon, UserIcon } from "@phosphor-icons/react/dist/ssr";
+
 import { Form } from "@components";
+import PasswordField from "@components/auth/password-field";
 
 import { SigninAction } from "../_actions/signin";
 
@@ -13,21 +16,26 @@ const SigninForm = () => {
         <Form.InputField
           id="username"
           label="Username"
-          placeholder="Username"
+          placeholder="Enter your username"
+          autoComplete="username"
+          spellCheck={false}
+          autoFocus
+          leftSlot={<UserIcon className="size-4" />}
         />
-        <Form.InputField
+        <PasswordField
           id="password"
           label="Password"
-          placeholder="Password"
-          type="password"
+          placeholder="Enter your password"
+          autoComplete="current-password"
+          leftSlot={<LockSimpleIcon className="size-4" />}
         />
       </div>
       <div className="space-y-2">
-        <Form.SubmitButton className="w-full">Signin</Form.SubmitButton>
+        <Form.SubmitButton className="w-full">Sign in</Form.SubmitButton>
         <span className="text-c-button">
-          Don’t have an account?{" "}
-          <Link href="/signup" className="text-accent-100">
-            Signup here
+          Don&apos;t have an account?{" "}
+          <Link href="/signup" className="text-accent-100 hover:underline">
+            Sign up here
           </Link>
         </span>
       </div>

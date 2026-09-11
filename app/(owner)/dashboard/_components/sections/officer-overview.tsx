@@ -1,15 +1,20 @@
-import { notFound } from "next/navigation";
 import Link from "next/link";
 
-import { ArrowRightIcon, CalendarBlankIcon, UserCircleIcon, UsersIcon } from "@phosphor-icons/react/dist/ssr";
+import {
+  ArrowRightIcon,
+  CalendarBlankIcon,
+  UserCircleIcon,
+  UsersIcon,
+} from "@phosphor-icons/react/dist/ssr";
+
+import { notFound } from "next/navigation";
 
 import { Avatar, Badge, Button } from "@components";
 
-import { getOfficerData } from "../_data/officer";
+import { Card } from "../card";
+import { getOfficerData } from "../../_data/officer";
 
-import { OfficerCard } from "../_components/officer-card";
-
-export default async function OfficerOverviewPage() {
+export const OfficerOverview = () => {
   const data = getOfficerData();
   if (!data) notFound();
 
@@ -28,9 +33,13 @@ export default async function OfficerOverviewPage() {
 
   return (
     <section className="px-4 pt-3 pb-6 size-full flex flex-col gap-4">
-      <OfficerCard className="flex flex-col gap-4">
+      <Card className="flex flex-col gap-4">
         <div className="flex items-center gap-4">
-          <Avatar src={officer.avatar ?? ""} alt={fullName} className="size-16!" />
+          <Avatar
+            src={officer.avatar ?? ""}
+            alt={fullName}
+            className="size-16!"
+          />
           <div className="flex flex-col gap-1 min-w-0">
             <span className="text-d-header-md text-foreground truncate">
               Welcome back, {officer.firstName}
@@ -52,21 +61,21 @@ export default async function OfficerOverviewPage() {
             </div>
           </div>
         </div>
-      </OfficerCard>
+      </Card>
 
       <div className="grid gap-4 sm:grid-cols-3">
         {stats.map(({ label, value, icon: Icon }) => (
-          <OfficerCard key={label} className="flex items-center gap-3 py-5">
+          <Card key={label} className="flex items-center gap-3 py-5">
             <Icon weight="duotone" className="size-9 text-accent-200" />
             <div className="flex flex-col min-w-0">
               <span className="text-d-stat text-foreground">{value}</span>
               <span className="text-d-caption text-muted">{label}</span>
             </div>
-          </OfficerCard>
+          </Card>
         ))}
       </div>
 
-      <OfficerCard className="flex flex-wrap items-center justify-between gap-4">
+      <Card className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
           <span className="text-d-header-md text-foreground">
             Update your profile
@@ -75,11 +84,15 @@ export default async function OfficerOverviewPage() {
             Keep your name, email and dietary details up to date.
           </span>
         </div>
-        <Button as="link" href="/officer/profile" className="gap-2 rounded-md! h-10! px-4!">
+        <Button
+          as="link"
+          href="/dashboard/profile"
+          className="gap-2 rounded-md! h-10! px-4!"
+        >
           <span>View profile</span>
           <ArrowRightIcon className="size-4" />
         </Button>
-      </OfficerCard>
+      </Card>
 
       <span className="text-d-caption text-muted">
         <Link href="/" className="hover:text-foreground">
@@ -88,4 +101,4 @@ export default async function OfficerOverviewPage() {
       </span>
     </section>
   );
-}
+};

@@ -1,5 +1,7 @@
 import { notFound } from "next/navigation";
 
+import { StorefrontIcon } from "@phosphor-icons/react/dist/ssr";
+
 import { Badge } from "@components";
 import { formatDate } from "@utils";
 
@@ -8,10 +10,12 @@ import { InfoCard, InfoRow } from "../_components/info-card";
 
 import { getRestaurantProfile } from "./_data/restaurant";
 import { updateRestaurantAction } from "./_actions/update-restaurant-action";
+import { requireOwner } from "@libs/session";
 
 import { RestaurantEditForm } from "./_components/restaurant-edit-form";
 
 export default async function OwnerRestaurantPage() {
+  await requireOwner();
   const data = getRestaurantProfile();
   if (!data) notFound();
 
@@ -27,12 +31,25 @@ export default async function OwnerRestaurantPage() {
           </span>
         </header>
 
-        <div className="flex flex-wrap items-center gap-4">
+        <div className="flex items-center gap-4">
+          <div className="size-14 shrink-0 rounded-2xl border border-accent-200/25 bg-accent-100/10 flex items-center justify-center">
+            <StorefrontIcon
+              weight="fill"
+              className="size-7 text-accent-100"
+            />
+          </div>
           <div className="flex flex-col gap-1 min-w-0">
-            <span className="text-d-header-md text-foreground truncate">
-              {restaurant.name}
-            </span>
-            <span className="text-d-caption text-muted">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-d-header-md text-foreground truncate">
+                {restaurant.name}
+              </span>
+              {restaurant.discount ? (
+                <Badge variant="positive">
+                  Member · {restaurant.discount}% off
+                </Badge>
+              ) : null}
+            </div>
+            <span className="text-d-caption text-muted truncate">
               /{restaurant.slug} · {restaurant.country}, {restaurant.city}
             </span>
             <div className="flex flex-wrap gap-1">
@@ -66,12 +83,30 @@ export default async function OwnerRestaurantPage() {
           </InfoCard>
         </div>
 
-        <p className="text-d-body text-foreground">{restaurant.description}</p>
+        <div className="grid gap-4 lg:grid-cols-2">
+          {restaurant.shortDescription ? (
+            <InfoCard title="Short description">
+              <p className="text-d-body text-foreground whitespace-pre-line">
+                {restaurant.shortDescription}
+              </p>
+            </InfoCard>
+          ) : null}
+          <InfoCard title="About">
+            <p className="text-d-body text-foreground whitespace-pre-line">
+              {restaurant.description}
+            </p>
+          </InfoCard>
+        </div>
 
         <div className="border border-muted rounded-lg p-4">
-          <h3 className="text-d-header-md text-foreground mb-4">
-            Edit restaurant
-          </h3>
+          <div className="flex flex-col gap-1 mb-5">
+            <h3 className="text-d-header-md text-foreground">
+              Edit restaurant
+            </h3>
+            <span className="text-d-caption text-muted">
+              Changes are saved instantly and visible to diners on your page.
+            </span>
+          </div>
           <RestaurantEditForm
             action={updateRestaurantAction}
             initial={{

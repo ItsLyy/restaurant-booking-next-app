@@ -54,6 +54,6 @@ export async function updateOfficerProfileAction(
     return { success: false, message: "Profile not found." };
   }
 
-  revalidatePath("/officer/profile", "page");
+  revalidatePath("/dashboard/profile", "page");
   return { success: true, message: "Profile updated." };
 }

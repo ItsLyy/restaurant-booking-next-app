@@ -14,13 +14,15 @@ import {
 } from "./_data/bookings";
 import { parseBookingFilter } from "./_components/booking-filter";
 import { buildBookingsHref } from "./_components/url-params";
+import { getDashboardRole } from "@libs/session";
 
 export default async function DashboardBookingsPage({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const { date: dateParam, status, q, page: pageParam } = await searchParams;
+  const [role, { date: dateParam, status, q, page: pageParam }] =
+    await Promise.all([getDashboardRole(), searchParams]);
 
   const date = normalizeDate(dateParam);
   const filter = parseBookingFilter(status);
@@ -53,7 +55,7 @@ export default async function DashboardBookingsPage({
   return (
     <section className="px-4 pt-3 pb-6 size-full">
       <Card className="size-full flex flex-col gap-4">
-        <Header date={date} />
+        <Header date={date} canManage={role === "owner"} />
         <div className="flex flex-wrap items-center justify-between gap-3">
           <DateFilter
             date={date}

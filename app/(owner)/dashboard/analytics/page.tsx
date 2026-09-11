@@ -7,8 +7,10 @@ import { BarChart } from "./_components/charts/bar-chart";
 import { DonutChart } from "./_components/charts/donut-chart";
 import { getAnalyticsData } from "./_data/analytics";
 import { formatDate } from "@utils";
+import { requireOwner } from "@libs/session";
 
-export default function AnalyticsPage() {
+export default async function AnalyticsPage() {
+  await requireOwner();
   const data = getAnalyticsData();
 
   const revenueSeries = data.monthly.map((month) => ({

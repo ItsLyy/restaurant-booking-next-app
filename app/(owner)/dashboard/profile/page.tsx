@@ -2,14 +2,19 @@ import { notFound } from "next/navigation";
 
 import { Avatar, Badge, ProfileEditForm } from "@components";
 import { formatDate } from "@utils";
+import { getDashboardRole } from "@libs/session";
 
 import { Card } from "../_components/card";
 import { InfoCard, InfoRow } from "../_components/info-card";
 
+import { OfficerProfile } from "./_components/officer-profile";
 import { getOwnerProfile } from "./_data/profile";
 import { updateOwnerProfileAction } from "./_actions/update-owner-profile-action";
 
-export default async function OwnerProfilePage() {
+export default async function DashboardProfilePage() {
+  const role = await getDashboardRole();
+  if (role === "officer") return <OfficerProfile />;
+
   const data = getOwnerProfile();
   if (!data) notFound();
 

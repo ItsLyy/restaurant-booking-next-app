@@ -1,28 +1,41 @@
+import AuthCard from "@components/auth/auth-card";
 import OTPForm from "./_components/otp-form";
 
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "OTP Verification",
-  description: "Enter OTP Code sended to your email",
+  description: "Enter the one-time code sent to your email",
   robots: {
     index: false,
     follow: false,
   },
 };
 
-export default function OTPPage() {
+export default async function OTPPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const { next, email } = await searchParams;
+
+  const nextPath =
+    typeof next === "string" && next.startsWith("/") && !next.startsWith("//")
+      ? next
+      : "/signup/role";
+  const targetEmail = typeof email === "string" ? email : "";
+
   return (
-    <section className="flex min-h-svh w-full justify-center items-center px-4 py-8">
-      <div className="w-full max-w-125 h-fit p-5 sm:p-6 bg-base-200 border border-muted rounded-2xl space-y-6">
-        <header className="space-y-2">
-          <h1 className="text-c-header-lg text-foreground">OTP Verification</h1>
-          <span className="text-c-body">
-            Enter OTP Code sent to example@example.com
-          </span>
-        </header>
-        <OTPForm />
-      </div>
-    </section>
+    <AuthCard
+      step={2}
+      title="OTP Verification"
+      subtitle={
+        targetEmail
+          ? `Enter the one-time code sent to ${targetEmail}.`
+          : "Enter the one-time code sent to your email."
+      }
+    >
+      <OTPForm next={nextPath} email={targetEmail} />
+    </AuthCard>
   );
 }

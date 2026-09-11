@@ -5,7 +5,7 @@ import { InputField } from "@components";
 export const Searchbar = ({ defaultValue }: { defaultValue?: string }) => {
   return (
     <form
-      className="flex bg-accent-100 rounded-lg w-full max-w-175"
+      className="flex bg-accent-100 rounded-lg w-full"
       action="/restaurants"
       role="search"
     >
