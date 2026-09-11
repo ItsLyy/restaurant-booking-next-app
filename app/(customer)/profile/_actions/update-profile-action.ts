@@ -2,6 +2,7 @@
 
 import z from "zod";
 
+import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
 import type { FormState, IUser } from "@types";
@@ -12,14 +13,17 @@ import {
   PROFILES_FILES,
   readProfiles,
 } from "@data/profiles/update-profile";
-
-const CUSTOMER_ID = "user-001";
+import { getCustomerSession } from "@libs/session";
 
 export async function updateProfileAction(
   _: FormState,
   formData: FormData,
 ): Promise<FormState> {
-  const avatarResult = await saveAvatarFile(formData, CUSTOMER_ID);
+  const customer = await getCustomerSession();
+  if (!customer) redirect("/signin");
+
+  const customerId = customer.userId;
+  const avatarResult = await saveAvatarFile(formData, customerId);
   if (avatarResult.error) {
     return { success: false, message: avatarResult.error };
   }
@@ -38,12 +42,12 @@ export async function updateProfileAction(
   }
 
   const users = readProfiles<IUser>(PROFILES_FILES.customers);
-  const current = users.find((user) => user.id === CUSTOMER_ID);
+  const current = users.find((user) => user.id === customerId);
   if (!current) {
     return { success: false, message: "Profile not found." };
   }
 
-  const patched = patchProfile<IUser>(PROFILES_FILES.customers, CUSTOMER_ID, {
+  const patched = patchProfile<IUser>(PROFILES_FILES.customers, customerId, {
     firstName: validated.data.firstName,
     lastName: validated.data.lastName,
     email: validated.data.email,

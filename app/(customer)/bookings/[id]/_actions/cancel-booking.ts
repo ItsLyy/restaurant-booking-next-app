@@ -3,9 +3,11 @@
 import { readFileSync, writeFileSync } from "fs";
 import path from "path";
 
+import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
 import { getEffectiveBookingStatus } from "@data/bookings/booking-deadline";
+import { getCustomerSession } from "@libs/session";
 
 import type { IBooking, IPayment } from "@types";
 
@@ -31,6 +33,9 @@ export async function cancelBookingAction(
   bookingId: string,
   reason?: string,
 ): Promise<IBooking> {
+  const customer = await getCustomerSession();
+  if (!customer) redirect("/signin");
+
   const bookings = readBookings();
   const index = bookings.findIndex((item) => item.id === bookingId);
   if (index === -1) {
@@ -38,6 +43,9 @@ export async function cancelBookingAction(
   }
 
   const booking = bookings[index];
+  if (booking.customerId !== customer.userId) {
+    throw new Error("Booking not found.");
+  }
   const payment = readPayments().find((item) => item.bookingId === bookingId);
 
   if (booking.status !== "pending" && booking.status !== "confirmed") {

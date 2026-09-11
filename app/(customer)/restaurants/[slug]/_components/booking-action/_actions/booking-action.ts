@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 import restaurants from "@data/dummy/restaurants.json";
 
@@ -12,6 +13,7 @@ import {
   RestaurantNoTablesError,
   RestaurantNotFoundError,
 } from "@data/bookings/create-booking";
+import { getCustomerSession } from "@libs/session";
 
 import { z } from "zod";
 
@@ -26,6 +28,9 @@ const bookingSchema = z.object({
 export async function createBookingAction(
   input: z.infer<typeof bookingSchema>,
 ) {
+  const customer = await getCustomerSession();
+  if (!customer) redirect("/signin");
+
   const parsed = bookingSchema.safeParse(input);
   if (!parsed.success) {
     throw new Error(
@@ -34,7 +39,7 @@ export async function createBookingAction(
   }
 
   try {
-    const booking = await createBooking(parsed.data);
+    const booking = await createBooking(parsed.data, customer.userId);
 
     const restaurant = restaurants.find(
       (item) => item.id === parsed.data.restaurantId,

@@ -3,7 +3,10 @@
 import { readFileSync, writeFileSync } from "fs";
 import path from "path";
 
+import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+
+import { getCustomerSession } from "@libs/session";
 
 import type { IBooking } from "@types";
 
@@ -25,6 +28,9 @@ export async function confirmBookingAction(
   _prevState: ConfirmBookingState,
   formData: FormData,
 ): Promise<ConfirmBookingState> {
+  const customer = await getCustomerSession();
+  if (!customer) redirect("/signin");
+
   const bookingId = String(formData.get("bookingId") ?? "").trim();
   const specialRequest = String(formData.get("specialRequest") ?? "")
     .trim()
@@ -41,6 +47,9 @@ export async function confirmBookingAction(
   }
 
   const booking = bookings[index];
+  if (booking.customerId !== customer.userId) {
+    return { ok: false, error: "This booking no longer exists." };
+  }
   if (booking.status === "cancelled" || booking.status === "no_show") {
     return { ok: false, error: "This booking can no longer be confirmed." };
   }

@@ -103,6 +103,20 @@ export const getSessionOfficerId = async (): Promise<string | undefined> => {
   return undefined;
 };
 
+export const getCustomerSession = async (): Promise<SessionUser | null> => {
+  const user = await verifySession();
+  return user?.role === "customer" ? user : null;
+};
+
+export const requireCustomer = async (
+  nextPath: string,
+): Promise<SessionUser> => {
+  const user = await verifySession();
+  if (user?.role === "customer") return user;
+  if (user) redirect("/dashboard");
+  redirect(`/signin?next=${encodeURIComponent(nextPath)}`);
+};
+
 export const requireOwner = async (): Promise<void> => {
   if ((await getDashboardRole()) !== "owner") notFound();
 };

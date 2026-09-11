@@ -3,9 +3,17 @@
 import { readFileSync, writeFileSync } from "fs";
 import path from "path";
 
+import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
-import type { IPayment } from "@types";
+import { getCustomerSession } from "@libs/session";
+
+import type { IBooking, IPayment } from "@types";
+
+const BOOKINGS_FILE_PATH = path.join(
+  process.cwd(),
+  "app/_data/dummy/bookings.json",
+);
 
 const PAYMENTS_FILE_PATH = path.join(
   process.cwd(),
@@ -13,6 +21,17 @@ const PAYMENTS_FILE_PATH = path.join(
 );
 
 export async function payBookingAction(bookingId: string): Promise<IPayment> {
+  const customer = await getCustomerSession();
+  if (!customer) redirect("/signin");
+
+  const bookings = JSON.parse(
+    readFileSync(BOOKINGS_FILE_PATH, "utf8"),
+  ) as IBooking[];
+  const booking = bookings.find((item) => item.id === bookingId);
+  if (!booking || booking.customerId !== customer.userId) {
+    throw new Error("Booking not found.");
+  }
+
   const payments = JSON.parse(
     readFileSync(PAYMENTS_FILE_PATH, "utf8"),
   ) as IPayment[];

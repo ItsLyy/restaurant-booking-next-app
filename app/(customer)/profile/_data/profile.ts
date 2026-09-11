@@ -10,8 +10,6 @@ const BOOKINGS_FILE_PATH = path.join(DUMMY_DIR, "bookings.json");
 const TABLES_FILE_PATH = path.join(DUMMY_DIR, "tables.json");
 const RESTAURANTS_FILE_PATH = path.join(DUMMY_DIR, "restaurants.json");
 
-const CUSTOMER_ID = "user-001";
-
 export interface CustomerRecentBooking {
   id: string;
   bookingCode: string;
@@ -37,14 +35,17 @@ export interface CustomerProfileData {
   recentBookings: CustomerRecentBooking[];
 }
 
-export const getCustomerProfile = (): IUser | undefined => {
+export const getCustomerById = (customerId: string): IUser | undefined => {
   try {
     const users = JSON.parse(readFileSync(USERS_FILE_PATH, "utf8")) as IUser[];
-    return users.find((user) => user.id === CUSTOMER_ID) ?? undefined;
+    return users.find((user) => user.id === customerId) ?? undefined;
   } catch {
     return undefined;
   }
 };
+
+export const getCustomerProfile = (customerId: string): IUser | undefined =>
+  getCustomerById(customerId);
 
 interface TableItem {
   id: string;
@@ -58,8 +59,10 @@ interface RestaurantItem {
   city?: string;
 }
 
-export const getCustomerProfileData = (): CustomerProfileData | undefined => {
-  const user = getCustomerProfile();
+export const getCustomerProfileData = (
+  customerId: string,
+): CustomerProfileData | undefined => {
+  const user = getCustomerById(customerId);
   if (!user) return undefined;
 
   let bookings: IBooking[] = [];
@@ -86,7 +89,7 @@ export const getCustomerProfileData = (): CustomerProfileData | undefined => {
     restaurants = [];
   }
 
-  const userBookings = bookings.filter((b) => b.customerId === CUSTOMER_ID);
+  const userBookings = bookings.filter((b) => b.customerId === customerId);
 
   const today = new Date().toISOString().slice(0, 10);
   const upcoming = userBookings.filter(

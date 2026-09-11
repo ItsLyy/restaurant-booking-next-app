@@ -7,6 +7,7 @@ import { StatusDescription } from "./_components/status-description";
 import { StatusDetail } from "./_components/status-detail";
 
 import { getBooking } from "@data/bookings/get-booking";
+import { requireCustomer } from "@libs/session";
 
 import { resolvePaymentStatus } from "@utils";
 
@@ -27,8 +28,9 @@ export default async function BookingDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const customer = await requireCustomer(`/bookings/${id}`);
   const data = await getBooking(id);
-  if (!data) notFound();
+  if (!data || data.booking.customerId !== customer.userId) notFound();
 
   const {
     booking,

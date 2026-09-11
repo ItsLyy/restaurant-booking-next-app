@@ -10,6 +10,7 @@ import {
   type AuthAccount,
 } from "@data/auth/users";
 import { verifyPassword } from "@libs/password";
+import { safeNextPath } from "@libs/safe-next";
 import { createSession } from "@libs/session";
 import type { FormState } from "@types";
 
@@ -51,5 +52,8 @@ export async function SigninAction(
   }
 
   await createSession(account);
-  redirect(account.role === "customer" ? "/" : "/dashboard");
+  if (account.role === "customer") {
+    redirect(safeNextPath(String(formData.get("next") ?? "")));
+  }
+  redirect("/dashboard");
 }

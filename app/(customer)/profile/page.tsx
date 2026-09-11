@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
+import { requireCustomer } from "@libs/session";
+
 import { getCustomerProfileData } from "./_data/profile";
 import { updateProfileAction } from "./_actions/update-profile-action";
 import { ProfileViewContainer } from "./_components/profile-view-container";
@@ -15,7 +17,8 @@ export const metadata: Metadata = {
 };
 
 export default async function CustomerProfilePage() {
-  const data = getCustomerProfileData();
+  const customer = await requireCustomer("/profile");
+  const data = getCustomerProfileData(customer.userId);
   if (!data) notFound();
 
   return (

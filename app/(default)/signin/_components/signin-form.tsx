@@ -9,9 +9,10 @@ import PasswordField from "@components/auth/password-field";
 
 import { SigninAction } from "../_actions/signin";
 
-const SigninForm = () => {
+const SigninForm = ({ next = "/" }: { next?: string }) => {
   return (
     <Form action={SigninAction} className="space-y-12">
+      {next ? <input type="hidden" name="next" value={next} /> : null}
       <div className="space-y-3">
         <Form.InputField
           id="username"

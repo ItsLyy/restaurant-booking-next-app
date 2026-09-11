@@ -1,11 +1,23 @@
 import Link from "next/link";
 import { Logo } from "@components";
 
+import { getAuthUser } from "@libs/session";
+
 import { getCustomerProfile } from "../profile/_data/profile";
 import { HeaderNav } from "./header-nav";
 
 export const Header = async () => {
-  const customer = getCustomerProfile();
+  const session = await getAuthUser();
+  const customer =
+    session?.role === "customer"
+      ? getCustomerProfile(session.userId)
+      : undefined;
+
+  const hasDashboardAccess =
+    session !== null &&
+    (session.role === "owner" ||
+      session.role === "manager" ||
+      session.role === "staff");
 
   return (
     <header className="sticky top-0 left-0 z-30 w-full bg-base-100/90 backdrop-blur-md border-b border-muted/30 transition-colors">
@@ -21,6 +33,7 @@ export const Header = async () => {
         </Link>
 
         <HeaderNav
+          hasDashboardAccess={hasDashboardAccess}
           customer={
             customer
               ? {

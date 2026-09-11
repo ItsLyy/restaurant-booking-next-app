@@ -6,10 +6,12 @@ import { Menus } from "./_components/menus";
 import { RestaurantInformationHeader } from "./_components/header";
 import { Reviews } from "./_components/reviews";
 import { BookingAction } from "./_components/booking-action";
+import { getCustomerById } from "../../profile/_data/profile";
 
 import { getRestaurant } from "@data/restaurants/get-restaurant";
 import { getRestaurantAvailability } from "@data/restaurants/get-restaurant-availability";
 import { getAllRestaurants } from "@data/restaurants/get-all-restaurants";
+import { getAuthUser } from "@libs/session";
 import { SITE_URL } from "@libs";
 
 import type { Metadata } from "next";
@@ -59,7 +61,18 @@ export default async function RestaurantDetailPage({
   const restaurant = await getRestaurant(slug);
   if (!restaurant) notFound();
 
-  const { busyTablesByTime, slotsByDay, tables } = await getRestaurantAvailability(slug);
+  const session = await getAuthUser();
+  const customer =
+    session?.role === "customer"
+      ? getCustomerById(session.userId)
+      : undefined;
+
+  const availability = customer
+    ? await getRestaurantAvailability(slug)
+    : null;
+  const tables = availability?.tables ?? [];
+  const slotsByDay = availability?.slotsByDay ?? {};
+  const busyTablesByTime = availability?.busyTablesByTime ?? {};
 
   const averageRating = restaurant.reviews.length
     ? restaurant.reviews.reduce(
@@ -155,6 +168,15 @@ export default async function RestaurantDetailPage({
             slotsByDay={slotsByDay}
             tables={tables}
             busyTablesByTime={busyTablesByTime}
+            customer={
+              customer
+                ? {
+                    firstName: customer.firstName,
+                    lastName: customer.lastName,
+                    avatar: customer.avatar,
+                  }
+                : undefined
+            }
           />
         </div>
         <div className="w-full flex flex-col grow-0 p-2 gap-4 overflow-hidden">

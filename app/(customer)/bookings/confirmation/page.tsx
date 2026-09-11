@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ConfirmBookingForm } from "./_components/confirm-booking-form";
 
 import { getBooking } from "@data/bookings/get-booking";
+import { requireCustomer } from "@libs/session";
 
 import type { Metadata } from "next";
 
@@ -23,8 +24,9 @@ export default async function ConfirmBookingPage({
   const { id } = await searchParams;
   const bookingId = typeof id === "string" ? id : "";
 
+  const customer = await requireCustomer("/bookings");
   const data = bookingId ? await getBooking(bookingId) : null;
-  if (!data) notFound();
+  if (!data || data.booking.customerId !== customer.userId) notFound();
 
   const {
     booking,

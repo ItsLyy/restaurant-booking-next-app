@@ -77,6 +77,7 @@ function findRestaurantTables(restaurantId: string): ITable[] {
 
 export async function createBooking(
   input: CreateBookingInput,
+  customerId: string = CUSTOMER_ID,
 ): Promise<IBooking> {
   const { restaurantId, date, time, partySize, specialRequest } = input;
 
@@ -148,7 +149,7 @@ export async function createBooking(
     partySize,
     ...(specialRequest ? { specialRequest } : {}),
     status: INITIAL_STATUS,
-    customerId: CUSTOMER_ID,
+    customerId,
     tableId: bestTable.id,
     createdAt: now,
     updatedAt: now,

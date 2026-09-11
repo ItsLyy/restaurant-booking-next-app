@@ -18,6 +18,7 @@ import { Button } from "@components";
 import { CustomerUserProfile } from "./user-profile";
 
 interface HeaderNavProps {
+  hasDashboardAccess?: boolean;
   customer?: {
     firstName: string;
     lastName: string;
@@ -27,7 +28,10 @@ interface HeaderNavProps {
   };
 }
 
-export const HeaderNav = ({ customer }: HeaderNavProps) => {
+export const HeaderNav = ({
+  hasDashboardAccess,
+  customer,
+}: HeaderNavProps) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
@@ -106,6 +110,14 @@ export const HeaderNav = ({ customer }: HeaderNavProps) => {
         {/* User Account / Sign In */}
         {customer ? (
           <CustomerUserProfile customer={customer} />
+        ) : hasDashboardAccess ? (
+          <Button
+            as="link"
+            href="/dashboard"
+            className="rounded-full! h-9! px-4! text-xs!"
+          >
+            Dashboard
+          </Button>
         ) : (
           <Button
             as="link"
