@@ -2,14 +2,15 @@ import { notFound } from "next/navigation";
 
 import { Avatar, Badge, ProfileEditForm } from "@components";
 import { formatDate } from "@utils";
+import { getSessionOfficerId } from "@libs/session";
 
 import { Card } from "../../_components/card";
 import { InfoCard, InfoRow } from "../../_components/info-card";
 import { getOfficerData } from "../../_data/officer";
 import { updateOfficerProfileAction } from "../_actions/update-officer-profile-action";
 
-export const OfficerProfile = () => {
-  const data = getOfficerData();
+export const OfficerProfile = async () => {
+  const data = getOfficerData(await getSessionOfficerId());
   if (!data) notFound();
 
   const { officer, restaurant, invitedByOwner } = data;
@@ -41,10 +42,7 @@ export const OfficerProfile = () => {
               @{officer.username}
             </span>
             <div className="flex flex-wrap items-center gap-2">
-              <Badge>Officer</Badge>
-              <Badge variant="neutral" className="capitalize">
-                {officer.position}
-              </Badge>
+              <Badge className="capitalize">{officer.position}</Badge>
             </div>
           </div>
         </div>

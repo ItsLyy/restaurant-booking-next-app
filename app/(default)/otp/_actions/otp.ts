@@ -4,7 +4,13 @@ import { redirect } from "next/navigation";
 
 import z from "zod";
 
-import { registerUser } from "@libs/session";
+import { verifyEmailOtp } from "@data/auth/otp";
+import { createCustomerAccount } from "@data/auth/users";
+import {
+  clearPendingSignup,
+  getPendingSignup,
+} from "@libs/pending-signup";
+import { createSession } from "@libs/session";
 import type { FormState } from "@types";
 
 const DEFAULT_TARGET = "/signup/role";
@@ -15,7 +21,7 @@ export async function verifyOTPAction(
 ): Promise<FormState> {
   const otp = formData.get("otp");
   const next = formData.get("next");
-  const email = formData.get("email");
+  const emailParam = formData.get("email");
 
   const validated = z
     .string()
@@ -26,9 +32,37 @@ export async function verifyOTPAction(
     return { success: false, message: validated.error.issues[0].message };
   }
 
-  if (typeof email === "string" && email.trim()) {
-    await registerUser({ email: email.trim() });
+  const pending = await getPendingSignup();
+  const email =
+    typeof emailParam === "string" && emailParam.trim()
+      ? emailParam.trim()
+      : pending?.email;
+
+  if (!email) {
+    return { success: false, message: "Signup session expired. Try again." };
   }
+
+  if (!(await verifyEmailOtp(email, validated.data))) {
+    return {
+      success: false,
+      message: "Invalid or expired code. Please try again.",
+    };
+  }
+
+  if (!pending || pending.email.toLowerCase() !== email.toLowerCase()) {
+    return { success: false, message: "Signup session expired. Try again." };
+  }
+
+  const account = createCustomerAccount({
+    firstName: pending.firstName,
+    lastName: pending.lastName,
+    username: pending.username,
+    email: pending.email,
+    password: pending.passwordHash,
+  });
+
+  await clearPendingSignup();
+  await createSession(account);
 
   const target =
     typeof next === "string" &&

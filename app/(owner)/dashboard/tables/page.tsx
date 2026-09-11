@@ -53,7 +53,7 @@ export default async function DashboardTablesPage({
   return (
     <section className="px-4 pt-3 pb-6 size-full flex">
       <Card className="flex flex-col gap-4 size-full">
-        <Header canManage={role === "owner"} />
+        <Header canManage={role !== "staff"} />
         <DateFilter
           date={date}
           pathname="/dashboard/tables"

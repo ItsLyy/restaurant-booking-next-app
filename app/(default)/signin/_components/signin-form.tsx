@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 
-import { LockSimpleIcon, UserIcon } from "@phosphor-icons/react/dist/ssr";
+import { GoogleLogoIcon, LockSimpleIcon, UserIcon } from "@phosphor-icons/react/dist/ssr";
 
-import { Form } from "@components";
+import { Button, Form } from "@components";
 import PasswordField from "@components/auth/password-field";
 
 import { SigninAction } from "../_actions/signin";
@@ -38,6 +38,23 @@ const SigninForm = () => {
             Sign up here
           </Link>
         </span>
+      </div>
+      <div className="space-y-4">
+        <div className="flex items-center gap-3">
+          <span className="h-px flex-1 bg-border/50" />
+          <span className="text-c-body text-xs">or</span>
+          <span className="h-px flex-1 bg-border/50" />
+        </div>
+        <Button
+          as="link"
+          href="/api/auth/google"
+          variant="outline"
+          className="w-full"
+          rel="nofollow"
+        >
+          <GoogleLogoIcon className="mr-2 size-4" />
+          Continue with Google
+        </Button>
       </div>
     </Form>
   );

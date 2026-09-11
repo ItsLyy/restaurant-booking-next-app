@@ -49,9 +49,10 @@ export const getStaffData = (): {
     owners.map((o) => [o.id, `${o.firstName} ${o.lastName}`]),
   );
 
-  const staff: StaffMember[] = officers
-    .filter((o) => o.restaurantId === RESTAURANT_ID)
-    .map((o) => ({
+  const staff: StaffMember[] = [];
+  for (const o of officers) {
+    if (o.restaurantId !== RESTAURANT_ID) continue;
+    staff.push({
       id: o.id,
       firstName: o.firstName,
       lastName: o.lastName,
@@ -61,8 +62,11 @@ export const getStaffData = (): {
       position: o.position,
       createdAt: o.createdAt,
       invitedByName: ownerNames.get(o.invitedBy),
-    }))
-    .sort((a, b) => (b.createdAt ?? "").localeCompare(a.createdAt ?? ""));
+    });
+  }
+  staff.sort((a, b) =>
+    (b.createdAt ?? "").localeCompare(a.createdAt ?? ""),
+  );
 
   return { restaurant, staff };
 };

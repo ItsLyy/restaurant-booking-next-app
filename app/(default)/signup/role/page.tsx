@@ -8,7 +8,7 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 
 import AuthCard from "@components/auth/auth-card";
-import { getRegisteredUser } from "@libs/session";
+import { getAuthUser } from "@libs/session";
 
 import type { Metadata } from "next";
 
@@ -37,7 +37,7 @@ const ROLE_OPTIONS = [
 ] as const;
 
 export default async function RolePage() {
-  const user = await getRegisteredUser();
+  const user = await getAuthUser();
 
   return (
     <AuthCard

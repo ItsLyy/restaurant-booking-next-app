@@ -4,14 +4,12 @@ import { ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr";
 import { Card } from "../../_components/card";
 
 import AddBookingContent from "./_components/add-booking-content";
-import { requireOwner } from "@libs/session";
 
 export default async function AddBookingPage({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  await requireOwner();
   return (
     <section className="px-4 pt-3 pb-6 size-full">
       <Card className="size-full flex flex-col gap-6">

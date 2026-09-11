@@ -4,7 +4,8 @@ import { redirect } from "next/navigation";
 
 import z from "zod";
 
-import { setRegisteredRole } from "@libs/session";
+import { promoteToOwner } from "@data/auth/users";
+import { createSession, getAuthUser } from "@libs/session";
 import type { FormState } from "@types";
 
 const businessLicenseSchema = z
@@ -33,6 +34,9 @@ export async function createRestaurantAction(
   _: FormState,
   formData: FormData,
 ): Promise<FormState> {
+  const session = await getAuthUser();
+  if (!session) redirect("/signin");
+
   const validated = restaurantSchema.safeParse({
     "restaurant-name": formData.get("restaurant-name"),
     "business-license": formData.get("business-license"),
@@ -43,7 +47,14 @@ export async function createRestaurantAction(
     };
   }
 
-  await setRegisteredRole("owner");
+  const owner = promoteToOwner(session.userId);
+  if (!owner) {
+    return {
+      success: false,
+      message: "Could not activate the Owner role for this account.",
+    };
+  }
 
+  await createSession(owner);
   redirect("/dashboard");
 }

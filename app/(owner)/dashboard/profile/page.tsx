@@ -13,7 +13,7 @@ import { updateOwnerProfileAction } from "./_actions/update-owner-profile-action
 
 export default async function DashboardProfilePage() {
   const role = await getDashboardRole();
-  if (role === "officer") return <OfficerProfile />;
+  if (role !== "owner") return <OfficerProfile />;
 
   const data = getOwnerProfile();
   if (!data) notFound();

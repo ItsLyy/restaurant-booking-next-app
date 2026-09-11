@@ -4,6 +4,13 @@ import { redirect } from "next/navigation";
 
 import z from "zod";
 
+import { issueEmailVerificationOtp } from "@data/auth/otp";
+import {
+  findAccountByEmail,
+  findAccountByUsername,
+} from "@data/auth/users";
+import { hashPassword } from "@libs/password";
+import { setPendingSignup } from "@libs/pending-signup";
 import type { FormState } from "@types";
 
 const passwordSchema = z
@@ -61,7 +68,32 @@ export async function SignupAction(
     };
   }
 
-  const email = validated.data.email;
+  const { email, username } = validated.data;
+
+  if (findAccountByEmail(email)) {
+    return {
+      errors: { email: ["An account with this email already exists."] },
+    };
+  }
+
+  if (findAccountByUsername(username)) {
+    return {
+      errors: { username: ["This username is already taken."] },
+    };
+  }
+
+  const [passwordHash] = await Promise.all([
+    hashPassword(validated.data.password),
+    issueEmailVerificationOtp(email),
+  ]);
+  await setPendingSignup({
+    firstName: validated.data["first-name"],
+    lastName: validated.data["last-name"],
+    username,
+    email,
+    passwordHash,
+  });
+
   redirect(
     `/otp?email=${encodeURIComponent(email)}&next=${encodeURIComponent("/signup/role")}`,
   );

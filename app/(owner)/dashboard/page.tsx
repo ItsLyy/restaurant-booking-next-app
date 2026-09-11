@@ -1,7 +1,4 @@
 import { getDashboardData } from "./_data/dashboard";
-import { getDashboardRole } from "@libs/session";
-
-import { OfficerOverview } from "./_components/sections/officer-overview";
 import { QuickInformation } from "./_components/sections/quick-information";
 import { TableStatus } from "./_components/sections/table-status";
 import { TodayBooking } from "./_components/sections/today-booking";
@@ -15,9 +12,6 @@ export default async function OverviewPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const role = await getDashboardRole();
-  if (role === "officer") return <OfficerOverview />;
-
   const data = getDashboardData();
   const { status, table } = await searchParams;
   const filter = parseBookingFilter(status);

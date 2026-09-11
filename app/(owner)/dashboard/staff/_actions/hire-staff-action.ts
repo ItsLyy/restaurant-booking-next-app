@@ -10,6 +10,7 @@ import {
   writeProfiles,
   PROFILES_FILES,
 } from "@data/profiles/update-profile";
+import { getDashboardRole } from "@libs/session";
 
 const OWNER_ID = "owner-001";
 const RESTAURANT_ID = "rest-001";
@@ -23,7 +24,7 @@ const hireSchema = z.object({
     .string()
     .min(1, "Last name is required")
     .max(50, "Must be 50 characters or fewer"),
-  email: z.string().email("Please enter a valid email address"),
+  email: z.email("Please enter a valid email address"),
   username: z
     .string()
     .min(3, "Username must be at least 3 characters")
@@ -46,6 +47,16 @@ export async function hireStaffAction(
   if (!validated.success) {
     return {
       errors: z.flattenError(validated.error as z.ZodError).fieldErrors,
+    };
+  }
+
+  if (
+    (await getDashboardRole()) === "manager" &&
+    validated.data.position === "manager"
+  ) {
+    return {
+      success: false,
+      message: "Only the owner can hire managers.",
     };
   }
 

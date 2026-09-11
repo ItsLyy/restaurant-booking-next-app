@@ -15,8 +15,6 @@ const BOOKINGS_FILE_PATH = path.join(
   "app/_data/dummy/bookings.json",
 );
 
-const OFFICER_ID = "officer-001";
-
 export interface OfficerDashboardData {
   officer: IOfficer;
   restaurant: IRestaurant;
@@ -44,9 +42,11 @@ const readJson = <T>(file: JsonFile): T =>
     ),
   ) as T;
 
-export const getOfficerData = (): OfficerDashboardData | undefined => {
+export const getOfficerData = (
+  officerId = "officer-001",
+): OfficerDashboardData | undefined => {
   const officers = readJson<IOfficer[]>("officers");
-  const officer = officers.find((item) => item.id === OFFICER_ID);
+  const officer = officers.find((item) => item.id === officerId);
   if (!officer) return undefined;
 
   const restaurants = readJson<IRestaurant[]>("restaurants");

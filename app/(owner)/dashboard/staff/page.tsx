@@ -2,14 +2,14 @@ import { PlusIcon } from "@phosphor-icons/react/dist/ssr";
 
 import { Avatar, Badge, Button } from "@components";
 import { formatDate } from "@utils";
-import { requireOwner } from "@libs/session";
+import { requireManagerOrAbove } from "@libs/session";
 
 import { Card } from "../_components/card";
 
 import { getStaffData } from "./_data/staff";
 
 export default async function StaffPage() {
-  await requireOwner();
+  await requireManagerOrAbove();
   const { staff } = getStaffData();
 
   return (

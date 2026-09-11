@@ -7,7 +7,7 @@ import { useFormContext } from "@components/general/form";
 
 import { hireStaffAction } from "../_actions/hire-staff-action";
 
-const PositionField = () => {
+const PositionField = ({ canHireManager }: { canHireManager: boolean }) => {
   const { state } = useFormContext();
   const fieldError = state.errors?.position?.[0];
 
@@ -28,7 +28,7 @@ const PositionField = () => {
           fieldError ? "border-negative" : "border-muted"
         }`}
       >
-        <option value="manager">Manager</option>
+        {canHireManager ? <option value="manager">Manager</option> : null}
         <option value="staff">Staff</option>
       </select>
       {fieldError ? (
@@ -38,7 +38,11 @@ const PositionField = () => {
   );
 };
 
-export const HireStaffForm = () => {
+export const HireStaffForm = ({
+  canHireManager = true,
+}: {
+  canHireManager?: boolean;
+}) => {
   return (
     <Form action={hireStaffAction} className="space-y-6">
       <div className="space-y-3">
@@ -68,7 +72,7 @@ export const HireStaffForm = () => {
           labelRequired
           placeholder="kenji_watanabe"
         />
-        <PositionField />
+        <PositionField canHireManager={canHireManager} />
       </div>
       <Form.SubmitButton className="w-full">
         Add staff member

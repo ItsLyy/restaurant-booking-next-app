@@ -12,14 +12,16 @@ import {
   PROFILES_FILES,
   readProfiles,
 } from "@data/profiles/update-profile";
-
-const OFFICER_ID = "officer-001";
+import { getSessionOfficerId } from "@libs/session";
 
 export async function updateOfficerProfileAction(
   _: FormState,
   formData: FormData,
 ): Promise<FormState> {
-  const avatarResult = await saveAvatarFile(formData, OFFICER_ID);
+  const officerId = await getSessionOfficerId();
+  if (!officerId) return { success: false, message: "Profile not found." };
+
+  const avatarResult = await saveAvatarFile(formData, officerId);
   if (avatarResult.error) {
     return { success: false, message: avatarResult.error };
   }
@@ -38,12 +40,12 @@ export async function updateOfficerProfileAction(
   }
 
   const officers = readProfiles<IOfficer>(PROFILES_FILES.officers);
-  const current = officers.find((officer) => officer.id === OFFICER_ID);
+  const current = officers.find((officer) => officer.id === officerId);
   if (!current) {
     return { success: false, message: "Profile not found." };
   }
 
-  const patched = patchProfile<IOfficer>(PROFILES_FILES.officers, OFFICER_ID, {
+  const patched = patchProfile<IOfficer>(PROFILES_FILES.officers, officerId, {
     firstName: validated.data.firstName,
     lastName: validated.data.lastName,
     email: validated.data.email,

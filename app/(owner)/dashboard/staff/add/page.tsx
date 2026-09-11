@@ -1,14 +1,15 @@
 import { ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr";
 
 import { Button } from "@components";
-import { requireOwner } from "@libs/session";
+import { getDashboardRole, requireManagerOrAbove } from "@libs/session";
 
 import { Card } from "../../_components/card";
 
 import { HireStaffForm } from "../_components/hire-staff-form";
 
 export default async function AddStaffPage() {
-  await requireOwner();
+  await requireManagerOrAbove();
+  const role = await getDashboardRole();
 
   return (
     <section className="px-4 pt-3 pb-6 size-full">
@@ -32,7 +33,7 @@ export default async function AddStaffPage() {
             <span>Back</span>
           </Button>
         </header>
-        <HireStaffForm />
+        <HireStaffForm canHireManager={role === "owner"} />
       </Card>
     </section>
   );

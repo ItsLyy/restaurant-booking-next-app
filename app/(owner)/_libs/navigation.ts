@@ -14,7 +14,7 @@ export interface NavigationItem {
   label: string;
   href: string;
   icon: ComponentType<IconProps>;
-  access?: "owner"[];
+  access?: DashboardRole[];
 }
 
 export const ROOT_PATH = "/dashboard";
@@ -27,20 +27,18 @@ export const NAV_ITEMS: NavigationItem[] = [
     label: "Staff",
     href: "/dashboard/staff",
     icon: UsersThreeIcon,
-    access: ["owner"],
+    access: ["owner", "manager"],
   },
   {
     label: "Analytics",
     href: "/dashboard/analytics",
     icon: ChartBarIcon,
-    access: ["owner"],
+    access: ["owner", "manager"],
   },
 ];
 
 export const getVisibleNavItems = (role: DashboardRole): NavigationItem[] =>
-  NAV_ITEMS.filter(
-    (item) => !item.access || item.access.includes(role as "owner"),
-  );
+  NAV_ITEMS.filter((item) => !item.access || item.access.includes(role));
 
 export const ROUTE_TITLES: Record<string, string> = {
   ...Object.fromEntries(NAV_ITEMS.map(({ label, href }) => [href, label])),

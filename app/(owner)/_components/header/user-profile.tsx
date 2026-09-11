@@ -57,7 +57,28 @@ const OWNER_MENU_ITEMS: UserMenuLink[] = [
   },
 ];
 
-const OFFICER_MENU_ITEMS: UserMenuLink[] = [
+const MANAGER_MENU_ITEMS: UserMenuLink[] = [
+  {
+    label: "My Profile",
+    href: "/dashboard/profile",
+    icon: UserCircleIcon,
+    description: "Manage personal details",
+  },
+  {
+    label: "Staff",
+    href: "/dashboard/staff",
+    icon: UsersThreeIcon,
+    description: "Hire and manage staff",
+  },
+  {
+    label: "My Booking",
+    href: "/bookings",
+    icon: CalendarCheckIcon,
+    description: "View your reservations",
+  },
+];
+
+const STAFF_MENU_ITEMS: UserMenuLink[] = [
   {
     label: "My Profile",
     href: "/dashboard/profile",
@@ -72,20 +93,34 @@ const OFFICER_MENU_ITEMS: UserMenuLink[] = [
   },
 ];
 
+const ROLE_LABELS: Record<DashboardRole, string> = {
+  owner: "Owner",
+  manager: "Manager",
+  staff: "Staff",
+};
+
+const SWITCHABLE_ROLES: DashboardRole[] = ["owner", "manager", "staff"];
+
+const IS_DEMO = process.env.NODE_ENV !== "production";
+
 export const UserProfile = ({ user }: { user: DashboardUser }) => {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const isOwner = user.role === "owner";
-  const menuItems = isOwner ? OWNER_MENU_ITEMS : OFFICER_MENU_ITEMS;
-  const actions: UserMenuAction[] = [
-    {
-      label: isOwner ? "View as Officer" : "View as Owner",
-      icon: ArrowsLeftRightIcon,
-      onClick: () =>
-        switchDashboardRoleAction(isOwner ? "officer" : "owner"),
-    },
-  ];
+  const menuItems =
+    user.role === "owner"
+      ? OWNER_MENU_ITEMS
+      : user.role === "manager"
+        ? MANAGER_MENU_ITEMS
+        : STAFF_MENU_ITEMS;
+  const roleLabel = ROLE_LABELS[user.role];
+  const actions: UserMenuAction[] = IS_DEMO
+    ? SWITCHABLE_ROLES.filter((role) => role !== user.role).map((role) => ({
+        label: `View as ${ROLE_LABELS[role]}`,
+        icon: ArrowsLeftRightIcon,
+        onClick: () => switchDashboardRoleAction(role),
+      }))
+    : [];
 
   useEffect(() => {
     if (!isOpen) return;
@@ -127,9 +162,7 @@ export const UserProfile = ({ user }: { user: DashboardUser }) => {
       >
         <div className="hidden sm:flex flex-col items-end">
           <span className="text-foreground text-d-caption">{user.name}</span>
-          <span className="text-muted text-d-caption">
-            {isOwner ? "Owner" : `Officer · ${user.position ?? "staff"}`}
-          </span>
+          <span className="text-muted text-d-caption">{roleLabel}</span>
         </div>
         <div className="flex items-center gap-2">
           <Avatar
@@ -152,8 +185,8 @@ export const UserProfile = ({ user }: { user: DashboardUser }) => {
           identity={{
             name: user.name,
             avatar: user.avatar,
-            badge: isOwner ? "Owner" : "Officer",
-            subtitle: isOwner ? "Restaurant owner" : user.email,
+            badge: roleLabel,
+            subtitle: user.role === "owner" ? "Restaurant owner" : user.email,
           }}
           onClose={() => setIsOpen(false)}
         />
