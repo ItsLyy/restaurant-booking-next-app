@@ -44,7 +44,7 @@ export const RestaurantItem = ({
       <div className="flex flex-col md:flex-row gap-4 justify-between p-2 grow min-w-0">
         <div className="flex flex-col gap-4 min-w-0">
           <div className="text-c-body flex flex-col gap-2 text-muted w-full sm:w-76 min-w-0">
-            <span className="text-c-header-md text-foreground line-clamp-2 text-ellipsis">
+            <span className="text-c-header-md text-foreground line-clamp-2 text-ellipsis group-hover:text-accent-100 transition-colors">
               {name}
             </span>
             <div className="flex">
@@ -71,10 +71,12 @@ export const RestaurantItem = ({
             </div>
           )}
         </div>
-        <div className="flex md:flex-col justify-between items-end shrink-0">
+        <div className="flex md:flex-col justify-between items-end shrink-0 gap-2 md:gap-4">
           <div className="flex items-center gap-1 text-muted">
-            <StarIcon size={24} weight="duotone" />
-            <span className="text-c-body font-medium">{rating}</span>
+            <StarIcon size={24} weight="fill" className="text-amber-500" />
+            <span className="text-c-body font-medium">
+              {rating.toFixed(1)}
+            </span>
           </div>
           <span className="text-c-body text-foreground">
             {formatPrice(minPrice)}

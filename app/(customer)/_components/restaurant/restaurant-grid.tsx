@@ -18,6 +18,9 @@ const RestaurantGrid = ({ restaurants }: RestaurantGridProps) => {
           rating={restaurant.rating}
           minPrice={restaurant.minPrice}
           maxPrice={restaurant.maxPrice}
+          city={restaurant.city}
+          discount={restaurant.discount}
+          tags={restaurant.tags}
         />
       ))}
     </div>

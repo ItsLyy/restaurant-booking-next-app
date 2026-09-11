@@ -2,6 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import Link from "next/link";
+
+import { ForkKnifeIcon } from "@phosphor-icons/react/dist/ssr";
+
 import { RestaurantItem } from "./restaurant-item";
 import { PAGE_SIZE } from "@libs";
 
@@ -42,6 +46,16 @@ interface RestaurantListItemData {
   page: number;
   hasMore: boolean;
 }
+
+const hasActiveQuery = (query: RestaurantQuery) =>
+  Boolean(
+    query.search ||
+      query.category ||
+      query.pmin !== undefined ||
+      query.pmax !== undefined ||
+      query.minRating !== undefined ||
+      query.hasDiscount,
+  );
 
 export const RestaurantListInfinite = ({
   initial,
@@ -106,40 +120,70 @@ export const RestaurantListInfinite = ({
 
   if (items.length === 0) {
     return (
-      <p className="text-c-body text-muted">
-        No restaurants match your filters.
-      </p>
+      <div className="rise-in flex flex-col items-center gap-3 py-16 text-center">
+        <div className="size-14 rounded-full bg-base-200 flex items-center justify-center">
+          <ForkKnifeIcon size={28} weight="duotone" className="text-muted" />
+        </div>
+        <div className="flex flex-col gap-1">
+          <span className="text-c-header-md text-foreground">
+            No restaurants found
+          </span>
+          <span className="text-c-body">
+            No restaurants match your search or filters.
+          </span>
+        </div>
+        {hasActiveQuery(query) ? (
+          <Link
+            href="/restaurants"
+            className="mt-2 inline-flex h-10 items-center rounded-lg border border-accent-100 px-4 text-c-button text-accent-100 transition-colors hover:bg-accent-200/10"
+          >
+            Clear all filters
+          </Link>
+        ) : null}
+      </div>
     );
   }
 
   return (
-    <ul className="rise-in space-y-6 w-full">
-      {items.map((restaurant) => (
-        <li key={restaurant.id}>
-          <RestaurantItem
-            name={restaurant.name}
-            slug={restaurant.slug}
-            image={restaurant.image}
-            country={restaurant.country}
-            city={restaurant.city}
-            address={restaurant.address}
-            minPrice={restaurant.minPrice}
-            maxPrice={restaurant.maxPrice}
-            discount={restaurant.discount}
-            shortDescription={restaurant.shortDescription}
-            rating={restaurant.rating}
-          />
-        </li>
-      ))}
-      {loading && (
-        <li className="flex justify-center py-6" aria-hidden="true">
-          <span className="size-5 animate-spin rounded-full border-2 border-muted border-t-accent-200" />
-        </li>
-      )}
-      <li ref={sentinelRef} aria-hidden="true" className="h-px" />
-      <li className="flex justify-center text-c-caption text-muted">
-        Showing {items.length} of {total}
-      </li>
-    </ul>
+    <div className="rise-in flex flex-col gap-3">
+      <div className="flex items-baseline gap-2">
+        <span className="text-c-header-md text-foreground">
+          {total} {total === 1 ? "restaurant" : "restaurants"}
+        </span>
+        {items.length < total ? (
+          <span className="text-c-caption text-muted">
+            showing {items.length} so far
+          </span>
+        ) : null}
+      </div>
+      <ul className="w-full">
+        {items.map((restaurant) => (
+          <li
+            key={restaurant.id}
+            className="py-6 first:pt-0 last:pb-0 border-b border-muted/20 last:border-none"
+          >
+            <RestaurantItem
+              name={restaurant.name}
+              slug={restaurant.slug}
+              image={restaurant.image}
+              country={restaurant.country}
+              city={restaurant.city}
+              address={restaurant.address}
+              minPrice={restaurant.minPrice}
+              maxPrice={restaurant.maxPrice}
+              discount={restaurant.discount}
+              shortDescription={restaurant.shortDescription}
+              rating={restaurant.rating}
+            />
+          </li>
+        ))}
+        {loading && (
+          <li className="flex justify-center py-6" aria-hidden="true">
+            <span className="size-5 animate-spin rounded-full border-2 border-muted border-t-accent-200" />
+          </li>
+        )}
+        <li ref={sentinelRef} aria-hidden="true" className="h-px" />
+      </ul>
+    </div>
   );
 };

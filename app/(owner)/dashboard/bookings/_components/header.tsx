@@ -1,13 +1,19 @@
 import { Button } from "@components";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr";
 
+import { formatDayDate } from "@utils";
+import { todayString } from "../../_data/dates";
+
 export const Header = ({ date }: { date: string }) => {
+  const isToday = date === todayString();
+
   return (
     <header className="w-full flex justify-between">
       <div className="flex flex-col">
         <h2 className="text-d-header-md text-foreground">Detailed Bookings</h2>
         <span className="text-d-caption">
-          Manage all your restaurant reservations
+          {formatDayDate(date)}
+          {isToday ? " · today" : ""}
         </span>
       </div>
       <Button

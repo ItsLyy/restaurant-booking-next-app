@@ -11,17 +11,17 @@ const CategoryCard = ({ name, slug, image }: CategoryCardProps) => {
   return (
     <Link
       href={`/restaurants?category=${slug}`}
-      className="relative w-40.75 h-30 rounded-xl overflow-hidden cursor-pointer group block"
+      className="relative w-44 h-32 rounded-2xl overflow-hidden cursor-pointer group block shrink-0 shadow-2xs"
     >
       <Image
         src={image}
         alt={name}
-        className="object-cover object-center bg-base-200 text-transparent group-hover:scale-105 transition-transform ease-in-out duration-300 scroll-smooth"
+        className="object-cover object-center bg-base-200 text-transparent group-hover:scale-108 transition-transform duration-300 ease-out"
         fill
-        sizes="163px"
+        sizes="176px"
       />
-      <div className="size-full p-3 bg-black/60 flex items-end absolute top-0 left-0 right-0 bottom-0">
-        <span className="w-[50%] inline-block text-c-normal text-base-100">
+      <div className="size-full p-3.5 bg-gradient-to-t from-black/85 via-black/35 to-transparent flex items-end absolute inset-0">
+        <span className="text-sm font-semibold text-base-100 tracking-wide drop-shadow-xs group-hover:translate-x-0.5 transition-transform duration-200">
           {name}
         </span>
       </div>

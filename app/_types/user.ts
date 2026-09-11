@@ -17,3 +17,9 @@ export interface IOwner extends IUser {
   businessLicense?: string;
   verifyAt?: string;
 }
+
+export interface IOfficer extends IUser {
+  position: "manager" | "staff";
+  invitedBy: string;
+  restaurantId: string;
+}

@@ -38,12 +38,16 @@ interface RowBooking {
 
 interface BookingRowActionsProps {
   booking: RowBooking;
+  base?: string;
 }
 
 const menuItemBase =
   "flex w-full items-center gap-2 px-3 py-2 rounded-md text-d-caption disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed";
 
-export const BookingRowActions = ({ booking }: BookingRowActionsProps) => {
+export const BookingRowActions = ({
+  booking,
+  base = "/dashboard/bookings",
+}: BookingRowActionsProps) => {
   const router = useRouter();
   const { isOpen, anchor, toggleMenu, closeMenu } = useRowMenu();
   const [pendingAction, setPendingAction] = useState<RowAction>(null);
@@ -128,7 +132,7 @@ export const BookingRowActions = ({ booking }: BookingRowActionsProps) => {
               className="w-44 border border-muted rounded-lg bg-base-100 shadow-lg p-1"
             >
               <a
-                href={`/dashboard/bookings/${booking.id}`}
+                href={`${base}/${booking.id}`}
                 className={`${menuItemBase} text-foreground hover:bg-accent-200/10`}
               >
                 <EyeIcon className="size-4 text-accent-100" />

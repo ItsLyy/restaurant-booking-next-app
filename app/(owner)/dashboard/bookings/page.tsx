@@ -13,6 +13,7 @@ import {
   normalizeDate,
 } from "./_data/bookings";
 import { parseBookingFilter } from "./_components/booking-filter";
+import { buildBookingsHref } from "./_components/url-params";
 
 export default async function DashboardBookingsPage({
   searchParams,
@@ -66,7 +67,11 @@ export default async function DashboardBookingsPage({
         </div>
         <BookingsSummary bookings={bookings} counts={counts} />
         <BookingTableFilter current={filter} counts={counts} date={date} query={query} />
-        <BookingDetailTable bookings={pagedBookings} viewDate={date} />
+        <BookingDetailTable
+          bookings={pagedBookings}
+          viewDate={date}
+          emptyHref={buildBookingsHref({ date })}
+        />
         <Footer
           page={currentPage}
           pages={pageCount}

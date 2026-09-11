@@ -11,11 +11,15 @@ import restaurantPhotos from "@data/dummy/restaurant_photos.json";
 import restaurants from "@data/dummy/restaurants.json";
 
 export const generateStaticParams = async () => {
-  return restaurants.flatMap((restaurant) =>
-    restaurantPhotos
-      .filter((photo) => photo.restaurantId === restaurant.id)
-      .map((photo) => ({ slug: restaurant.slug, imageId: photo.id })),
-  );
+  const params: { slug: string; imageId: string }[] = [];
+  for (const restaurant of restaurants) {
+    for (const photo of restaurantPhotos) {
+      if (photo.restaurantId === restaurant.id) {
+        params.push({ slug: restaurant.slug, imageId: photo.id });
+      }
+    }
+  }
+  return params;
 };
 
 export async function generateMetadata({

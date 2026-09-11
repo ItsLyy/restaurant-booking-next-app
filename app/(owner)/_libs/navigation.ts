@@ -5,6 +5,8 @@ import {
   ChartBarIcon,
   LecternIcon,
   SquaresFourIcon,
+  StorefrontIcon,
+  UserCircleIcon,
 } from "@phosphor-icons/react/dist/ssr";
 
 export interface NavigationItem {
@@ -20,6 +22,8 @@ export const NAV_ITEMS: NavigationItem[] = [
   { label: "Bookings", href: "/dashboard/bookings", icon: BookIcon },
   { label: "Tables", href: "/dashboard/tables", icon: LecternIcon },
   { label: "Analytics", href: "/dashboard/analytics", icon: ChartBarIcon },
+  { label: "Restaurant", href: "/dashboard/restaurant", icon: StorefrontIcon },
+  { label: "Profile", href: "/dashboard/profile", icon: UserCircleIcon },
 ];
 
 export const ROUTE_TITLES: Record<string, string> = Object.fromEntries(

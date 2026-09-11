@@ -44,6 +44,7 @@ export const ConfirmBookingForm = ({
   useEffect(() => {
     if (!state.ok) return;
     toast.success("Booking confirmed — see you soon!");
+    // react-doctor-disable-next-line nextjs-no-client-side-redirect
     router.push(`/bookings/${bookingId}`);
   }, [state.ok, bookingId, router]);
 

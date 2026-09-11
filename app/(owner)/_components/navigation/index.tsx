@@ -1,6 +1,6 @@
 "use client";
 
-import { SignOutIcon } from "@phosphor-icons/react/dist/ssr";
+import { DashboardNavFooter } from "@components";
 
 import { NavItem } from "./nav-item";
 
@@ -20,12 +20,7 @@ export const Navigation = ({
           </li>
         ))}
       </ul>
-      <footer className="space-y-2">
-        <NavItem icon={SignOutIcon} label="Go back browsing" href="/" />
-        <div className="border border-muted px-4 py-3 rounded-lg w-full bg-base-200">
-          <span className="text-muted text-c-header-md">{restaurantName}</span>
-        </div>
-      </footer>
+      <DashboardNavFooter restaurantName={restaurantName} />
     </nav>
   );
 };

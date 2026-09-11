@@ -1127,5 +1127,17 @@
     "tableId": "table-107",
     "createdAt": "2026-09-06T10:00:00.000Z",
     "updatedAt": "2026-09-06T10:00:00.000Z"
+  },
+  {
+    "id": "booking-110",
+    "date": "2026-09-30",
+    "time": "21:30",
+    "partySize": 10,
+    "status": "pending",
+    "customerId": "user-001",
+    "tableId": "table-018",
+    "createdAt": "2026-09-10T09:13:00.492Z",
+    "updatedAt": "2026-09-10T09:13:12.358Z",
+    "specialRequest": "AKWdwad"
   }
 ]

@@ -11,8 +11,11 @@ import { Avatar } from "@components/index";
 import type { DashboardOwner } from "../../dashboard/_data/dashboard";
 
 const MENU_ITEMS = [
-  { label: "My Profile", href: "/dashboard" },
-  { label: "Settings", href: "/dashboard" },
+  { label: "My Profile", href: "/dashboard/profile" },
+  { label: "Dashboard", href: "/dashboard" },
+  { label: "Restaurant setting", href: "/dashboard/restaurant" },
+  { label: "My Booking", href: "/bookings" },
+  { label: "Logout", href: "/" },
 ];
 
 export const UserProfile = ({ owner }: { owner: DashboardOwner }) => {
@@ -46,7 +49,7 @@ export const UserProfile = ({ owner }: { owner: DashboardOwner }) => {
       {isOpen && (
         <div
           role="menu"
-          className="absolute right-0 mt-2 w-44 border border-muted rounded-lg bg-base-100 shadow-lg p-1"
+          className="absolute right-0 mt-2 w-56 border border-muted rounded-lg bg-base-100 shadow-lg p-1"
         >
           {MENU_ITEMS.map((item) => (
             <Link

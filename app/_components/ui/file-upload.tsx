@@ -14,6 +14,7 @@ interface FileUploadProps {
   id: string;
   accept?: string;
   error?: boolean;
+  hint?: string;
 }
 
 const formatFileSize = (bytes: number) => {
@@ -32,7 +33,12 @@ const FileTypeIcon = ({ type }: { type: string }) => {
   return <FileTextIcon weight="fill" className="size-6" aria-hidden="true" />;
 };
 
-export const FileUpload = ({ id, accept, error }: FileUploadProps) => {
+export const FileUpload = ({
+  id,
+  accept,
+  error,
+  hint = "JPG, PNG, or PDF · max 5MB",
+}: FileUploadProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [dragging, setDragging] = useState(false);
@@ -123,9 +129,7 @@ export const FileUpload = ({ id, accept, error }: FileUploadProps) => {
             <span className="text-c-button">
               Click to upload or drag and drop
             </span>
-            <span className="text-c-caption text-muted">
-              JPG, PNG, or PDF · max 5MB
-            </span>
+            <span className="text-c-caption text-muted">{hint}</span>
           </div>
         </>
       )}
