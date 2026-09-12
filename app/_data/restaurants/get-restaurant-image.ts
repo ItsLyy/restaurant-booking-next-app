@@ -1,7 +1,8 @@
 import { cache } from "react";
+import { eq } from "drizzle-orm";
 
-import restaurants from "../dummy/restaurants.json";
-import restaurantPhotos from "../dummy/restaurant_photos.json";
+import { db } from "@db/client";
+import { restaurants, restaurantPhotos } from "@db/schema";
 
 import type { IRestaurant, IRestaurantPhoto } from "@types";
 
@@ -17,25 +18,37 @@ export const getRestaurantImage = cache(async function getRestaurantImage(
   slug: string,
   imageId: string,
 ): Promise<RestaurantImageGallery | null> {
-  const restaurant = restaurants.find((item) => item.slug === slug);
+  const restaurant =
+    (
+      await db
+        .select()
+        .from(restaurants)
+        .where(eq(restaurants.slug, slug))
+        .limit(1)
+    )[0] ?? null;
   if (!restaurant) return null;
 
-  const photo = restaurantPhotos.find(
-    (item) => item.id === imageId && item.restaurantId === restaurant.id,
-  ) as IRestaurantPhoto | undefined;
+  const allPhotos = await db
+    .select()
+    .from(restaurantPhotos)
+    .where(eq(restaurantPhotos.restaurantId, restaurant.id));
+
+  const photo = allPhotos.find((item) => item.id === imageId);
   if (!photo) return null;
 
-  const allPhotos = restaurantPhotos.filter(
-    (item) => item.restaurantId === restaurant.id,
-  ) as IRestaurantPhoto[];
-
+  type Photo = IRestaurantPhoto;
   const images =
     photo.type === "menu"
-      ? allPhotos.filter((item) => item.type === "menu")
+      ? allPhotos
+          .filter((item) => item.type === "menu")
+          .map((item) => toPhoto(item))
       : [
-          allPhotos.find((item) => item.type === "cover"),
-          ...allPhotos.filter((item) => item.type === "post").slice(0, POST_COUNT),
-        ].filter((item): item is IRestaurantPhoto => Boolean(item));
+          allPhotos.find((item) => item.type === "cover") ?? null,
+          ...allPhotos
+            .filter((item) => item.type === "post")
+            .slice(0, POST_COUNT)
+            .map((item) => toPhoto(item)),
+        ].filter((item): item is Photo => Boolean(item));
 
   if (!images.some((item) => item.id === imageId)) return null;
 
@@ -44,7 +57,18 @@ export const getRestaurantImage = cache(async function getRestaurantImage(
       name: restaurant.name,
       slug: restaurant.slug,
     },
-    image: photo,
+    image: toPhoto(photo),
     images,
   };
 });
+
+function toPhoto(row: (typeof restaurantPhotos.$inferSelect)): IRestaurantPhoto {
+  return {
+    id: row.id,
+    url: row.url,
+    type: row.type,
+    restaurantId: row.restaurantId,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+  };
+}

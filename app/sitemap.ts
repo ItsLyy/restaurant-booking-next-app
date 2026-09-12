@@ -1,11 +1,16 @@
-import restaurants from "@data/dummy/restaurants.json";
-import restaurantPhotos from "@data/dummy/restaurant_photos.json";
+import { db } from "@db/client";
+import { restaurants, restaurantPhotos } from "@db/schema";
 import { SITE_URL } from "@libs";
 
 import type { MetadataRoute } from "next";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const restaurantEntries: MetadataRoute.Sitemap = restaurants.map(
+  const [restaurantRows, photoRows] = await Promise.all([
+    db.select().from(restaurants),
+    db.select().from(restaurantPhotos),
+  ]);
+
+  const restaurantEntries: MetadataRoute.Sitemap = restaurantRows.map(
     (restaurant) => ({
       url: `${SITE_URL}/restaurants/${restaurant.slug}`,
       lastModified: restaurant.updatedAt,
@@ -14,20 +19,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }),
   );
 
-  const photoEntries: MetadataRoute.Sitemap = restaurantPhotos.flatMap(
-    (photo) => {
-      const restaurant = restaurants.find(
-        (item) => item.id === photo.restaurantId,
-      );
-      if (!restaurant) return [];
-      return {
-        url: `${SITE_URL}/restaurants/${restaurant.slug}/images/${photo.id}`,
-        lastModified: photo.updatedAt,
-        changeFrequency: "monthly",
-        priority: 0.5,
-      };
-    },
-  );
+  const photoEntries: MetadataRoute.Sitemap = photoRows.flatMap((photo) => {
+    const restaurant = restaurantRows.find(
+      (item) => item.id === photo.restaurantId,
+    );
+    if (!restaurant) return [];
+    return {
+      url: `${SITE_URL}/restaurants/${restaurant.slug}/images/${photo.id}`,
+      lastModified: photo.updatedAt,
+      changeFrequency: "monthly",
+      priority: 0.5,
+    };
+  });
 
   return [
     {
