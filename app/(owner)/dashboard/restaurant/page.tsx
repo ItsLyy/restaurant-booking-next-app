@@ -13,6 +13,7 @@ import { updateRestaurantAction } from "./_actions/update-restaurant-action";
 import { requireOwner } from "@libs/session";
 
 import { RestaurantEditForm } from "./_components/restaurant-edit-form";
+import { DeleteRestaurantButton } from "./_components/delete-restaurant-button";
 
 export default async function OwnerRestaurantPage() {
   await requireOwner();
@@ -120,6 +121,19 @@ export default async function OwnerRestaurantPage() {
               tags: restaurant.tags,
             }}
           />
+        </div>
+
+        <div className="border border-negative/20 bg-negative/5 rounded-lg p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex flex-col gap-1">
+            <h3 className="text-d-header-md text-foreground">
+              Delete restaurant
+            </h3>
+            <span className="text-d-caption text-muted">
+              Permanently delete this restaurant. All staff members and your own
+              account will revert to regular customer accounts.
+            </span>
+          </div>
+          <DeleteRestaurantButton restaurantName={restaurant.name} />
         </div>
       </Card>
     </section>

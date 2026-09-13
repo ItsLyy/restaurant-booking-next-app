@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 
 import {
-  ArrowsLeftRightIcon,
   CalendarCheckIcon,
   CaretDownIcon,
   StorefrontIcon,
@@ -14,12 +13,7 @@ import {
 import { Avatar } from "@components/general/avatar";
 import { UserMenuPanel } from "@components/general/user-menu";
 
-import { switchDashboardRoleAction } from "../../_actions/switch-role";
-
-import type {
-  UserMenuAction,
-  UserMenuLink,
-} from "@components/general/user-menu";
+import type { UserMenuLink } from "@components/general/user-menu";
 import type { DashboardRole } from "@libs/session";
 
 export interface DashboardUser {
@@ -99,10 +93,6 @@ const ROLE_LABELS: Record<DashboardRole, string> = {
   staff: "Staff",
 };
 
-const SWITCHABLE_ROLES: DashboardRole[] = ["owner", "manager", "staff"];
-
-const IS_DEMO = process.env.NODE_ENV !== "production";
-
 export const UserProfile = ({ user }: { user: DashboardUser }) => {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -114,13 +104,6 @@ export const UserProfile = ({ user }: { user: DashboardUser }) => {
         ? MANAGER_MENU_ITEMS
         : STAFF_MENU_ITEMS;
   const roleLabel = ROLE_LABELS[user.role];
-  const actions: UserMenuAction[] = IS_DEMO
-    ? SWITCHABLE_ROLES.filter((role) => role !== user.role).map((role) => ({
-        label: `View as ${ROLE_LABELS[role]}`,
-        icon: ArrowsLeftRightIcon,
-        onClick: () => switchDashboardRoleAction(role),
-      }))
-    : [];
 
   useEffect(() => {
     if (!isOpen) return;
@@ -181,7 +164,6 @@ export const UserProfile = ({ user }: { user: DashboardUser }) => {
       {isOpen ? (
         <UserMenuPanel
           items={menuItems}
-          actions={actions}
           identity={{
             name: user.name,
             avatar: user.avatar,

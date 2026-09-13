@@ -5,7 +5,11 @@ import restaurants from "@data/dummy/restaurants.json";
 import tables from "@data/dummy/tables.json";
 import payments from "@data/dummy/payments.json";
 
-import { getEffectiveBookingStatus, isBookingTooSoon } from "./booking-deadline";
+import {
+  derivePaymentDeadline,
+  getEffectiveBookingStatus,
+  isBookingTooSoon,
+} from "./booking-deadline";
 
 import type { IBooking, IPayment, ITable } from "@types";
 
@@ -20,6 +24,11 @@ export interface CreateBookingInput {
 const BOOKINGS_FILE_PATH = path.join(
   process.cwd(),
   "app/_data/dummy/bookings.json",
+);
+
+const PAYMENTS_FILE_PATH = path.join(
+  process.cwd(),
+  "app/_data/dummy/payments.json",
 );
 
 const CUSTOMER_ID = "user-001";
@@ -54,6 +63,26 @@ function readBookings(): IBooking[] {
   }
 }
 
+function readPayments(): IPayment[] {
+  try {
+    const raw = readFileSync(PAYMENTS_FILE_PATH, "utf8");
+    return (JSON.parse(raw) as IPayment[]);
+  } catch {
+    throw new BookingWriteError("Could not read the payment data.");
+  }
+}
+
+function buildNextPaymentId(payments: IPayment[]): string {
+  let max = 0;
+  for (const payment of payments) {
+    const sequence = Number(payment.id.replace("payment-", ""));
+    if (Number.isFinite(sequence) && sequence > max) {
+      max = sequence;
+    }
+  }
+  return `payment-${String(max + 1).padStart(3, "0")}`;
+}
+
 function buildNextBookingId(bookings: IBooking[]): string {
   let max = 0;
   for (const booking of bookings) {
@@ -75,11 +104,20 @@ function findRestaurantTables(restaurantId: string): ITable[] {
   return found;
 }
 
-export async function createBooking(
-  input: CreateBookingInput,
-  customerId: string = CUSTOMER_ID,
-): Promise<IBooking> {
-  const { restaurantId, date, time, partySize, specialRequest } = input;
+export interface BookingPreview {
+  restaurantName: string;
+  restaurantSlug: string;
+  tableName: string;
+  price: number;
+}
+
+function selectBooking(input: CreateBookingInput): {
+  restaurant: (typeof restaurants)[number];
+  restaurantTables: ITable[];
+  busyTableIds: Set<string>;
+  bestTable: ITable;
+} {
+  const { restaurantId, date, time, partySize } = input;
 
   const restaurant = restaurants.find((item) => item.id === restaurantId);
   if (!restaurant) {
@@ -141,6 +179,28 @@ export async function createBooking(
     );
   }
 
+  return { restaurant, restaurantTables, busyTableIds, bestTable };
+}
+
+export function getBookingPreview(input: CreateBookingInput): BookingPreview {
+  const { restaurant, bestTable } = selectBooking(input);
+  return {
+    restaurantName: restaurant.name,
+    restaurantSlug: restaurant.slug,
+    tableName: bestTable.name,
+    price: bestTable.price,
+  };
+}
+
+export async function createBooking(
+  input: CreateBookingInput,
+  customerId: string = CUSTOMER_ID,
+): Promise<IBooking> {
+  const { date, time, partySize, specialRequest } = input;
+  const { bestTable } = selectBooking(input);
+
+  const bookings = readBookings();
+  const payments = readPayments();
   const now = new Date().toISOString();
   const booking: IBooking = {
     id: buildNextBookingId(bookings),
@@ -157,14 +217,64 @@ export async function createBooking(
 
   bookings.push(booking);
 
+  const payment: IPayment = {
+    id: buildNextPaymentId(payments),
+    price: bestTable.price,
+    status: "unpaid",
+    deadline: derivePaymentDeadline(),
+    gatewayToken: `tok_sandbox_${booking.id}`,
+    bookingId: booking.id,
+    createdAt: now,
+    updatedAt: now,
+  };
+  payments.push(payment);
+
   try {
     writeFileSync(
       BOOKINGS_FILE_PATH,
       `${JSON.stringify(bookings, null, 2)}\n`,
       "utf8",
     );
+    writeFileSync(
+      PAYMENTS_FILE_PATH,
+      `${JSON.stringify(payments, null, 2)}\n`,
+      "utf8",
+    );
   } catch {
     throw new BookingWriteError("Could not save the booking.");
+  }
+
+  // Sync to database if available
+  try {
+    const { db } = await import("@db/client");
+    const { bookings: bookingsTable, payments: paymentsTable } = await import("@db/schema");
+
+    await db.insert(bookingsTable).values({
+      id: booking.id,
+      date: booking.date,
+      time: booking.time,
+      partySize: booking.partySize,
+      specialRequest: booking.specialRequest ?? null,
+      status: "pending",
+      customerId: booking.customerId,
+      tableId: booking.tableId,
+      createdAt: booking.createdAt ?? now,
+      updatedAt: booking.updatedAt ?? now,
+    });
+
+    await db.insert(paymentsTable).values({
+      id: payment.id,
+      price: payment.price,
+      status: "unpaid",
+      deadline: payment.deadline,
+      gatewayToken: payment.gatewayToken,
+      paidAt: null,
+      bookingId: payment.bookingId,
+      createdAt: payment.createdAt ?? now,
+      updatedAt: payment.updatedAt ?? now,
+    });
+  } catch {
+    // DB sync error handled gracefully
   }
 
   return booking;

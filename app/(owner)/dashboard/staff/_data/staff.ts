@@ -30,7 +30,9 @@ export interface StaffMember {
   invitedByName?: string;
 }
 
-export const getStaffData = (): {
+export const getStaffData = (
+  restaurantId = RESTAURANT_ID,
+): {
   restaurant?: IRestaurant;
   staff: StaffMember[];
 } => {
@@ -44,14 +46,17 @@ export const getStaffData = (): {
     readFileSync(RESTAURANTS_PATH, "utf8"),
   ) as IRestaurant[];
 
-  const restaurant = restaurants.find((r) => r.id === RESTAURANT_ID);
-  const ownerNames = new Map(
+  const restaurant = restaurants.find((r) => r.id === restaurantId);
+  const nameMap = new Map(
     owners.map((o) => [o.id, `${o.firstName} ${o.lastName}`]),
   );
+  for (const o of officers) {
+    nameMap.set(o.id, `${o.firstName} ${o.lastName}`);
+  }
 
   const staff: StaffMember[] = [];
   for (const o of officers) {
-    if (o.restaurantId !== RESTAURANT_ID) continue;
+    if (o.restaurantId !== restaurantId) continue;
     staff.push({
       id: o.id,
       firstName: o.firstName,
@@ -61,7 +66,7 @@ export const getStaffData = (): {
       avatar: o.avatar ?? "",
       position: o.position,
       createdAt: o.createdAt,
-      invitedByName: ownerNames.get(o.invitedBy),
+      invitedByName: nameMap.get(o.invitedBy),
     });
   }
   staff.sort((a, b) =>

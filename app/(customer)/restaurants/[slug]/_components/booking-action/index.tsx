@@ -4,13 +4,10 @@ import { useCallback, useState } from "react";
 
 import { usePathname, useRouter } from "next/navigation";
 
-import { toast } from "sonner";
-
 import { Button } from "@components";
 
 import { isBookingTooSoon } from "@data/bookings/booking-deadline";
 
-import { createBookingAction } from "./_actions/booking-action";
 import { Calendar } from "./calendar";
 import { PartySize } from "./party-size";
 import { Time } from "./time";
@@ -161,24 +158,15 @@ export const BookingAction = ({
     setBookingError(null);
 
     try {
-      const result = await createBookingAction({
-        restaurantId,
-        date: selectedDate,
-        time: selectedTime,
-        partySize: selectedPartySize,
-      });
-
-      toast.success(
-        "Booking requested! Confirm the details on the next step.",
+      router.push(
+        `/bookings/confirmation?restaurantId=${encodeURIComponent(
+          restaurantId,
+        )}&date=${encodeURIComponent(selectedDate)}&time=${encodeURIComponent(
+          selectedTime,
+        )}&partySize=${selectedPartySize}`,
       );
-      router.push(`/bookings/confirmation?id=${result.booking.id}`);
-    } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : "Could not create the booking.";
-      setBookingError(message);
-      toast.error(message);
+    } catch {
+      setBookingError("Could not open the booking confirmation.");
     } finally {
       setIsSubmitting(false);
     }

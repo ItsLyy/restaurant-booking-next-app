@@ -1,5 +1,5 @@
 import { cache } from "react";
-import { eq, inArray } from "drizzle-orm";
+import { desc, eq, inArray } from "drizzle-orm";
 
 import { db } from "@db/client";
 import {
@@ -95,6 +95,7 @@ export const getRestaurant = cache(async function getRestaurant(
         .select()
         .from(reviews)
         .where(inArray(reviews.bookingId, restaurantBookingIds))
+        .orderBy(desc(reviews.customerCommentAt))
     : [];
 
   const cover = photos.find((photo) => photo.type === "cover");

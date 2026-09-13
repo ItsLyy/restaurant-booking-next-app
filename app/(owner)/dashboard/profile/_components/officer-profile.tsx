@@ -8,6 +8,7 @@ import { Card } from "../../_components/card";
 import { InfoCard, InfoRow } from "../../_components/info-card";
 import { getOfficerData } from "../../_data/officer";
 import { updateOfficerProfileAction } from "../_actions/update-officer-profile-action";
+import { LeaveRestaurantButton } from "./leave-restaurant-button";
 
 export const OfficerProfile = async () => {
   const data = getOfficerData(await getSessionOfficerId());
@@ -105,6 +106,20 @@ export const OfficerProfile = async () => {
               avatar: officer.avatar,
               allergics: officer.allergics,
             }}
+          />
+        </div>
+
+        <div className="border border-negative/20 bg-negative/5 rounded-lg p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex flex-col gap-1">
+            <h3 className="text-d-header-md text-foreground">
+              Leave restaurant
+            </h3>
+            <span className="text-d-caption text-muted">
+              Relinquish your officer position and return to a regular customer account.
+            </span>
+          </div>
+          <LeaveRestaurantButton
+            restaurantName={restaurant?.name ?? "this restaurant"}
           />
         </div>
       </Card>

@@ -2,8 +2,14 @@ import { notFound } from "next/navigation";
 
 import { ConfirmBookingForm } from "./_components/confirm-booking-form";
 
-import { getBooking } from "@data/bookings/get-booking";
-import { requireCustomer } from "@libs/session";
+import {
+  BookingLeadTimeError,
+  BookingSlotUnavailableError,
+  getBookingPreview,
+  RestaurantNoTablesError,
+  RestaurantNotFoundError,
+} from "@data/bookings/create-booking";
+import { requireDiner } from "@libs/session";
 
 import type { Metadata } from "next";
 
@@ -21,20 +27,39 @@ export default async function ConfirmBookingPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const { id } = await searchParams;
-  const bookingId = typeof id === "string" ? id : "";
+  const { restaurantId, date, time, partySize } = await searchParams;
+  const id = typeof restaurantId === "string" ? restaurantId : "";
+  const bookingDate = typeof date === "string" ? date : "";
+  const bookingTime = typeof time === "string" ? time : "";
+  const parsedPartySize = Number(
+    typeof partySize === "string" ? partySize : "",
+  );
 
-  const customer = await requireCustomer("/bookings");
-  const data = bookingId ? await getBooking(bookingId) : null;
-  if (!data || data.booking.customerId !== customer.userId) notFound();
+  await requireDiner("/bookings");
 
-  const {
-    booking,
-    bookingCode,
-    restaurantName,
-    tableName,
-    payment,
-  } = data;
+  if (!id || !bookingDate || !bookingTime || !Number.isInteger(parsedPartySize)) {
+    notFound();
+  }
+
+  let preview;
+  try {
+    preview = getBookingPreview({
+      restaurantId: id,
+      date: bookingDate,
+      time: bookingTime,
+      partySize: parsedPartySize,
+    });
+  } catch (error) {
+    if (
+      error instanceof BookingSlotUnavailableError ||
+      error instanceof BookingLeadTimeError ||
+      error instanceof RestaurantNotFoundError ||
+      error instanceof RestaurantNoTablesError
+    ) {
+      notFound();
+    }
+    throw error;
+  }
 
   return (
     <section className="w-full flex justify-center items-center py-6 px-4">
@@ -46,20 +71,18 @@ export default async function ConfirmBookingPage({
             </h1>
             <p className="text-c-caption text-muted mt-0.5">
               Review the details below and add any special note before we send
-              your request to {restaurantName}.
+              your request to {preview.restaurantName}.
             </p>
           </div>
           <div className="p-6">
             <ConfirmBookingForm
-              bookingId={booking.id}
-              restaurantName={restaurantName}
-              bookingCode={bookingCode}
-              date={booking.date}
-              time={booking.time}
-              tableName={tableName}
-              partySize={booking.partySize}
-              price={payment?.price ?? 0}
-              initialSpecialRequest={booking.specialRequest}
+              restaurantId={id}
+              restaurantName={preview.restaurantName}
+              date={bookingDate}
+              time={bookingTime}
+              tableName={preview.tableName}
+              partySize={parsedPartySize}
+              price={preview.price}
             />
           </div>
         </div>

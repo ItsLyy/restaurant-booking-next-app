@@ -1,16 +1,19 @@
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr";
 
-import { Avatar, Badge, Button } from "@components";
-import { formatDate } from "@utils";
-import { requireManagerOrAbove } from "@libs/session";
+import { Button } from "@components";
+import { getAuthUser, getDashboardRole, requireManagerOrAbove } from "@libs/session";
+import { getCurrentRestaurantId } from "../../_libs/current-restaurant";
 
 import { Card } from "../_components/card";
-
+import { StaffMemberRow } from "./_components/staff-member-row";
 import { getStaffData } from "./_data/staff";
 
 export default async function StaffPage() {
   await requireManagerOrAbove();
-  const { staff } = getStaffData();
+  const role = (await getDashboardRole()) ?? "staff";
+  const session = await getAuthUser();
+  const restaurantId = await getCurrentRestaurantId();
+  const { staff } = getStaffData(restaurantId);
 
   return (
     <section className="px-4 pt-3 pb-6 size-full">
@@ -43,39 +46,12 @@ export default async function StaffPage() {
         ) : (
           <div className="w-full flex flex-col gap-2">
             {staff.map((member) => (
-              <div
+              <StaffMemberRow
                 key={member.id}
-                className="flex items-center gap-4 border border-muted rounded-lg p-4 bg-base-100"
-              >
-                <Avatar
-                  src={member.avatar}
-                  alt={`${member.firstName} ${member.lastName}`}
-                  className="size-11! rounded-full!"
-                />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-c-button text-foreground font-semibold truncate">
-                      {member.firstName} {member.lastName}
-                    </span>
-                    <Badge variant="neutral" className="capitalize">
-                      {member.position}
-                    </Badge>
-                    {member.invitedByName ? (
-                      <span className="text-c-caption text-muted hidden sm:inline">
-                        · Invited by {member.invitedByName}
-                      </span>
-                    ) : null}
-                  </div>
-                  <span className="text-c-caption text-muted truncate block">
-                    @{member.username} · {member.email}
-                  </span>
-                </div>
-                {member.createdAt ? (
-                  <span className="text-c-caption text-muted shrink-0 hidden sm:block">
-                    Joined {formatDate(member.createdAt)}
-                  </span>
-                ) : null}
-              </div>
+                member={member}
+                viewerRole={role === "owner" ? "owner" : "manager"}
+                currentUserId={session?.userId}
+              />
             ))}
           </div>
         )}

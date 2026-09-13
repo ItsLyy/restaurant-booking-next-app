@@ -130,5 +130,201 @@
     "bookingId": "booking-037",
     "createdAt": "2026-04-10T12:00:00.000Z",
     "updatedAt": "2026-04-10T14:00:00.000Z"
+  },
+  {
+    "id": "review-013",
+    "customerComment": "I love your restaurant",
+    "customerRating": 5,
+    "customerCommentAt": "2026-09-12T03:36:16.413Z",
+    "bookingId": "booking-112",
+    "createdAt": "2026-09-12T03:36:16.413Z",
+    "updatedAt": "2026-09-12T03:51:27.474Z",
+    "ownerReply": "Thank you!!",
+    "ownerReplyAt": "2026-09-12T03:51:27.474Z"
+  },
+  {
+    "id": "review-014",
+    "customerComment": "The seasonal omakase was breathtaking. Every course was crafted with such precision and artistry. The toro melted on the tongue and the matcha dessert was the ideal ending.",
+    "customerRating": 5,
+    "customerCommentAt": "2026-08-01T21:30:00.000Z",
+    "ownerReply": "Arigato gozaimasu Alice! Chef Hiroshi and our kitchen team are delighted that the omakase and matcha dessert resonated with you. We hope to welcome you back next season.",
+    "ownerReplyAt": "2026-08-01T14:30:00.000Z",
+    "bookingId": "booking-114",
+    "createdAt": "2026-08-01T21:30:00.000Z",
+    "updatedAt": "2026-08-01T14:30:00.000Z"
+  },
+  {
+    "id": "review-015",
+    "customerComment": "Exquisite dining experience in the private Tatami room. The ambiance with garden views and soft koto music makes you forget you are in the middle of the city.",
+    "customerRating": 5,
+    "customerCommentAt": "2026-08-03T21:30:00.000Z",
+    "ownerReply": "Thank you Ben! The Tatami room is designed specifically for serene, intimate evenings. We are glad you enjoyed the view and music.",
+    "ownerReplyAt": "2026-08-03T16:00:00.000Z",
+    "bookingId": "booking-115",
+    "createdAt": "2026-08-03T21:30:00.000Z",
+    "updatedAt": "2026-08-03T16:00:00.000Z"
+  },
+  {
+    "id": "review-016",
+    "customerComment": "Superb wagyu beef and crispy tempura. Service was very attentive and courteous throughout. Only minus was that parking took a while on a busy Friday night.",
+    "customerRating": 4,
+    "customerCommentAt": "2026-08-06T21:30:00.000Z",
+    "bookingId": "booking-116",
+    "createdAt": "2026-08-06T21:30:00.000Z",
+    "updatedAt": "2026-08-06T21:30:00.000Z"
+  },
+  {
+    "id": "review-017",
+    "customerComment": "Unmatched sake selection! The sommelier paired each dish wonderfully. The salmon sashimi was remarkably fresh and pristine.",
+    "customerRating": 5,
+    "customerCommentAt": "2026-08-08T21:30:00.000Z",
+    "ownerReply": "Thank you Daniel! Our sake pairings are curated with passionate local breweries. Looking forward to your next visit!",
+    "ownerReplyAt": "2026-08-09T10:00:00.000Z",
+    "bookingId": "booking-117",
+    "createdAt": "2026-08-08T21:30:00.000Z",
+    "updatedAt": "2026-08-09T10:00:00.000Z"
+  },
+  {
+    "id": "review-018",
+    "customerComment": "Celebrated our anniversary here and it could not have been more memorable. The team surprised us with a personalized dessert plate. Outstanding hospitality!",
+    "customerRating": 5,
+    "customerCommentAt": "2026-08-11T21:30:00.000Z",
+    "ownerReply": "Happy anniversary Emma! It was our genuine pleasure to celebrate this milestone with you both. Warmest wishes from the entire Sakura Garden team.",
+    "ownerReplyAt": "2026-08-11T20:00:00.000Z",
+    "bookingId": "booking-118",
+    "createdAt": "2026-08-11T21:30:00.000Z",
+    "updatedAt": "2026-08-11T20:00:00.000Z"
+  },
+  {
+    "id": "review-019",
+    "customerComment": "The dragon roll and miso glazed black cod were sensational. Cozy aesthetic and pleasant service. Will recommend to all my friends visiting Kyoto.",
+    "customerRating": 4,
+    "customerCommentAt": "2026-08-14T21:30:00.000Z",
+    "bookingId": "booking-119",
+    "createdAt": "2026-08-14T21:30:00.000Z",
+    "updatedAt": "2026-08-14T21:30:00.000Z"
+  },
+  {
+    "id": "review-020",
+    "customerComment": "Authentic Edo-style sushi at its finest. You can taste the dedication in the rice seasoning and knife technique. A top tier culinary experience.",
+    "customerRating": 5,
+    "customerCommentAt": "2026-08-17T21:30:00.000Z",
+    "ownerReply": "Honored by your review, Leo. Preserving traditional Edo-style craftsmanship is at the heart of our kitchen. We look forward to your return.",
+    "ownerReplyAt": "2026-08-18T09:15:00.000Z",
+    "bookingId": "booking-120",
+    "createdAt": "2026-08-17T21:30:00.000Z",
+    "updatedAt": "2026-08-18T09:15:00.000Z"
+  },
+  {
+    "id": "review-021",
+    "customerComment": "Delightful dinner! The unagi don was tender and perfectly glazed. The garden lighting in the evening creates a magical romantic atmosphere.",
+    "customerRating": 4,
+    "customerCommentAt": "2026-08-20T21:30:00.000Z",
+    "bookingId": "booking-121",
+    "createdAt": "2026-08-20T21:30:00.000Z",
+    "updatedAt": "2026-08-20T21:30:00.000Z"
+  },
+  {
+    "id": "review-022",
+    "customerComment": "Freshness is next level. The chef explained the origin of each fish which added so much depth to our meal. Easily the best sushi in town.",
+    "customerRating": 5,
+    "customerCommentAt": "2026-08-22T21:30:00.000Z",
+    "ownerReply": "Thank you Marcus! We believe every catch has a story to tell, and our chefs love sharing it with our guests.",
+    "ownerReplyAt": "2026-08-22T15:45:00.000Z",
+    "bookingId": "booking-122",
+    "createdAt": "2026-08-22T21:30:00.000Z",
+    "updatedAt": "2026-08-22T15:45:00.000Z"
+  },
+  {
+    "id": "review-023",
+    "customerComment": "Came back for business lunch and was thoroughly impressed again. Fast, refined service, and the bento box selection is top notch.",
+    "customerRating": 5,
+    "customerCommentAt": "2026-08-25T21:30:00.000Z",
+    "bookingId": "booking-123",
+    "createdAt": "2026-08-25T21:30:00.000Z",
+    "updatedAt": "2026-08-25T21:30:00.000Z"
+  },
+  {
+    "id": "review-024",
+    "customerComment": "Great vegetarian options alongside the seafood! The agedashi tofu and mushroom hotpot were rich in flavor and deeply satisfying.",
+    "customerRating": 4,
+    "customerCommentAt": "2026-08-27T21:30:00.000Z",
+    "bookingId": "booking-124",
+    "createdAt": "2026-08-27T21:30:00.000Z",
+    "updatedAt": "2026-08-27T21:30:00.000Z"
+  },
+  {
+    "id": "review-025",
+    "customerComment": "The chawanmushi and soft-shell crab hand rolls were absolute showstoppers. Cozy booth seating made our conversation easy and enjoyable.",
+    "customerRating": 5,
+    "customerCommentAt": "2026-08-29T21:30:00.000Z",
+    "bookingId": "booking-125",
+    "createdAt": "2026-08-29T21:30:00.000Z",
+    "updatedAt": "2026-08-29T21:30:00.000Z"
+  },
+  {
+    "id": "review-026",
+    "customerComment": "The food was delectable as always, but our table was situated near the kitchen door which got a bit noisy during the peak rush hour.",
+    "customerRating": 3,
+    "customerCommentAt": "2026-08-31T21:30:00.000Z",
+    "ownerReply": "Thank you for the candid feedback Daniel. We apologize for the kitchen noise distraction and will make sure you are seated in our quieter garden wing on your next visit.",
+    "ownerReplyAt": "2026-09-01T11:00:00.000Z",
+    "bookingId": "booking-126",
+    "createdAt": "2026-08-31T21:30:00.000Z",
+    "updatedAt": "2026-09-01T11:00:00.000Z"
+  },
+  {
+    "id": "review-027",
+    "customerComment": "Perfection from start to finish. The yellowtail with jalapeño was refreshing, and the black sesame ice cream was divine.",
+    "customerRating": 5,
+    "customerCommentAt": "2026-09-02T21:30:00.000Z",
+    "bookingId": "booking-127",
+    "createdAt": "2026-09-02T21:30:00.000Z",
+    "updatedAt": "2026-09-02T21:30:00.000Z"
+  },
+  {
+    "id": "review-028",
+    "customerComment": "Top tier dining! Beautiful plating, impeccable service, and calm Japanese zen garden ambiance. Worth every penny.",
+    "customerRating": 5,
+    "customerCommentAt": "2026-09-04T21:30:00.000Z",
+    "bookingId": "booking-128",
+    "createdAt": "2026-09-04T21:30:00.000Z",
+    "updatedAt": "2026-09-04T21:30:00.000Z"
+  },
+  {
+    "id": "review-029",
+    "customerComment": "Very fresh nigiri set and authentic dashi broth. The staff greeted us warmly from the moment we stepped through the entrance.",
+    "customerRating": 4,
+    "customerCommentAt": "2026-09-06T21:30:00.000Z",
+    "bookingId": "booking-129",
+    "createdAt": "2026-09-06T21:30:00.000Z",
+    "updatedAt": "2026-09-06T21:30:00.000Z"
+  },
+  {
+    "id": "review-030",
+    "customerComment": "A peaceful sanctuary with delicious food. The green tea cocktail was unique and refreshing. Highly recommend booking a garden table.",
+    "customerRating": 5,
+    "customerCommentAt": "2026-09-08T21:30:00.000Z",
+    "bookingId": "booking-130",
+    "createdAt": "2026-09-08T21:30:00.000Z",
+    "updatedAt": "2026-09-08T21:30:00.000Z"
+  },
+  {
+    "id": "review-031",
+    "customerComment": "Exceeded all our expectations. The chef selection nigiri platter was art on a plate. Cannot wait to return!",
+    "customerRating": 5,
+    "customerCommentAt": "2026-09-10T21:30:00.000Z",
+    "bookingId": "booking-131",
+    "createdAt": "2026-09-10T21:30:00.000Z",
+    "updatedAt": "2026-09-10T21:30:00.000Z"
+  },
+  {
+    "id": "review-032",
+    "customerComment": "Wonderful dinner with friends. The spicy tuna tartare and tempura udon were stellar. Great attention to dietary preferences too.",
+    "customerRating": 4,
+    "customerCommentAt": "2026-09-11T21:30:00.000Z",
+    "bookingId": "booking-132",
+    "createdAt": "2026-09-11T21:30:00.000Z",
+    "updatedAt": "2026-09-11T21:30:00.000Z"
   }
 ]

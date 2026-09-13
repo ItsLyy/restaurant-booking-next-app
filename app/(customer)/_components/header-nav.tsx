@@ -16,10 +16,13 @@ import {
 
 import { Button } from "@components";
 import { CustomerUserProfile } from "./user-profile";
+import { DASHBOARD_MENU_ITEMS } from "./dashboard-menu-items";
+
+import type { AuthRole } from "@data/auth/users";
 
 interface HeaderNavProps {
-  hasDashboardAccess?: boolean;
-  customer?: {
+  role?: AuthRole;
+  user?: {
     firstName: string;
     lastName: string;
     email?: string;
@@ -28,10 +31,101 @@ interface HeaderNavProps {
   };
 }
 
-export const HeaderNav = ({
-  hasDashboardAccess,
-  customer,
-}: HeaderNavProps) => {
+interface MobileNavDrawerProps {
+  isOpen: boolean;
+  onClose: () => void;
+  pathname: string;
+  role?: AuthRole;
+  hasUser: boolean;
+}
+
+const MobileNavDrawer = ({
+  isOpen,
+  onClose,
+  pathname,
+  role,
+  hasUser,
+}: MobileNavDrawerProps) => {
+  if (!isOpen) return null;
+
+  const isRestaurantsActive = pathname.startsWith("/restaurants");
+  const isBookingsActive = pathname.startsWith("/bookings");
+  const profileHref = role === "customer" || !role ? "/profile" : "/dashboard";
+
+  return (
+    <div className="rise-in md:hidden absolute top-full left-0 w-full bg-base-100/98 backdrop-blur-lg border-b border-muted/40 shadow-xl px-4 py-4 z-40 flex flex-col gap-3">
+      {/* Mobile Search Input */}
+      <Link
+        href="/restaurants?search="
+        onClick={onClose}
+        className="flex items-center gap-2.5 px-3.5 h-10 rounded-xl border border-muted/60 bg-base-200/60 text-xs text-muted"
+      >
+        <MagnifyingGlassIcon weight="bold" className="size-4 text-accent-200" />
+        <span>Search restaurants, cuisines, cities…</span>
+      </Link>
+
+      {/* Navigation Links */}
+      <div className="flex flex-col gap-1 border-t border-muted/30 pt-2">
+        <Link
+          href="/"
+          onClick={onClose}
+          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium text-foreground hover:bg-base-200 transition-colors"
+        >
+          <HouseIcon weight="bold" className="size-4 text-muted" />
+          <span>Home</span>
+        </Link>
+
+        <Link
+          href="/restaurants"
+          onClick={onClose}
+          className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs transition-colors ${
+            isRestaurantsActive
+              ? "bg-accent-100/10 text-accent-100 font-semibold"
+              : "text-foreground hover:bg-base-200 font-medium"
+          }`}
+        >
+          <CompassIcon weight={isRestaurantsActive ? "fill" : "bold"} className="size-4 text-accent-200" />
+          <span>Explore Restaurants</span>
+        </Link>
+
+        <Link
+          href="/bookings"
+          onClick={onClose}
+          className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs transition-colors ${
+            isBookingsActive
+              ? "bg-accent-100/10 text-accent-100 font-semibold"
+              : "text-foreground hover:bg-base-200 font-medium"
+          }`}
+        >
+          <CalendarCheckIcon weight={isBookingsActive ? "fill" : "bold"} className="size-4 text-positive" />
+          <span>My Bookings</span>
+        </Link>
+
+        {hasUser && (
+          <Link
+            href={profileHref}
+            onClick={onClose}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium text-foreground hover:bg-base-200 transition-colors"
+          >
+            <UserCircleIcon weight="bold" className="size-4 text-accent-100" />
+            <span>My Profile & Preferences</span>
+          </Link>
+        )}
+
+        <Link
+          href="/signup"
+          onClick={onClose}
+          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium text-muted hover:text-foreground hover:bg-base-200 transition-colors"
+        >
+          <StorefrontIcon weight="bold" className="size-4 text-muted" />
+          <span>Become Restaurant Owner</span>
+        </Link>
+      </div>
+    </div>
+  );
+};
+
+export const HeaderNav = ({ role, user }: HeaderNavProps) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
@@ -52,6 +146,30 @@ export const HeaderNav = ({
 
   const isRestaurantsActive = pathname.startsWith("/restaurants");
   const isBookingsActive = pathname.startsWith("/bookings");
+
+  const renderUserMenu = () => {
+    if (!user) {
+      return (
+        <Button
+          as="link"
+          href="/signin"
+          className="rounded-full! h-9! px-4! text-xs!"
+        >
+          Sign in
+        </Button>
+      );
+    }
+    if (role === "customer" || !role) {
+      return <CustomerUserProfile customer={user} />;
+    }
+    return (
+      <CustomerUserProfile
+        customer={user}
+        badge={DASHBOARD_MENU_ITEMS[role].badge}
+        items={DASHBOARD_MENU_ITEMS[role].items}
+      />
+    );
+  };
 
   return (
     <>
@@ -108,25 +226,7 @@ export const HeaderNav = ({
         </Link>
 
         {/* User Account / Sign In */}
-        {customer ? (
-          <CustomerUserProfile customer={customer} />
-        ) : hasDashboardAccess ? (
-          <Button
-            as="link"
-            href="/dashboard"
-            className="rounded-full! h-9! px-4! text-xs!"
-          >
-            Dashboard
-          </Button>
-        ) : (
-          <Button
-            as="link"
-            href="/signin"
-            className="rounded-full! h-9! px-4! text-xs!"
-          >
-            Sign in
-          </Button>
-        )}
+        {renderUserMenu()}
 
         {/* Mobile Hamburger Toggle Button */}
         <button
@@ -145,77 +245,13 @@ export const HeaderNav = ({
       </div>
 
       {/* Mobile Navigation Drawer */}
-      {mobileMenuOpen && (
-        <div className="rise-in md:hidden absolute top-full left-0 w-full bg-base-100/98 backdrop-blur-lg border-b border-muted/40 shadow-xl px-4 py-4 z-40 flex flex-col gap-3">
-          {/* Mobile Search Input */}
-          <Link
-            href="/restaurants?search="
-            onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center gap-2.5 px-3.5 h-10 rounded-xl border border-muted/60 bg-base-200/60 text-xs text-muted"
-          >
-            <MagnifyingGlassIcon weight="bold" className="size-4 text-accent-200" />
-            <span>Search restaurants, cuisines, cities…</span>
-          </Link>
-
-          {/* Navigation Links */}
-          <div className="flex flex-col gap-1 border-t border-muted/30 pt-2">
-            <Link
-              href="/"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium text-foreground hover:bg-base-200 transition-colors"
-            >
-              <HouseIcon weight="bold" className="size-4 text-muted" />
-              <span>Home</span>
-            </Link>
-
-            <Link
-              href="/restaurants"
-              onClick={() => setMobileMenuOpen(false)}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs transition-colors ${
-                isRestaurantsActive
-                  ? "bg-accent-100/10 text-accent-100 font-semibold"
-                  : "text-foreground hover:bg-base-200 font-medium"
-              }`}
-            >
-              <CompassIcon weight={isRestaurantsActive ? "fill" : "bold"} className="size-4 text-accent-200" />
-              <span>Explore Restaurants</span>
-            </Link>
-
-            <Link
-              href="/bookings"
-              onClick={() => setMobileMenuOpen(false)}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs transition-colors ${
-                isBookingsActive
-                  ? "bg-accent-100/10 text-accent-100 font-semibold"
-                  : "text-foreground hover:bg-base-200 font-medium"
-              }`}
-            >
-              <CalendarCheckIcon weight={isBookingsActive ? "fill" : "bold"} className="size-4 text-positive" />
-              <span>My Bookings</span>
-            </Link>
-
-            {customer ? (
-              <Link
-                href="/profile"
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium text-foreground hover:bg-base-200 transition-colors"
-              >
-                <UserCircleIcon weight="bold" className="size-4 text-accent-100" />
-                <span>My Profile & Preferences</span>
-              </Link>
-            ) : null}
-
-            <Link
-              href="/signup"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium text-muted hover:text-foreground hover:bg-base-200 transition-colors"
-            >
-              <StorefrontIcon weight="bold" className="size-4 text-muted" />
-              <span>Become Restaurant Owner</span>
-            </Link>
-          </div>
-        </div>
-      )}
+      <MobileNavDrawer
+        isOpen={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+        pathname={pathname}
+        role={role}
+        hasUser={!!user}
+      />
     </>
   );
 };

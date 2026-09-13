@@ -6,12 +6,12 @@ import { Menus } from "./_components/menus";
 import { RestaurantInformationHeader } from "./_components/header";
 import { Reviews } from "./_components/reviews";
 import { BookingAction } from "./_components/booking-action";
-import { getCustomerById } from "../../profile/_data/profile";
 
 import { getRestaurant } from "@data/restaurants/get-restaurant";
 import { getRestaurantAvailability } from "@data/restaurants/get-restaurant-availability";
 import { getAllRestaurants } from "@data/restaurants/get-all-restaurants";
 import { getAuthUser } from "@libs/session";
+import { findAccountById } from "@data/auth/users";
 import { SITE_URL } from "@libs";
 
 import type { Metadata } from "next";
@@ -62,10 +62,14 @@ export default async function RestaurantDetailPage({
   if (!restaurant) notFound();
 
   const session = await getAuthUser();
-  const customer =
-    session?.role === "customer"
-      ? getCustomerById(session.userId)
-      : undefined;
+  const account = session ? findAccountById(session.userId) : undefined;
+  const customer = account
+    ? {
+        firstName: account.firstName,
+        lastName: account.lastName,
+        avatar: account.avatar,
+      }
+    : undefined;
 
   const availability = customer
     ? await getRestaurantAvailability(slug)
@@ -190,7 +194,7 @@ export default async function RestaurantDetailPage({
           <p className="text-c-body">{restaurant.description}</p>
           <h2 className="text-c-header-md text-foreground">Menus</h2>
           <Menus slug={slug} name={restaurant.name} menus={restaurant.menus} />
-          <h2 className="text-c-header-md text-foreground">Reviews</h2>
+          <h2 id="reviews" className="text-c-header-md text-foreground">Reviews</h2>
           <Reviews owner={restaurant.owner} reviews={restaurant.reviews} />
         </div>
       </div>

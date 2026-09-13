@@ -746,5 +746,26 @@
     "createdAt": "2026-09-06T10:00:00.000Z",
     "updatedAt": "2026-09-06T10:00:00.000Z",
     "paidAt": "2026-09-06T10:00:00.000Z"
+  },
+  {
+    "id": "payment-077",
+    "price": 45000,
+    "status": "unpaid",
+    "deadline": "2026-09-12T08:24:54.357Z",
+    "gatewayToken": "tok_sandbox_booking-111",
+    "bookingId": "booking-111",
+    "createdAt": "2026-09-12T02:24:54.357Z",
+    "updatedAt": "2026-09-12T02:24:54.357Z"
+  },
+  {
+    "id": "payment-078",
+    "price": 12000,
+    "status": "paid",
+    "deadline": "2026-09-12T08:26:10.342Z",
+    "gatewayToken": "tok_sandbox_booking-112",
+    "bookingId": "booking-112",
+    "createdAt": "2026-09-12T02:26:10.341Z",
+    "updatedAt": "2026-09-12T02:28:02.427Z",
+    "paidAt": "2026-09-12T02:28:02.427Z"
   }
 ]

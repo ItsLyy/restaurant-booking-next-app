@@ -6,6 +6,8 @@ import { usePathname } from "next/navigation";
 
 import { SignOutIcon } from "@phosphor-icons/react/dist/ssr";
 
+import { logoutAction } from "../../_actions/logout";
+
 import { Avatar } from "@components/general/avatar";
 import { Badge } from "@components/ui/badge";
 
@@ -133,15 +135,16 @@ export const UserMenuPanel = ({
       ) : null}
 
       <div className="mt-1 pt-1 border-t border-muted/30">
-        <Link
-          href="/"
-          role="menuitem"
-          onClick={onClose}
-          className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-negative hover:bg-negative/10 font-medium transition-colors"
-        >
-          <SignOutIcon weight="bold" className="size-4 shrink-0" />
-          <span>Log out</span>
-        </Link>
+        <form action={logoutAction}>
+          <button
+            type="submit"
+            role="menuitem"
+            className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-negative hover:bg-negative/10 font-medium transition-colors w-full text-left cursor-pointer"
+          >
+            <SignOutIcon weight="bold" className="size-4 shrink-0" />
+            <span>Log out</span>
+          </button>
+        </form>
       </div>
     </div>
   );

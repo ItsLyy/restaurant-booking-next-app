@@ -7,7 +7,7 @@ import tables from "@data/dummy/tables.json";
 import { toBookingCode } from "./booking-code";
 import { getEffectiveBookingStatus } from "./booking-deadline";
 
-import type { IBooking, IPayment } from "@types";
+import type { IBooking, IPayment, IReview } from "@types";
 
 const BOOKINGS_FILE_PATH = path.join(
   process.cwd(),
@@ -19,12 +19,21 @@ const PAYMENTS_FILE_PATH = path.join(
   "app/_data/dummy/payments.json",
 );
 
+const REVIEWS_FILE_PATH = path.join(
+  process.cwd(),
+  "app/_data/dummy/reviews.json",
+);
+
 function readBookings(): IBooking[] {
   return JSON.parse(readFileSync(BOOKINGS_FILE_PATH, "utf8")) as IBooking[];
 }
 
 function readPayments(): IPayment[] {
   return JSON.parse(readFileSync(PAYMENTS_FILE_PATH, "utf8")) as IPayment[];
+}
+
+function readReviews(): IReview[] {
+  return JSON.parse(readFileSync(REVIEWS_FILE_PATH, "utf8")) as IReview[];
 }
 
 interface GetBookingResponse {
@@ -35,6 +44,7 @@ interface GetBookingResponse {
   restaurantAddress: string;
   tableName: string;
   payment: IPayment | null;
+  review: IReview | null;
 }
 
 export async function getBooking(
@@ -51,6 +61,9 @@ export async function getBooking(
   const payment = readPayments().find(
     (item) => item.bookingId === booking.id,
   );
+
+  const review =
+    readReviews().find((item) => item.bookingId === booking.id) ?? null;
 
   const effectiveStatus = getEffectiveBookingStatus(booking, payment);
   const effectiveBooking: IBooking =
@@ -75,5 +88,6 @@ export async function getBooking(
     restaurantAddress: restaurant?.address ?? "",
     tableName: table?.name ?? booking.tableId,
     payment: payment ?? null,
+    review,
   };
 }

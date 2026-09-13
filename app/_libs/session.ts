@@ -70,6 +70,25 @@ export const deleteSession = async (): Promise<void> => {
   cookieStore.delete(SESSION_COOKIE);
 };
 
+export const updateSessionRole = async (role: AuthRole): Promise<void> => {
+  const session = await verifySession();
+  if (!session) return;
+  const token = await encrypt({
+    sub: session.userId,
+    email: session.email,
+    role,
+  });
+
+  const cookieStore = await cookies();
+  cookieStore.set(SESSION_COOKIE, token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: SESSION_MAX_AGE,
+  });
+};
+
 export const verifySession = cache(async (): Promise<SessionUser | null> => {
   const cookieStore = await cookies();
   const token = cookieStore.get(SESSION_COOKIE)?.value;
@@ -106,6 +125,17 @@ export const getSessionOfficerId = async (): Promise<string | undefined> => {
 export const getCustomerSession = async (): Promise<SessionUser | null> => {
   const user = await verifySession();
   return user?.role === "customer" ? user : null;
+};
+
+export const getDinerSession = async (): Promise<SessionUser | null> =>
+  verifySession();
+
+export const requireDiner = async (
+  nextPath: string,
+): Promise<SessionUser> => {
+  const user = await verifySession();
+  if (user) return user;
+  redirect(`/signin?next=${encodeURIComponent(nextPath)}`);
 };
 
 export const requireCustomer = async (

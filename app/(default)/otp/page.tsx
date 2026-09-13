@@ -1,4 +1,7 @@
+import { redirect } from "next/navigation";
+
 import AuthCard from "@components/auth/auth-card";
+import { getPendingSignup } from "@libs/pending-signup";
 import OTPForm from "./_components/otp-form";
 
 import type { Metadata } from "next";
@@ -24,6 +27,11 @@ export default async function OTPPage({
       ? next
       : "/signup/role";
   const targetEmail = typeof email === "string" ? email : "";
+  const pending = await getPendingSignup();
+
+  if (!targetEmail && !pending?.email) {
+    redirect("/signup");
+  }
 
   return (
     <AuthCard

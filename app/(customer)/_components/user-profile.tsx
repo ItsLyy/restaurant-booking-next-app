@@ -22,6 +22,8 @@ interface CustomerUserProfileProps {
     username?: string;
     avatar?: string;
   };
+  items?: UserMenuLink[];
+  badge?: string;
 }
 
 const MENU_ITEMS: UserMenuLink[] = [
@@ -39,13 +41,17 @@ const MENU_ITEMS: UserMenuLink[] = [
   },
   {
     label: "Become restaurant owner",
-    href: "/signup",
+    href: "/signup/restaurant",
     icon: StorefrontIcon,
     description: "List your dining tables",
   },
 ];
 
-export const CustomerUserProfile = ({ customer }: CustomerUserProfileProps) => {
+export const CustomerUserProfile = ({
+  customer,
+  items = MENU_ITEMS,
+  badge = "Diner",
+}: CustomerUserProfileProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -110,11 +116,11 @@ export const CustomerUserProfile = ({ customer }: CustomerUserProfileProps) => {
 
       {isOpen ? (
         <UserMenuPanel
-          items={MENU_ITEMS}
+          items={items}
           identity={{
             name: fullName,
             avatar: customer.avatar ?? "",
-            badge: "Diner",
+            badge,
             subtitle:
               customer.email ??
               (customer.username ? `@${customer.username}` : ""),

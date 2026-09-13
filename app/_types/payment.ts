@@ -5,6 +5,7 @@ export interface IPayment {
   deadline: string;
   gatewayToken: string;
   bookingId: string;
+  paidAt?: string;
   createdAt?: string;
   updatedAt?: string;
 }

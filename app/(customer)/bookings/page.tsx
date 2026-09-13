@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { getAllBookings } from "@data/bookings/get-all-bookings";
-import { requireCustomer } from "@libs/session";
+import { requireDiner } from "@libs/session";
 
 import { formatDayDate, formatTime, resolvePaymentStatus } from "@utils";
 
@@ -28,7 +28,7 @@ export default async function BookingsPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const customer = await requireCustomer("/bookings");
+  const customer = await requireDiner("/bookings");
 
   const [{ page: pageParam }, bookings] = await Promise.all([
     searchParams,

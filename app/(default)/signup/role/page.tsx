@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 import {
   ArrowRightIcon,
@@ -38,6 +39,10 @@ const ROLE_OPTIONS = [
 
 export default async function RolePage() {
   const user = await getAuthUser();
+
+  if (!user) {
+    redirect("/signup");
+  }
 
   return (
     <AuthCard

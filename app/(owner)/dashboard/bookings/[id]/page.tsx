@@ -7,6 +7,7 @@ import { Card } from "../../_components/card";
 import { BookingBadge } from "../../_components/booking-badge";
 import { BookingInfo } from "../_components/booking-info";
 import { BookingDetailActions } from "./_components/booking-detail-actions";
+import { RealtimeDashboardBookings } from "../../_components/realtime-dashboard-bookings";
 
 import { getBookingInfo } from "../_data/bookings";
 
@@ -37,6 +38,7 @@ export default async function DashboardBookingDetailPage({
   return (
     <section className="px-4 pt-3 pb-6 size-full">
       <Card className="size-full flex flex-col gap-4">
+        <RealtimeDashboardBookings restaurantId="rest-001" showLiveBadge={false} />
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="flex flex-col gap-2">
             <Link

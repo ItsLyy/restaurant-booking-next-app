@@ -3,6 +3,8 @@ import type { IconProps } from "@phosphor-icons/react";
 import {
   BookIcon,
   ChartBarIcon,
+  ChatCenteredTextIcon,
+  ImagesIcon,
   LecternIcon,
   SquaresFourIcon,
   UsersThreeIcon,
@@ -23,6 +25,8 @@ export const NAV_ITEMS: NavigationItem[] = [
   { label: "Overview", href: ROOT_PATH, icon: SquaresFourIcon },
   { label: "Bookings", href: "/dashboard/bookings", icon: BookIcon },
   { label: "Tables", href: "/dashboard/tables", icon: LecternIcon },
+  { label: "Photos", href: "/dashboard/photos", icon: ImagesIcon },
+  { label: "Reviews", href: "/dashboard/reviews", icon: ChatCenteredTextIcon },
   {
     label: "Staff",
     href: "/dashboard/staff",

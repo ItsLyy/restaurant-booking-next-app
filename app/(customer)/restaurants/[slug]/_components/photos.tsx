@@ -46,7 +46,7 @@ export const Photos = ({
                 key={photo.id}
                 alt={`More photos of ${name}`}
                 photo={photo}
-                totalPhotos={photos.length - 2}
+                totalPhotos={photos.length - 1}
                 slug={slug}
               />
             );

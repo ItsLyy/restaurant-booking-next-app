@@ -14,14 +14,16 @@ import {
 } from "./_data/bookings";
 import { parseBookingFilter } from "./_components/booking-filter";
 import { buildBookingsHref } from "./_components/url-params";
+import { RealtimeDashboardBookings } from "../_components/realtime-dashboard-bookings";
+import { getCurrentRestaurantId } from "../../_libs/current-restaurant";
 
 export default async function DashboardBookingsPage({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const { date: dateParam, status, q, page: pageParam } = await searchParams;
-
+  const [{ date: dateParam, status, q, page: pageParam }, restaurantId] =
+    await Promise.all([searchParams, getCurrentRestaurantId()]);
   const date = normalizeDate(dateParam);
   const filter = parseBookingFilter(status);
   const query = typeof q === "string" ? q.trim().toLowerCase() : "";
@@ -53,7 +55,10 @@ export default async function DashboardBookingsPage({
   return (
     <section className="px-4 pt-3 pb-6 size-full">
       <Card className="size-full flex flex-col gap-4">
-        <Header date={date} canManage />
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <Header date={date} canManage />
+          <RealtimeDashboardBookings restaurantId={restaurantId} />
+        </div>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <DateFilter
             date={date}

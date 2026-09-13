@@ -106,6 +106,7 @@ interface FormFileFieldProps {
   id: string;
   label?: string;
   accept?: string;
+  hint?: string;
   className?: string;
 }
 
@@ -113,6 +114,7 @@ const FormFileField = ({
   id,
   label,
   accept,
+  hint,
   className,
 }: FormFileFieldProps) => {
   const { state } = useFormContext();
@@ -124,7 +126,7 @@ const FormFileField = ({
           {label}
         </label>
       )}
-      <FileUpload id={id} accept={accept} error={Boolean(fieldError)} />
+      <FileUpload id={id} accept={accept} hint={hint} error={Boolean(fieldError)} />
       {fieldError && (
         <span className="text-c-caption text-negative">{fieldError}</span>
       )}

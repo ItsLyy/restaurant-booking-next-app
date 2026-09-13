@@ -81,7 +81,7 @@ export const officers = pgTable("officers", {
   invitedBy: text("invited_by").notNull(),
   restaurantId: text("restaurant_id")
     .notNull()
-    .references(() => restaurants.id),
+    .references(() => restaurants.id, { onDelete: "cascade" }),
 });
 
 export const categories = pgTable("categories", {
