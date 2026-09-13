@@ -20,6 +20,7 @@
     ],
     "paths": {
       "@assets/*": ["./app/_assets/*"],
+      "@db/*": ["./app/_db/*"],
       "@components/*": ["./app/_components/*"],
       "@components": ["./app/_components/index.ts"],
       "@data/*": ["./app/_data/*"],

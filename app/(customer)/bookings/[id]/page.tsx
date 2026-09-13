@@ -7,8 +7,10 @@ import { StatusDescription } from "./_components/status-description";
 import { StatusDetail } from "./_components/status-detail";
 
 import { getBooking } from "@data/bookings/get-booking";
+import { requireDiner } from "@libs/session";
 
 import { resolvePaymentStatus } from "@utils";
+import { RealtimeCustomerBookingListener } from "./_components/realtime-customer-booking-listener";
 
 import type { Metadata } from "next";
 
@@ -27,8 +29,9 @@ export default async function BookingDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const customer = await requireDiner(`/bookings/${id}`);
   const data = await getBooking(id);
-  if (!data) notFound();
+  if (!data || data.booking.customerId !== customer.userId) notFound();
 
   const {
     booking,
@@ -44,6 +47,12 @@ export default async function BookingDetailPage({
   return (
     <section className="w-full flex justify-center items-center py-6 px-4">
       <div className="max-w-150 w-full space-y-4">
+        <div className="flex justify-end">
+          <RealtimeCustomerBookingListener
+            bookingId={booking.id}
+            restaurantName={restaurantName}
+          />
+        </div>
         <Header
           restaurantName={restaurantName}
           bookingStatus={booking.status}
@@ -83,6 +92,7 @@ export default async function BookingDetailPage({
           restaurantSlug={restaurantSlug}
           restaurantAddress={restaurantAddress}
           bookingId={booking.id}
+          review={data.review}
         />
       </div>
     </section>

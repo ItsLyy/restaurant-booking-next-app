@@ -32,22 +32,6 @@
     "updatedAt": "2024-01-13T09:10:00.000Z"
   },
   {
-    "id": "photo-r1-post-04",
-    "url": "https://images.unsplash.com/photo-1576866209830-589e1bfbaa4d?w=1200",
-    "type": "post",
-    "restaurantId": "rest-001",
-    "createdAt": "2024-01-13T09:15:00.000Z",
-    "updatedAt": "2024-01-13T09:15:00.000Z"
-  },
-  {
-    "id": "photo-r1-post-05",
-    "url": "https://images.unsplash.com/photo-1493770348161-369560ae357d?w=1200",
-    "type": "post",
-    "restaurantId": "rest-001",
-    "createdAt": "2024-01-13T09:20:00.000Z",
-    "updatedAt": "2024-01-13T09:20:00.000Z"
-  },
-  {
     "id": "photo-r1-menu-01",
     "url": "https://images.unsplash.com/photo-1512058564366-18510be2db19?w=800",
     "type": "menu",

@@ -7,16 +7,8 @@ import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr";
 import { ImageGallery } from "../../_components/image-gallery";
 
 import { getRestaurantImage } from "@data/restaurants/get-restaurant-image";
-import restaurantPhotos from "@data/dummy/restaurant_photos.json";
-import restaurants from "@data/dummy/restaurants.json";
 
-export const generateStaticParams = async () => {
-  return restaurants.flatMap((restaurant) =>
-    restaurantPhotos
-      .filter((photo) => photo.restaurantId === restaurant.id)
-      .map((photo) => ({ slug: restaurant.slug, imageId: photo.id })),
-  );
-};
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,

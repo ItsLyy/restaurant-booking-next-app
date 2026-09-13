@@ -1,31 +1,32 @@
 "use client";
 
-import { SignOutIcon } from "@phosphor-icons/react/dist/ssr";
+import { DashboardNavFooter } from "@components";
 
 import { NavItem } from "./nav-item";
 
-import { NAV_ITEMS } from "../../_libs/navigation";
+import { getVisibleNavItems } from "../../_libs/navigation";
+
+import type { DashboardRole } from "@libs/session";
 
 export const Navigation = ({
   restaurantName,
+  role,
 }: {
   restaurantName: string;
+  role: DashboardRole;
 }) => {
+  const items = getVisibleNavItems(role);
+
   return (
     <nav className="grow size-full flex flex-col justify-between p-8">
       <ul className="flex flex-col gap-2">
-        {NAV_ITEMS.map((item) => (
+        {items.map((item) => (
           <li key={item.href}>
             <NavItem icon={item.icon} label={item.label} href={item.href} />
           </li>
         ))}
       </ul>
-      <footer className="space-y-2">
-        <NavItem icon={SignOutIcon} label="Go back browsing" href="/" />
-        <div className="border border-muted px-4 py-3 rounded-lg w-full bg-base-200">
-          <span className="text-muted text-c-header-md">{restaurantName}</span>
-        </div>
-      </footer>
+      <DashboardNavFooter restaurantName={restaurantName} />
     </nav>
   );
 };

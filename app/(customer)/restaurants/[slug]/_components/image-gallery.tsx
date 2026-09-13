@@ -19,7 +19,17 @@ interface ImageGalleryProps {
   initialIndex: number;
 }
 
-const getThumbnailUrl = (url: string) => url.replace(/\?w=\d+/, "?w=240");
+const SUPABASE_STORAGE_MARKER = "/storage/v1/object/public/";
+
+const THUMB_TRANSFORMABLE = /\.(jpe?g|png|webp)(\?|#|$)/i;
+
+const getThumbnailUrl = (url: string) => {
+  if (url.includes(SUPABASE_STORAGE_MARKER) && THUMB_TRANSFORMABLE.test(url)) {
+    const base = url.split(/\?|#/)[0];
+    return `${base}?width=240`;
+  }
+  return url.replace(/\?w=\d+/, "?w=240");
+};
 
 export const ImageGallery = ({
   slug,

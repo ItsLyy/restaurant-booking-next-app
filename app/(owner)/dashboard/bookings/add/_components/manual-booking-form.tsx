@@ -40,7 +40,7 @@ export const ManualBookingForm = ({
     <form action={formAction} className="grid grid-cols-2 gap-4">
       <p className="col-span-2 text-d-caption text-muted">
         The customer will be filled in automatically from the account that
-        creates this booking (owner or officer).
+        creates this booking (owner, manager, or staff).
       </p>
 
       <div className="flex flex-col gap-1">

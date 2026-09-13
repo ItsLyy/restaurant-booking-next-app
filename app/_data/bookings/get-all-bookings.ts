@@ -16,8 +16,14 @@ interface BookingListItem {
   paymentStatus: IPayment["status"] | undefined;
 }
 
-export async function getAllBookings(): Promise<BookingListItem[]> {
-  return bookings.map((booking) => {
+export async function getAllBookings(
+  customerId?: string,
+): Promise<BookingListItem[]> {
+  const filtered = customerId
+    ? bookings.filter((booking) => booking.customerId === customerId)
+    : bookings;
+
+  return filtered.map((booking) => {
     const table = tables.find((item) => item.id === booking.tableId);
     const restaurant = restaurants.find(
       (item) => item.id === table?.restaurantId,

@@ -4,12 +4,13 @@ import { ConfirmUnpaidState } from "./confirm-unpaid-state";
 import { FailedState } from "./failed-state";
 import { PendingState } from "./pending-state";
 
-import { IBooking, IPayment } from "@types";
+import { IBooking, IPayment, IReview } from "@types";
 
 interface GeneralProps {
   bookingStatus: IBooking["status"];
   paymentStatus: IPayment["status"];
   bookingId: string;
+  review: IReview | null;
 }
 
 interface FooterProps extends GeneralProps {
@@ -27,6 +28,7 @@ export const Footer = ({
   restaurantSlug,
   restaurantAddress,
   bookingId,
+  review,
 }: FooterProps) => {
   return (
     <footer className="space-y-2">
@@ -38,6 +40,7 @@ export const Footer = ({
         restaurantSlug={restaurantSlug}
         restaurantAddress={restaurantAddress}
         bookingId={bookingId}
+        review={review}
       />
     </footer>
   );
@@ -51,6 +54,7 @@ const CallToActions = ({
   restaurantSlug,
   restaurantAddress,
   bookingId,
+  review,
 }: FooterProps) => {
   if (bookingStatus === "confirmed" && paymentStatus === "unpaid")
     return (
@@ -66,7 +70,7 @@ const CallToActions = ({
       />
     );
   else if (bookingStatus === "completed")
-    return <CompletedState restaurantSlug={restaurantSlug} />;
+    return <CompletedState bookingId={bookingId} restaurantSlug={restaurantSlug} review={review} />;
   else if (bookingStatus === "cancelled" || bookingStatus === "no_show")
     return <FailedState restaurantSlug={restaurantSlug} />;
   return <PendingState bookingId={bookingId} />;

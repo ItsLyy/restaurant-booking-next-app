@@ -14,9 +14,8 @@ import { confirmBookingAction } from "../_actions/confirm-booking";
 import { formatDayDate, formatPrice, formatTime } from "@utils";
 
 interface ConfirmBookingFormProps {
-  bookingId: string;
+  restaurantId: string;
   restaurantName: string;
-  bookingCode: string;
   date: string;
   time: string;
   tableName: string;
@@ -26,9 +25,8 @@ interface ConfirmBookingFormProps {
 }
 
 export const ConfirmBookingForm = ({
-  bookingId,
+  restaurantId,
   restaurantName,
-  bookingCode,
   date,
   time,
   tableName,
@@ -42,16 +40,16 @@ export const ConfirmBookingForm = ({
   });
 
   useEffect(() => {
-    if (!state.ok) return;
+    if (!state.ok || !state.bookingId) return;
     toast.success("Booking confirmed — see you soon!");
-    router.push(`/bookings/${bookingId}`);
-  }, [state.ok, bookingId, router]);
+    // react-doctor-disable-next-line nextjs-no-client-side-redirect
+    router.push(`/bookings/${state.bookingId}`);
+  }, [state.ok, state.bookingId, router]);
 
   return (
     <div className="space-y-4">
       <dl className="divide-y divide-muted/50">
         <SummaryRow label="Restaurant" value={restaurantName} />
-        <SummaryRow label="Booking code" value={bookingCode} />
         <SummaryRow label="Date" value={formatDayDate(date)} />
         <SummaryRow label="Time" value={formatTime(time)} />
         <SummaryRow label="Table" value={tableName} />
@@ -60,7 +58,10 @@ export const ConfirmBookingForm = ({
       </dl>
 
       <form action={formAction} className="space-y-3">
-        <input type="hidden" name="bookingId" value={bookingId} />
+        <input type="hidden" name="restaurantId" value={restaurantId} />
+        <input type="hidden" name="date" value={date} />
+        <input type="hidden" name="time" value={time} />
+        <input type="hidden" name="partySize" value={partySize} />
 
         <div className="flex flex-col gap-1">
           <label

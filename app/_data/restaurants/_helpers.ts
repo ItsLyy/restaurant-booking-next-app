@@ -1,51 +1,34 @@
-import restaurantPhotos from "../dummy/restaurant_photos.json";
-import tables from "../dummy/tables.json";
-import bookings from "../dummy/bookings.json";
-import reviews from "../dummy/reviews.json";
+import type { IRestaurantListItem } from "@types";
+import type { RestaurantRow } from "@db/schema";
 
-import type { IRestaurant, IRestaurantListItem } from "@types";
+export interface RestaurantListItemStats {
+  image: string;
+  rating: number;
+  minPrice: number;
+  maxPrice: number;
+}
 
 export function toRestaurantListItem(
-  restaurant: IRestaurant,
+  restaurant: RestaurantRow,
+  stats: RestaurantListItemStats,
 ): IRestaurantListItem {
-  const restaurantTables = tables.filter(
-    (table) => table.restaurantId === restaurant.id,
-  );
-
-  const restaurantImage = restaurantPhotos.find(
-    (photo) => photo.restaurantId === restaurant.id && photo.type === "cover",
-  )?.url;
-
-  const restaurantBookingIds = new Set<string>();
-  for (const table of restaurantTables) {
-    for (const booking of bookings) {
-      if (booking.tableId === table.id) {
-        restaurantBookingIds.add(booking.id);
-      }
-    }
-  }
-  const restaurantReviews = reviews.filter((review) =>
-    restaurantBookingIds.has(review.bookingId),
-  );
-  const totalRating = restaurantReviews.reduce(
-    (sum, review) => sum + review.customerRating,
-    0,
-  );
-
-  const minPriceTable = restaurantTables.reduce((min, table) =>
-    table.price < min.price ? table : min,
-  );
-  const maxPriceTable = restaurantTables.reduce((max, table) =>
-    table.price > max.price ? table : max,
-  );
-
   return {
-    ...restaurant,
-    image: restaurantImage ?? "/",
-    rating: restaurantReviews.length
-      ? totalRating / restaurantReviews.length
-      : 0,
-    minPrice: minPriceTable.price,
-    maxPrice: maxPriceTable.price,
+    id: restaurant.id,
+    name: restaurant.name,
+    slug: restaurant.slug,
+    country: restaurant.country,
+    city: restaurant.city,
+    address: restaurant.address,
+    tags: restaurant.tags,
+    categoryId: restaurant.categoryId ?? undefined,
+    discount: restaurant.discount ?? undefined,
+    description: restaurant.description,
+    shortDescription: restaurant.shortDescription ?? undefined,
+    lat: restaurant.lat ?? undefined,
+    lng: restaurant.lng ?? undefined,
+    image: stats.image,
+    rating: stats.rating,
+    minPrice: stats.minPrice,
+    maxPrice: stats.maxPrice,
   };
 }

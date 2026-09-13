@@ -10,12 +10,13 @@ export interface BookingsHrefParams {
 }
 
 /**
- * Builds a /dashboard/bookings href that preserves every current filter
+ * Builds a bookings href that preserves every current filter
  * parameter and applies the given overrides. Omitting `date` keeps the
  * default (today); `status: "all"`, empty `query`, and page 1 are dropped.
  */
 export const buildBookingsHref = (
   params: BookingsHrefParams,
+  base = "/dashboard/bookings",
 ): string | UrlObject => {
   const query: Record<string, string> = {};
   if (params.date) query.date = params.date;
@@ -24,6 +25,6 @@ export const buildBookingsHref = (
   if (params.page && params.page > 1) query.page = String(params.page);
 
   const entries = Object.entries(query);
-  if (entries.length === 0) return "/dashboard/bookings";
-  return { pathname: "/dashboard/bookings", query };
+  if (entries.length === 0) return base;
+  return { pathname: base, query };
 };

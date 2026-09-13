@@ -5,7 +5,7 @@
     "firstName": "Kenji",
     "lastName": "Watanabe",
     "email": "kenji.watanabe@sakuragarden.jp",
-    "password": "$2b$10$mN8lK7jI6hG5fE4dC3bA2ZyXwVuTsRqPoNmLkJiHgFeDcBaZyXwVu",
+    "password": "$2b$10$wxQl0.T2bKuo0HrSjKqCt.LS4qRPicAIVLIaNzaK9q72IOkBDzNta",
     "role": "officer",
     "emailVerifyAt": "2024-01-15T09:00:00.000Z",
     "allergics": [],
@@ -22,10 +22,12 @@
     "firstName": "Yuki",
     "lastName": "Nakamura",
     "email": "yuki.nakamura@sakuragarden.jp",
-    "password": "$2b$10$pQ9rS0tU1vW2xY3zA4bC5dE6fG7hI8jK9lM0nO1pQ2rS3tU4vW5xY",
+    "password": "$2b$10$wxQl0.T2bKuo0HrSjKqCt.LS4qRPicAIVLIaNzaK9q72IOkBDzNta",
     "role": "officer",
     "emailVerifyAt": "2024-01-20T10:30:00.000Z",
-    "allergics": ["peanuts"],
+    "allergics": [
+      "peanuts"
+    ],
     "avatar": "https://randomuser.me/api/portraits/women/15.jpg",
     "position": "staff",
     "invitedBy": "owner-001",
@@ -59,7 +61,9 @@
     "password": "$2b$10$bC1dE2fG3hI4jK5lM6nO7pQ8rS9tU0vW1xY2zA3bC4dE5fG6hI7jK",
     "role": "officer",
     "emailVerifyAt": "2024-02-15T11:00:00.000Z",
-    "allergics": ["dairy"],
+    "allergics": [
+      "dairy"
+    ],
     "avatar": "https://randomuser.me/api/portraits/women/58.jpg",
     "position": "staff",
     "invitedBy": "owner-002",

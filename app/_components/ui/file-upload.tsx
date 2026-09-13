@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   FileImageIcon,
@@ -14,6 +14,7 @@ interface FileUploadProps {
   id: string;
   accept?: string;
   error?: boolean;
+  hint?: string;
 }
 
 const formatFileSize = (bytes: number) => {
@@ -32,18 +33,45 @@ const FileTypeIcon = ({ type }: { type: string }) => {
   return <FileTextIcon weight="fill" className="size-6" aria-hidden="true" />;
 };
 
-export const FileUpload = ({ id, accept, error }: FileUploadProps) => {
+export const FileUpload = ({
+  id,
+  accept,
+  error,
+  hint = "JPG, PNG, or PDF · max 5MB",
+}: FileUploadProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [dragging, setDragging] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   const commitFile = (next: File | null) => {
     setFile(next);
-    if (!next && inputRef.current) {
-      inputRef.current.value = "";
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
+
+    if (!next) {
+      setPreviewUrl(null);
+      if (inputRef.current) inputRef.current.value = "";
       return;
     }
-    if (next && inputRef.current) {
+
+    const isImage =
+      next.type.startsWith("image/") ||
+      /\.(jpe?g|png|webp|gif)$/i.test(next.name);
+
+    const nextUrl = isImage ? URL.createObjectURL(next) : null;
+    setPreviewUrl(nextUrl);
+
+    if (inputRef.current) {
       const transfer = new DataTransfer();
       transfer.items.add(next);
       inputRef.current.files = transfer.files;
@@ -94,13 +122,24 @@ export const FileUpload = ({ id, accept, error }: FileUploadProps) => {
         }
         aria-invalid={error ? true : undefined}
         className="sr-only"
-        onChange={(event) => setFile(event.target.files?.[0] ?? null)}
+        onChange={(event) => commitFile(event.target.files?.[0] ?? null)}
       />
       {file ? (
         <>
-          <div className="size-12 flex items-center justify-center rounded-full bg-positive/10">
-            <FileTypeIcon type={file.type} />
-          </div>
+          {previewUrl ? (
+            <div className="size-14 shrink-0 overflow-hidden rounded-xl border border-positive/30">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={previewUrl}
+                alt={`Preview of ${file.name}`}
+                className="size-full object-cover"
+              />
+            </div>
+          ) : (
+            <div className="size-12 flex items-center justify-center rounded-full bg-positive/10">
+              <FileTypeIcon type={file.type} />
+            </div>
+          )}
           <div className="flex flex-col items-center gap-0.5 max-w-full">
             <span className="text-c-button text-foreground truncate max-w-full">
               {file.name}
@@ -123,9 +162,7 @@ export const FileUpload = ({ id, accept, error }: FileUploadProps) => {
             <span className="text-c-button">
               Click to upload or drag and drop
             </span>
-            <span className="text-c-caption text-muted">
-              JPG, PNG, or PDF · max 5MB
-            </span>
+            <span className="text-c-caption text-muted">{hint}</span>
           </div>
         </>
       )}

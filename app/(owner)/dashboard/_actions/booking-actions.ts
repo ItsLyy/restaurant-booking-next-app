@@ -12,6 +12,8 @@ import {
   getEffectiveBookingStatus,
 } from "../../../_data/bookings/booking-deadline";
 
+import { getDashboardRole } from "@libs/session";
+
 import type { IBooking, IPayment, ITable } from "@types";
 
 const BOOKINGS_FILE_PATH = path.join(
@@ -89,6 +91,11 @@ function saveBooking(bookings: IBooking[], booking: IBooking): IBooking {
 }
 
 export async function confirmBookingAction(id: string): Promise<IBooking> {
+  const role = await getDashboardRole();
+  if (!role) {
+    throw new Error("Unauthorized.");
+  }
+
   const bookings = readBookings();
   const index = findBookingIndex(bookings, id);
   const booking = bookings[index];
@@ -137,22 +144,70 @@ export async function confirmBookingAction(id: string): Promise<IBooking> {
   });
 
   const payments = readPayments();
-  const existing = payments.find((item) => item.bookingId === id);
-  if (existing) {
-    return confirmed;
+  let existingPayment = payments.find((item) => item.bookingId === id);
+  if (!existingPayment) {
+    existingPayment = {
+      id: buildNextPaymentId(payments),
+      price: table?.price ?? booking.partySize * 25,
+      status: "unpaid",
+      deadline: derivePaymentDeadline(),
+      gatewayToken: `tok_sandbox_${id}`,
+      bookingId: id,
+      createdAt: now,
+      updatedAt: now,
+    };
+    payments.push(existingPayment);
+    writePayments(payments);
   }
 
-  payments.push({
-    id: buildNextPaymentId(payments),
-    price: table?.price ?? booking.partySize * 25,
-    status: "unpaid",
-    deadline: derivePaymentDeadline(),
-    gatewayToken: `tok_sandbox_${id}`,
-    bookingId: id,
-    createdAt: now,
-    updatedAt: now,
-  });
-  writePayments(payments);
+  // DB Sync
+  try {
+    const { db } = await import("@db/client");
+    const { bookings: bookingsTable, payments: paymentsTable } = await import("@db/schema");
+    const { eq } = await import("drizzle-orm");
+
+    await db
+      .update(bookingsTable)
+      .set({ status: "confirmed", updatedAt: now })
+      .where(eq(bookingsTable.id, id));
+
+    if (existingPayment) {
+      await db
+        .insert(paymentsTable)
+        .values({
+          id: existingPayment.id,
+          price: existingPayment.price,
+          status: (existingPayment.status === "paid" ? "paid" : "unpaid") as "unpaid" | "paid",
+          deadline: existingPayment.deadline,
+          gatewayToken: existingPayment.gatewayToken,
+          paidAt: null,
+          bookingId: id,
+          createdAt: existingPayment.createdAt ?? now,
+          updatedAt: existingPayment.updatedAt ?? now,
+        })
+        .onConflictDoNothing();
+    }
+  } catch {
+    // DB sync error handled gracefully
+  }
+
+  // Broadcast
+  try {
+    const { broadcastBookingEvent } = await import("@db/broadcast");
+    await broadcastBookingEvent("booking:confirmed", {
+      bookingId: id,
+      restaurantId: table?.restaurantId ?? RESTAURANT_ID,
+      customerId: booking.customerId,
+      tableId: booking.tableId,
+      status: "confirmed",
+      date: booking.date,
+      time: booking.time,
+      partySize: booking.partySize,
+      paymentStatus: existingPayment?.status ?? "unpaid",
+    });
+  } catch {
+    // Broadcast error handled gracefully
+  }
 
   return confirmed;
 }
@@ -161,6 +216,11 @@ export async function rejectBookingAction(
   id: string,
   reason?: string,
 ): Promise<IBooking> {
+  const role = await getDashboardRole();
+  if (!role) {
+    throw new Error("Unauthorized.");
+  }
+
   const bookings = readBookings();
   const index = findBookingIndex(bookings, id);
   const booking = bookings[index];
@@ -170,20 +230,68 @@ export async function rejectBookingAction(
   }
 
   const cancelledReason = reason?.trim() || "Rejected by the restaurant.";
+  const now = new Date().toISOString();
 
-  return saveBooking(bookings, {
+  const rejected = saveBooking(bookings, {
     ...booking,
     status: "cancelled",
     cancelled: {
-      date: new Date().toISOString().slice(0, 10),
+      date: now.slice(0, 10),
       by: "restaurant",
       reason: cancelledReason,
     },
-    updatedAt: new Date().toISOString(),
+    updatedAt: now,
   });
+
+  const table = tables.find((item) => item.id === booking.tableId) as
+    | ITable
+    | undefined;
+
+  // DB Sync
+  try {
+    const { db } = await import("@db/client");
+    const { bookings: bookingsTable } = await import("@db/schema");
+    const { eq } = await import("drizzle-orm");
+
+    await db
+      .update(bookingsTable)
+      .set({
+        status: "cancelled",
+        cancelledBy: "restaurant",
+        cancelledDate: now.slice(0, 10),
+        cancelledReason,
+        updatedAt: now,
+      })
+      .where(eq(bookingsTable.id, id));
+  } catch {
+    // DB sync error handled gracefully
+  }
+
+  // Broadcast
+  try {
+    const { broadcastBookingEvent } = await import("@db/broadcast");
+    await broadcastBookingEvent("booking:rejected", {
+      bookingId: id,
+      restaurantId: table?.restaurantId ?? RESTAURANT_ID,
+      customerId: booking.customerId,
+      tableId: booking.tableId,
+      status: "cancelled",
+      cancelledBy: "restaurant",
+      cancelledReason,
+    });
+  } catch {
+    // Broadcast error handled gracefully
+  }
+
+  return rejected;
 }
 
 export async function completeBookingAction(id: string): Promise<IBooking> {
+  const role = await getDashboardRole();
+  if (!role) {
+    throw new Error("Unauthorized.");
+  }
+
   const bookings = readBookings();
   const index = findBookingIndex(bookings, id);
   const booking = bookings[index];
@@ -192,18 +300,60 @@ export async function completeBookingAction(id: string): Promise<IBooking> {
     throw new Error("Only confirmed bookings can be marked as completed.");
   }
 
+  const now = new Date().toISOString();
   const completed = saveBooking(bookings, {
     ...booking,
     status: "completed",
-    updatedAt: new Date().toISOString(),
+    updatedAt: now,
   });
 
   const payments = readPayments();
   const payment = payments.find((item) => item.bookingId === id);
   if (payment && payment.status === "unpaid") {
     payment.status = "paid";
-    payment.updatedAt = new Date().toISOString();
+    payment.paidAt = now;
+    payment.updatedAt = now;
     writePayments(payments);
+  }
+
+  const table = tables.find((item) => item.id === booking.tableId) as
+    | ITable
+    | undefined;
+
+  // DB Sync
+  try {
+    const { db } = await import("@db/client");
+    const { bookings: bookingsTable, payments: paymentsTable } = await import("@db/schema");
+    const { eq } = await import("drizzle-orm");
+
+    await db
+      .update(bookingsTable)
+      .set({ status: "completed", updatedAt: now })
+      .where(eq(bookingsTable.id, id));
+
+    if (payment) {
+      await db
+        .update(paymentsTable)
+        .set({ status: "paid", paidAt: now, updatedAt: now })
+        .where(eq(paymentsTable.bookingId, id));
+    }
+  } catch {
+    // DB sync error handled gracefully
+  }
+
+  // Broadcast
+  try {
+    const { broadcastBookingEvent } = await import("@db/broadcast");
+    await broadcastBookingEvent("booking:completed", {
+      bookingId: id,
+      restaurantId: table?.restaurantId ?? RESTAURANT_ID,
+      customerId: booking.customerId,
+      tableId: booking.tableId,
+      status: "completed",
+      paymentStatus: "paid",
+    });
+  } catch {
+    // Broadcast error handled gracefully
   }
 
   return completed;
@@ -222,6 +372,11 @@ export async function createManualBookingAction(
   _prevState: ManualBookingState,
   formData: FormData,
 ): Promise<ManualBookingState> {
+  const role = await getDashboardRole();
+  if (!role) {
+    return { ok: false, error: "Unauthorized." };
+  }
+
   const date = String(formData.get("date") ?? "").trim();
   const time = String(formData.get("time") ?? "").trim();
   const partySize = Number(formData.get("partySize"));
@@ -309,17 +464,72 @@ export async function createManualBookingAction(
   writeBookings(bookings);
 
   const payments = readPayments();
-  payments.push({
+  const newPayment = {
     id: buildNextPaymentId(payments),
     price: table.price,
-    status: "unpaid",
+    status: "unpaid" as const,
     deadline: derivePaymentDeadline(),
     gatewayToken: `tok_sandbox_${id}`,
     bookingId: id,
     createdAt: now,
     updatedAt: now,
-  });
+  };
+  payments.push(newPayment);
   writePayments(payments);
+
+  // DB Sync
+  try {
+    const { db } = await import("@db/client");
+    const { bookings: bookingsTable, payments: paymentsTable } = await import("@db/schema");
+
+    await db.insert(bookingsTable).values({
+      id,
+      date,
+      time,
+      partySize,
+      specialRequest: specialRequest || null,
+      status: "confirmed",
+      customerId: MANUAL_BOOKING_ACTOR_ID,
+      tableId,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    await db.insert(paymentsTable).values({
+      id: newPayment.id,
+      price: newPayment.price,
+      status: "unpaid",
+      deadline: newPayment.deadline,
+      gatewayToken: newPayment.gatewayToken,
+      paidAt: null,
+      bookingId: id,
+      createdAt: now,
+      updatedAt: now,
+    });
+  } catch {
+    // DB sync error handled gracefully
+  }
+
+  // Broadcast
+  try {
+    const { broadcastBookingEvent } = await import("@db/broadcast");
+    await broadcastBookingEvent("booking:created", {
+      bookingId: id,
+      restaurantId: table.restaurantId ?? RESTAURANT_ID,
+      customerId: MANUAL_BOOKING_ACTOR_ID,
+      tableId,
+      tableName: table.name,
+      guestName: "Staff (Manual Reservation)",
+      status: "confirmed",
+      date,
+      time,
+      partySize,
+      paymentStatus: "unpaid",
+      price: table.price,
+    });
+  } catch {
+    // Broadcast error handled gracefully
+  }
 
   revalidatePath("/dashboard", "page");
   revalidatePath("/dashboard/bookings", "page");

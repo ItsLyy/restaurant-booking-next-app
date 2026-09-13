@@ -5,7 +5,7 @@
     "firstName": "Alice",
     "lastName": "Johnson",
     "email": "alice.johnson@gmail.com",
-    "password": "$2b$10$hI4jK5lM6nO7pQ8rS9tU0vW1xY2zA3bC4dE5fG6hI7jK8lM9nO0pQ",
+    "password": "$2b$10$wxQl0.T2bKuo0HrSjKqCt.LS4qRPicAIVLIaNzaK9q72IOkBDzNta",
     "role": "customer",
     "emailVerifyAt": "2024-04-01T12:00:00.000Z",
     "allergics": [
@@ -14,7 +14,7 @@
     ],
     "avatar": "https://randomuser.me/api/portraits/women/10.jpg",
     "createdAt": "2024-03-30T10:00:00.000Z",
-    "updatedAt": "2024-04-01T12:00:00.000Z"
+    "updatedAt": "2026-09-13T14:47:38.498Z"
   },
   {
     "id": "user-002",
@@ -138,5 +138,58 @@
     "avatar": "https://randomuser.me/api/portraits/men/22.jpg",
     "createdAt": "2024-05-15T10:00:00.000Z",
     "updatedAt": "2024-05-16T11:30:00.000Z"
+  },
+  {
+    "id": "user-010",
+    "username": "lyydev",
+    "email": "flowtest1789177733@example.com",
+    "password": "$2b$10$qH0mGwVcZtgOJFuSqOwW9uclFnXimyPNGh06laOd8GmqU2r.7N4x.",
+    "firstName": "Flow",
+    "lastName": "Test",
+    "role": "customer",
+    "emailVerifyAt": "2026-09-12T01:49:37.968Z",
+    "allergics": [],
+    "createdAt": "2026-09-12T01:49:37.968Z",
+    "updatedAt": "2026-09-12T01:49:37.968Z"
+  },
+  {
+    "id": "user-011",
+    "username": "guard1789177915",
+    "email": "guard1789177915@example.com",
+    "password": "$2b$10$ag0E/doblq/vidci3O58Bu6be1z4B3RcnHyEqf9mj/WIsTMAzNyaC",
+    "firstName": "Guard",
+    "lastName": "Test",
+    "role": "customer",
+    "emailVerifyAt": "2026-09-12T01:52:00.021Z",
+    "allergics": [],
+    "createdAt": "2026-09-12T01:52:00.021Z",
+    "updatedAt": "2026-09-12T01:52:00.021Z"
+  },
+  {
+    "id": "user-012",
+    "username": "clean1789178023",
+    "email": "clean1789178023@example.com",
+    "password": "$2b$10$ANjleMJDha3n/yNuOyqFP.EuAOSF2jyAyfff7io0ZewO/rFaF185i",
+    "firstName": "Clean",
+    "lastName": "Test",
+    "role": "customer",
+    "emailVerifyAt": "2026-09-12T01:53:48.255Z",
+    "allergics": [],
+    "createdAt": "2026-09-12T01:53:48.255Z",
+    "updatedAt": "2026-09-12T01:53:48.255Z"
+  },
+  {
+    "id": "user-013",
+    "username": "irlyfizaharisdab7",
+    "email": "irlyfizaharis@gmail.com",
+    "password": "$2b$10$C0MnT.DGgag3M11i3ZzjW.52OXn4fb3TaQ91Ub6CJfM1082IWCWUO",
+    "firstName": "Irly",
+    "lastName": "Fizaharis",
+    "role": "customer",
+    "emailVerifyAt": "2026-09-12T18:40:37.747Z",
+    "allergics": [],
+    "avatar": "https://lh3.googleusercontent.com/a/ACg8ocL6fh43ORt3VLWRqZqLSJ48d9XSY3j30Y1zoeME_mjSk99jy5rh=s96-c",
+    "createdAt": "2026-09-12T18:40:37.748Z",
+    "updatedAt": "2026-09-12T18:40:37.748Z"
   }
 ]

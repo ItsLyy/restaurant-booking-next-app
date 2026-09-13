@@ -2,22 +2,26 @@
 
 import { useCallback, useState } from "react";
 
-import { useRouter } from "next/navigation";
-
-import { toast } from "sonner";
+import { usePathname, useRouter } from "next/navigation";
 
 import { Button } from "@components";
 
 import { isBookingTooSoon } from "@data/bookings/booking-deadline";
 
-import { createBookingAction } from "./_actions/booking-action";
 import { Calendar } from "./calendar";
 import { PartySize } from "./party-size";
 import { Time } from "./time";
 
 import type { ITable } from "@types";
 
+interface CustomerIdentity {
+  firstName: string;
+  lastName: string;
+  avatar?: string;
+}
+
 interface BookingActionProps {
+  customer?: CustomerIdentity;
   restaurantId: string;
   slotsByDay: Record<number, string[]>;
   tables: ITable[];
@@ -66,27 +70,49 @@ const getMaxPartySize = (
 };
 
 export const BookingAction = ({
+  customer,
   restaurantId,
   slotsByDay,
   tables,
   busyTablesByTime,
 }: BookingActionProps) => {
   const router = useRouter();
+  const pathname = usePathname();
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [selectedPartySize, setSelectedPartySize] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [bookingError, setBookingError] = useState<string | null>(null);
 
-  const availableTimes = selectedDate
-    ? getAvailableTimes(slotsByDay, tables, busyTablesByTime, selectedDate)
-    : [];
-
   const handleAvailableTimes = useCallback(
     (date: string) =>
       getAvailableTimes(slotsByDay, tables, busyTablesByTime, date),
     [slotsByDay, tables, busyTablesByTime],
   );
+
+  if (!customer) {
+    const signinHref = `/signin?next=${encodeURIComponent(pathname)}`;
+    return (
+      <div className="border border-muted rounded-2xl w-full overflow-hidden">
+        <div className="py-4 px-6 bg-base-200 border-b border-muted">
+          <h2 className="text-foreground text-c-header-md">Book a Table</h2>
+        </div>
+        <div className="p-6 space-y-4">
+          <p className="text-c-normal text-muted">
+            Sign in to view availability and reserve a table at this
+            restaurant.
+          </p>
+          <Button as="link" href={signinHref} className="w-full">
+            Sign in to book
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  const availableTimes = selectedDate
+    ? getAvailableTimes(slotsByDay, tables, busyTablesByTime, selectedDate)
+    : [];
 
   const hasSelectedSlot = !!selectedDate && !!selectedTime;
 
@@ -132,24 +158,15 @@ export const BookingAction = ({
     setBookingError(null);
 
     try {
-      const result = await createBookingAction({
-        restaurantId,
-        date: selectedDate,
-        time: selectedTime,
-        partySize: selectedPartySize,
-      });
-
-      toast.success(
-        "Booking requested! Confirm the details on the next step.",
+      router.push(
+        `/bookings/confirmation?restaurantId=${encodeURIComponent(
+          restaurantId,
+        )}&date=${encodeURIComponent(selectedDate)}&time=${encodeURIComponent(
+          selectedTime,
+        )}&partySize=${selectedPartySize}`,
       );
-      router.push(`/bookings/confirmation?id=${result.booking.id}`);
-    } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : "Could not create the booking.";
-      setBookingError(message);
-      toast.error(message);
+    } catch {
+      setBookingError("Could not open the booking confirmation.");
     } finally {
       setIsSubmitting(false);
     }

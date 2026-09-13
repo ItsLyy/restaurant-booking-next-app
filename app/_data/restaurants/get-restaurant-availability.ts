@@ -1,12 +1,11 @@
-import bookings from "../dummy/bookings.json";
-import restaurants from "../dummy/restaurants.json";
-import restaurantHours from "../dummy/restaurant_hours.json";
-import tables from "../dummy/tables.json";
-import payments from "../dummy/payments.json";
+import { eq, inArray } from "drizzle-orm";
+
+import { db } from "@db/client";
+import { bookings, payments, restaurants, restaurantHours, tables } from "@db/schema";
 
 import { getEffectiveBookingStatus } from "../bookings/booking-deadline";
 
-import type { IBooking, ITable } from "@types";
+import type { IBooking, IPayment, ITable } from "@types";
 
 export interface RestaurantAvailability {
   slotsByDay: Record<number, string[]>;
@@ -41,46 +40,65 @@ function buildTimeSlots(openTime: string, closeTime: string): string[] {
 export async function getRestaurantAvailability(
   slug: string,
 ): Promise<RestaurantAvailability> {
-  const restaurant = restaurants.find((item) => item.slug === slug);
+  const restaurant =
+    (
+      await db
+        .select()
+        .from(restaurants)
+        .where(eq(restaurants.slug, slug))
+        .limit(1)
+    )[0] ?? null;
   if (!restaurant) {
     return { slotsByDay: {}, tables: [], busyTablesByTime: {} };
   }
 
-  const restaurantTableIds = new Set<string>();
-  const restaurantTables: ITable[] = [];
-  for (const table of tables) {
-    if (table.restaurantId === restaurant.id) {
-      restaurantTableIds.add(table.id);
-      restaurantTables.push(table as ITable);
-    }
-  }
+  const [restaurantTables, restaurantHourRows] = await Promise.all([
+    db
+      .select()
+      .from(tables)
+      .where(eq(tables.restaurantId, restaurant.id)),
+    db
+      .select()
+      .from(restaurantHours)
+      .where(eq(restaurantHours.restaurantId, restaurant.id)),
+  ]);
+
+  const restaurantTableIds = new Set(
+    restaurantTables.map((table) => table.id),
+  );
 
   const slotsByDay: Record<number, string[]> = {};
-  for (const hours of restaurantHours) {
-    if (hours.restaurantId !== restaurant.id) {
-      continue;
-    }
+  for (const hours of restaurantHourRows) {
     slotsByDay[hours.dayOfWeek] = buildTimeSlots(
       hours.openTime,
       hours.closeTime,
     );
   }
 
+  const restaurantBookings = restaurantTableIds.size
+    ? await db
+        .select()
+        .from(bookings)
+        .where(inArray(bookings.tableId, [...restaurantTableIds]))
+    : [];
+
+  const bookingIds = restaurantBookings.map((booking) => booking.id);
+  const paymentRows = bookingIds.length
+    ? await db.select().from(payments).where(inArray(payments.bookingId, bookingIds))
+    : [];
+
   const paymentByBookingId = new Map(
-    payments.map((item) => [item.bookingId, item] as const),
+    paymentRows.map((item) => [item.bookingId, item] as const),
   );
   const busySetBySlot = new Map<string, Set<string>>();
-  for (const booking of bookings) {
+  for (const booking of restaurantBookings) {
     if (booking.status === "cancelled" || booking.status === "no_show") {
       continue;
     }
     const payment = paymentByBookingId.get(booking.id) as
-      | import("@types").IPayment
+      | IPayment
       | undefined;
     if (getEffectiveBookingStatus(booking as IBooking, payment) === "cancelled") {
-      continue;
-    }
-    if (!restaurantTableIds.has(booking.tableId)) {
       continue;
     }
 
@@ -98,5 +116,9 @@ export async function getRestaurantAvailability(
     busyTablesByTime[date] = byDate;
   }
 
-  return { slotsByDay, tables: restaurantTables, busyTablesByTime };
+  return {
+    slotsByDay,
+    tables: restaurantTables as ITable[],
+    busyTablesByTime,
+  };
 }

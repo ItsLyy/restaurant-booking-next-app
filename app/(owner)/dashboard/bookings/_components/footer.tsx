@@ -14,6 +14,7 @@ interface FooterProps {
   date: string;
   filter: BookingFilter;
   query: string;
+  base?: string;
 }
 
 export const Footer = ({
@@ -24,13 +25,16 @@ export const Footer = ({
   date,
   filter,
   query,
+  base,
 }: FooterProps) => {
   const start = count === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
   const end = Math.min(page * PAGE_SIZE, count);
   const label =
     count === 0
       ? `No bookings shown of ${total}`
-      : `Showing ${start}–${end} of ${total}`;
+      : count === total
+        ? `Showing ${start}–${end} of ${total}`
+        : `Showing ${start}–${end} of ${count} (filtered from ${total})`;
 
   return (
     <footer className="flex justify-between w-full">
@@ -40,7 +44,7 @@ export const Footer = ({
           page={page}
           pages={pages}
           buildHref={(nextPage) =>
-            buildBookingsHref({ date, filter, query, page: nextPage })
+            buildBookingsHref({ date, filter, query, page: nextPage }, base)
           }
         />
       ) : null}

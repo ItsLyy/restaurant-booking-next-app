@@ -1,23 +1,33 @@
 "use server";
 
-import { readFileSync, writeFileSync } from "fs";
-import path from "path";
-
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
-import type { IBooking } from "@types";
+import restaurants from "@data/dummy/restaurants.json";
 
-const BOOKINGS_FILE_PATH = path.join(
-  process.cwd(),
-  "app/_data/dummy/bookings.json",
-);
+import {
+  BookingLeadTimeError,
+  BookingSlotUnavailableError,
+  BookingWriteError,
+  createBooking,
+  RestaurantNoTablesError,
+  RestaurantNotFoundError,
+} from "@data/bookings/create-booking";
+import { getDinerSession } from "@libs/session";
 
-function readBookings(): IBooking[] {
-  return JSON.parse(readFileSync(BOOKINGS_FILE_PATH, "utf8")) as IBooking[];
-}
+import { z } from "zod";
+
+const bookingSchema = z.object({
+  restaurantId: z.string().min(1),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  time: z.string().regex(/^\d{2}:\d{2}$/),
+  partySize: z.coerce.number().int().min(1).max(99),
+  specialRequest: z.string().max(500).optional(),
+});
 
 export interface ConfirmBookingState {
   ok: boolean;
+  bookingId?: string;
   error?: string;
 }
 
@@ -25,46 +35,73 @@ export async function confirmBookingAction(
   _prevState: ConfirmBookingState,
   formData: FormData,
 ): Promise<ConfirmBookingState> {
-  const bookingId = String(formData.get("bookingId") ?? "").trim();
-  const specialRequest = String(formData.get("specialRequest") ?? "")
-    .trim()
-    .slice(0, 500);
+  const customer = await getDinerSession();
+  if (!customer) redirect("/signin");
 
-  if (!bookingId) {
-    return { ok: false, error: "The booking reference is missing." };
+  const parsed = bookingSchema.safeParse({
+    restaurantId: formData.get("restaurantId"),
+    date: formData.get("date"),
+    time: formData.get("time"),
+    partySize: formData.get("partySize"),
+    specialRequest: String(formData.get("specialRequest") ?? "")
+      .trim()
+      .slice(0, 500),
+  });
+  if (!parsed.success) {
+    return {
+      ok: false,
+      error: "Your booking details are incomplete. Please start over.",
+    };
   }
-
-  const bookings = readBookings();
-  const index = bookings.findIndex((booking) => booking.id === bookingId);
-  if (index === -1) {
-    return { ok: false, error: "This booking no longer exists." };
-  }
-
-  const booking = bookings[index];
-  if (booking.status === "cancelled" || booking.status === "no_show") {
-    return { ok: false, error: "This booking can no longer be confirmed." };
-  }
-
-  bookings[index] = {
-    ...booking,
-    ...(specialRequest ? { specialRequest } : {}),
-    updatedAt: new Date().toISOString(),
-  };
 
   try {
-    writeFileSync(
-      BOOKINGS_FILE_PATH,
-      `${JSON.stringify(bookings, null, 2)}\n`,
-      "utf8",
+    const booking = await createBooking(parsed.data, customer.userId);
+
+    const restaurant = restaurants.find(
+      (item) => item.id === parsed.data.restaurantId,
     );
-  } catch {
-    return { ok: false, error: "Could not save the booking right now." };
+    if (restaurant) {
+      revalidatePath(`/restaurants/${restaurant.slug}`, "page");
+    }
+    revalidatePath("/bookings", "page");
+    revalidatePath("/dashboard", "page");
+    revalidatePath("/dashboard/bookings", "page");
+
+    // Broadcast booking:created event to restaurant dashboard and customer listeners
+    const { findAccountById } = await import("@data/auth/users");
+    const { broadcastBookingEvent } = await import("@db/broadcast");
+    const customerAccount = findAccountById(customer.userId);
+    const guestName = customerAccount
+      ? `${customerAccount.firstName} ${customerAccount.lastName}`.trim()
+      : customer.email;
+
+    await broadcastBookingEvent("booking:created", {
+      bookingId: booking.id,
+      restaurantId: parsed.data.restaurantId,
+      customerId: customer.userId,
+      tableId: booking.tableId,
+      guestName,
+      status: "pending",
+      date: booking.date,
+      time: booking.time,
+      partySize: booking.partySize,
+      paymentStatus: "unpaid",
+    });
+
+    return { ok: true, bookingId: booking.id };
+  } catch (error) {
+    if (
+      error instanceof BookingSlotUnavailableError ||
+      error instanceof BookingLeadTimeError ||
+      error instanceof RestaurantNotFoundError ||
+      error instanceof RestaurantNoTablesError ||
+      error instanceof BookingWriteError
+    ) {
+      return { ok: false, error: error.message };
+    }
+    return {
+      ok: false,
+      error: "Could not create the booking right now. Please try again.",
+    };
   }
-
-  revalidatePath(`/bookings/${bookingId}`, "page");
-  revalidatePath("/bookings", "page");
-  revalidatePath("/dashboard", "page");
-  revalidatePath("/dashboard/bookings", "page");
-
-  return { ok: true };
 }

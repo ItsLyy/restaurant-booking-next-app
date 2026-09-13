@@ -1,5 +1,4 @@
 import { getDashboardData } from "./_data/dashboard";
-
 import { QuickInformation } from "./_components/sections/quick-information";
 import { TableStatus } from "./_components/sections/table-status";
 import { TodayBooking } from "./_components/sections/today-booking";
@@ -7,6 +6,8 @@ import {
   parseBookingFilter,
   parseSelectedTable,
 } from "./_components/booking-filter";
+
+import { RealtimeDashboardBookings } from "./_components/realtime-dashboard-bookings";
 
 export default async function OverviewPage({
   searchParams,
@@ -26,6 +27,7 @@ export default async function OverviewPage({
 
   return (
     <section className="px-4 pt-3 pb-6 h-full flex gap-4">
+      <RealtimeDashboardBookings restaurantId={data.restaurant.id} showLiveBadge={false} />
       <div className="flex-1 min-w-0 min-h-0 flex flex-col gap-4">
         <QuickInformation bookings={data.bookings} />
         <TodayBooking
