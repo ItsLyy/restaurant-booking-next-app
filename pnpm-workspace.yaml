@@ -1,3 +1,22 @@
+allowBuilds:
+  esbuild: true
+  msgpackr-extract: true
+  sharp: true
+  unrs-resolver: true
+
 ignoredBuiltDependencies:
   - sharp
   - unrs-resolver
+
+onlyBuiltDependencies:
+  - msgpackr-extract
+
+minimumReleaseAge: 10080
+trustPolicy: no-downgrade
+trustPolicyExclude:
+  - "effect@4.0.0-beta.70"
+  - "@effect/platform-node-shared@4.0.0-beta.70"
+  - "eslint-import-resolver-typescript@3.10.1"
+  - "semver@6.3.1"
+  - "undici-types@6.21.0"
+blockExoticSubdeps: true

@@ -1,0 +1,100 @@
+import { notFound } from "next/navigation";
+
+import { Footer } from "./_components/footer";
+import { Header } from "./_components/header";
+import { Progress } from "./_components/progress";
+import { StatusDescription } from "./_components/status-description";
+import { StatusDetail } from "./_components/status-detail";
+
+import { getBooking } from "@data/bookings/get-booking";
+import { requireDiner } from "@libs/session";
+
+import { resolvePaymentStatus } from "@utils";
+import { RealtimeCustomerBookingListener } from "./_components/realtime-customer-booking-listener";
+
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Booking",
+  description: "View the status and details of your restaurant booking.",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
+
+export default async function BookingDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const customer = await requireDiner(`/bookings/${id}`);
+  const data = await getBooking(id);
+  if (!data || data.booking.customerId !== customer.userId) notFound();
+
+  const {
+    booking,
+    bookingCode,
+    restaurantName,
+    restaurantSlug,
+    restaurantAddress,
+    tableName,
+  } = data;
+  const paymentStatus = resolvePaymentStatus(booking.status, data.payment?.status);
+  const paymentPrice = data.payment?.price ?? 0;
+
+  return (
+    <section className="w-full flex justify-center items-center py-6 px-4">
+      <div className="max-w-150 w-full space-y-4">
+        <div className="flex justify-end">
+          <RealtimeCustomerBookingListener
+            bookingId={booking.id}
+            restaurantName={restaurantName}
+          />
+        </div>
+        <Header
+          restaurantName={restaurantName}
+          bookingStatus={booking.status}
+          paymentStatus={paymentStatus}
+        />
+        <StatusDetail
+          bookingStatus={booking.status}
+          bookingDate={booking.date}
+          bookingTime={booking.time}
+          paymentPrice={paymentPrice}
+          paymentStatus={paymentStatus}
+          bookingCancelled={
+            booking.cancelled
+              ? { by: booking.cancelled.by, date: booking.cancelled.date }
+              : undefined
+          }
+        />
+        <Progress bookingStatus={booking.status} paymentStatus={paymentStatus} />
+        <StatusDescription
+          bookingId={bookingCode}
+          bookingDate={booking.date}
+          bookingPartySize={booking.partySize}
+          bookingTable={tableName}
+          bookingTime={booking.time}
+          bookingStatus={booking.status}
+          bookingSpecialRequest={booking.specialRequest}
+          paymentPrice={paymentPrice}
+          paymentStatus={paymentStatus}
+          cancelledDate={booking.cancelled?.date}
+          cancelledReason={booking.cancelled?.reason}
+        />
+        <Footer
+          bookingStatus={booking.status}
+          paymentStatus={paymentStatus}
+          paymentPrice={paymentPrice}
+          restaurantName={restaurantName}
+          restaurantSlug={restaurantSlug}
+          restaurantAddress={restaurantAddress}
+          bookingId={booking.id}
+          review={data.review}
+        />
+      </div>
+    </section>
+  );
+}
