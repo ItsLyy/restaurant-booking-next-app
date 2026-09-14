@@ -5,7 +5,11 @@ import path from "path";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
+import { hashPassword } from "@libs/password";
+
 import * as schema from "./schema";
+
+export const DEMO_USER_PASSWORD = "Password123!";
 
 config({ path: ".env.local", quiet: true });
 
@@ -150,6 +154,7 @@ interface OtpJson {
 }
 
 async function main() {
+  const demoPasswordHash = await hashPassword(DEMO_USER_PASSWORD);
   const connectionString = process.env.DATABASE_URL;
   if (!connectionString) {
     throw new Error("DATABASE_URL is not defined in the environment.");
@@ -184,7 +189,7 @@ async function main() {
     id: base.id,
     username: base.username,
     email: base.email,
-    password: base.password,
+    password: demoPasswordHash,
     firstName: base.firstName,
     lastName: base.lastName,
     role: base.role,

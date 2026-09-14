@@ -19,13 +19,7 @@ interface OTPSlot {
 const createEmptyCodeSlots = (): OTPSlot[] =>
   Array.from({ length: OTP_LENGTH }, (_, id) => ({ id, value: "" }));
 
-const OTPForm = ({
-  next,
-  email,
-}: {
-  next: string;
-  email: string;
-}) => {
+const OTPForm = ({ next, email }: { next: string; email: string }) => {
   const [codes, setCodes] = useState(createEmptyCodeSlots);
   const inputRef = useRef<HTMLInputElement[]>([]);
   const submitRef = useRef<HTMLButtonElement>(null);
@@ -106,7 +100,11 @@ const OTPForm = ({
       <input type="hidden" name="otp" value={otpValue} />
       <input type="hidden" name="next" value={next} />
       <input type="hidden" name="email" value={email} />
-      <div className="grid grid-cols-6 gap-2 sm:gap-3 w-full" role="group" aria-label="One-time code">
+      <div
+        className="grid grid-cols-6 gap-2 sm:gap-3 w-full"
+        role="group"
+        aria-label="One-time code"
+      >
         {codes.map((slot, index) => (
           <InputCode
             key={slot.id}
@@ -133,7 +131,9 @@ const OTPForm = ({
                 : "text-accent-100 hover:underline cursor-pointer"
             }`}
           >
-            {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : "Resend code"}
+            {resendCooldown > 0
+              ? `Resend in ${resendCooldown}s`
+              : "Resend code"}
           </button>
         </span>
       </div>

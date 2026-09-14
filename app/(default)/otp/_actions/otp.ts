@@ -6,10 +6,7 @@ import z from "zod";
 
 import { verifyEmailOtp } from "@data/auth/otp";
 import { createCustomerAccount } from "@data/auth/users";
-import {
-  clearPendingSignup,
-  getPendingSignup,
-} from "@libs/pending-signup";
+import { clearPendingSignup, getPendingSignup } from "@libs/pending-signup";
 import { createSession } from "@libs/session";
 import type { FormState } from "@types";
 
@@ -65,9 +62,7 @@ export async function verifyOTPAction(
   await createSession(account);
 
   const target =
-    typeof next === "string" &&
-    next.startsWith("/") &&
-    !next.startsWith("//")
+    typeof next === "string" && next.startsWith("/") && !next.startsWith("//")
       ? next
       : DEFAULT_TARGET;
 

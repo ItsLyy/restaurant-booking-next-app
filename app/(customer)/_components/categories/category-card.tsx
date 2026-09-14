@@ -1,5 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
+import { SafeImage } from "@components";
 
 interface CategoryCardProps {
   name: string;
@@ -13,7 +13,7 @@ const CategoryCard = ({ name, slug, image }: CategoryCardProps) => {
       href={`/restaurants?category=${slug}`}
       className="relative w-44 h-32 rounded-2xl overflow-hidden cursor-pointer group block shrink-0 shadow-2xs"
     >
-      <Image
+      <SafeImage
         src={image}
         alt={name}
         className="object-cover object-center bg-base-200 text-transparent group-hover:scale-108 transition-transform duration-300 ease-out"

@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import {
   MapPinIcon,
@@ -6,6 +5,7 @@ import {
   StarIcon,
   TagIcon,
 } from "@phosphor-icons/react/dist/ssr";
+import { SafeImage } from "@components";
 
 import { formatPrice } from "@utils";
 
@@ -33,7 +33,7 @@ export const RestaurantItem = ({
       className="flex flex-col sm:flex-row gap-4 sm:gap-6 w-full group"
     >
       <div className="relative w-full sm:w-71.75 aspect-3/2 shrink-0 rounded-2xl overflow-hidden">
-        <Image
+        <SafeImage
           src={image}
           alt={name}
           fill
