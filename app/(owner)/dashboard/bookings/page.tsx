@@ -28,7 +28,7 @@ export default async function DashboardBookingsPage({
   const filter = parseBookingFilter(status);
   const query = typeof q === "string" ? q.trim().toLowerCase() : "";
 
-  const { bookings } = getBookingsData(date);
+  const { bookings } = await getBookingsData(date);
   const counts = getBookingsCounts(bookings);
 
   const filteredBookings = bookings.filter((booking) => {

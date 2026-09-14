@@ -14,7 +14,7 @@ export default async function DashboardReviewsPage({
 }) {
   const { page: pageParam } = await searchParams;
 
-  const reviews = getDashboardReviews();
+  const reviews = await getDashboardReviews();
 
   const pageCount = Math.max(1, Math.ceil(reviews.length / PAGE_SIZE));
   const parsedPage =

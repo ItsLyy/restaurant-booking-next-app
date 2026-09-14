@@ -7,7 +7,7 @@ import { getPhotosData } from "./_data/photos";
 import { PhotoTabs } from "./_components/photo-tabs";
 
 export default async function DashboardPhotosPage() {
-  const { cover, posts, menus } = getPhotosData();
+  const { cover, posts, menus } = await getPhotosData();
   if (!cover) notFound();
 
   return (

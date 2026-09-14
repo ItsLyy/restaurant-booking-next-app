@@ -62,7 +62,9 @@ export default async function RestaurantDetailPage({
   if (!restaurant) notFound();
 
   const session = await getAuthUser();
-  const account = session ? findAccountById(session.userId) : undefined;
+  const account = session
+    ? await findAccountById(session.userId)
+    : undefined;
   const customer = account
     ? {
         firstName: account.firstName,

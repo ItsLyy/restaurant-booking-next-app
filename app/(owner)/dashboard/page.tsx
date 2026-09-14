@@ -14,7 +14,7 @@ export default async function OverviewPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const data = getDashboardData();
+  const data = await getDashboardData();
   const { status, table } = await searchParams;
   const filter = parseBookingFilter(status);
 

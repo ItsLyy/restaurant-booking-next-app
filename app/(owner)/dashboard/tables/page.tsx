@@ -30,7 +30,7 @@ export default async function DashboardTablesPage({
   const placeFilter = parsePlaceFilter(place);
   const statusFilter = parseStatusFilter(status);
 
-  const data = getTablesData(date);
+  const data = await getTablesData(date);
 
   const visibleTables = data.tables.filter(
     (table) =>

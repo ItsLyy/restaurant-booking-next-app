@@ -13,7 +13,7 @@ export default async function StaffPage() {
   const role = (await getDashboardRole()) ?? "staff";
   const session = await getAuthUser();
   const restaurantId = await getCurrentRestaurantId();
-  const { staff } = getStaffData(restaurantId);
+  const { staff } = await getStaffData(restaurantId);
 
   return (
     <section className="px-4 pt-3 pb-6 size-full">

@@ -1,103 +1,88 @@
 "use server";
 
-import { readFileSync, writeFileSync } from "fs";
-import path from "path";
-
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
+import { eq } from "drizzle-orm";
+
+import { db } from "@db/client";
+import { bookings, payments, tables } from "@db/schema";
+import { broadcastBookingEvent } from "@db/broadcast";
 import { getDinerSession } from "@libs/session";
 
-import type { IBooking, IPayment } from "@types";
+import type { PaymentRow } from "@db/schema";
+import type { IPayment } from "@types";
 
-const BOOKINGS_FILE_PATH = path.join(
-  process.cwd(),
-  "app/_data/dummy/bookings.json",
-);
-
-const PAYMENTS_FILE_PATH = path.join(
-  process.cwd(),
-  "app/_data/dummy/payments.json",
-);
+const toIPayment = (row: PaymentRow): IPayment => ({
+  id: row.id,
+  price: row.price,
+  status: row.status,
+  deadline: row.deadline,
+  gatewayToken: row.gatewayToken,
+  bookingId: row.bookingId,
+  paidAt: row.paidAt ?? undefined,
+  createdAt: row.createdAt,
+  updatedAt: row.updatedAt,
+});
 
 export async function payBookingAction(bookingId: string): Promise<IPayment> {
   const customer = await getDinerSession();
   if (!customer) redirect("/signin");
 
-  const bookings = JSON.parse(
-    readFileSync(BOOKINGS_FILE_PATH, "utf8"),
-  ) as IBooking[];
-  const booking = bookings.find((item) => item.id === bookingId);
-  if (!booking || booking.customerId !== customer.userId) {
+  const bookingRow = (
+    await db
+      .select()
+      .from(bookings)
+      .where(eq(bookings.id, bookingId))
+      .limit(1)
+  )[0];
+  if (!bookingRow || bookingRow.customerId !== customer.userId) {
     throw new Error("Booking not found.");
   }
 
-  const payments = JSON.parse(
-    readFileSync(PAYMENTS_FILE_PATH, "utf8"),
-  ) as IPayment[];
-
-  const index = payments.findIndex((item) => item.bookingId === bookingId);
-  if (index === -1) {
+  const paymentRow = (
+    await db
+      .select()
+      .from(payments)
+      .where(eq(payments.bookingId, bookingId))
+      .limit(1)
+  )[0];
+  if (!paymentRow) {
     throw new Error("No payment found for this booking.");
   }
 
   const now = new Date().toISOString();
-  const updated = {
-    ...payments[index],
-    status: "paid" as const,
-    paidAt: now,
-    updatedAt: now,
-  };
-  payments[index] = updated;
 
-  writeFileSync(
-    PAYMENTS_FILE_PATH,
-    `${JSON.stringify(payments, null, 2)}\n`,
-    "utf8",
-  );
+  const updatedRows = await db
+    .update(payments)
+    .set({ status: "paid", paidAt: now, updatedAt: now })
+    .where(eq(payments.id, paymentRow.id))
+    .returning();
+  const updated = toIPayment(updatedRows[0] ?? paymentRow);
 
-  // Sync to database if available
-  try {
-    const { db } = await import("@db/client");
-    const { payments: paymentsTable } = await import("@db/schema");
-    const { eq } = await import("drizzle-orm");
-
+  const tableRow = (
     await db
-      .update(paymentsTable)
-      .set({ status: "paid", paidAt: now, updatedAt: now })
-      .where(eq(paymentsTable.bookingId, bookingId));
-  } catch {
-    // DB sync error handled gracefully
-  }
+      .select({ restaurantId: tables.restaurantId })
+      .from(tables)
+      .where(eq(tables.id, bookingRow.tableId))
+      .limit(1)
+  )[0];
+  const restaurantId = tableRow?.restaurantId ?? "rest-001";
 
   revalidatePath(`/bookings/${bookingId}`, "page");
   revalidatePath("/bookings", "page");
   revalidatePath("/dashboard", "page");
   revalidatePath("/dashboard/bookings", "page");
 
-  // Broadcast booking:paid event
-  try {
-    const { broadcastBookingEvent } = await import("@db/broadcast");
-    const tablesPath = path.join(process.cwd(), "app/_data/dummy/tables.json");
-    const rawTables = JSON.parse(readFileSync(tablesPath, "utf8")) as {
-      id: string;
-      restaurantId: string;
-    }[];
-    const restaurantId =
-      rawTables.find((t) => t.id === booking.tableId)?.restaurantId ?? "rest-001";
-
-    await broadcastBookingEvent("booking:paid", {
-      bookingId,
-      restaurantId,
-      customerId: customer.userId,
-      tableId: booking.tableId,
-      paymentStatus: "paid",
-      status: booking.status,
-      price: updated.price,
-    });
-  } catch {
-    // Broadcast failure handled gracefully
-  }
+  await broadcastBookingEvent("booking:paid", {
+    bookingId,
+    restaurantId,
+    customerId: customer.userId,
+    tableId: bookingRow.tableId,
+    paymentStatus: "paid",
+    status: bookingRow.status,
+    price: updated.price,
+  });
 
   return updated;
 }

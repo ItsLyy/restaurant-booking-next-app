@@ -1,26 +1,19 @@
-import { readFileSync } from "fs";
-import path from "path";
+import { eq } from "drizzle-orm";
 
-import type { ITable } from "@types";
+import { db } from "@db/client";
+import { tables as tablesTable } from "@db/schema";
 
-const TABLES_FILE_PATH = path.join(
-  process.cwd(),
-  "app/_data/dummy/tables.json",
-);
+export async function tablesCountByFloor(): Promise<{ defaultFloor: number }> {
+  const rows = await db
+    .select({ floor: tablesTable.floor })
+    .from(tablesTable)
+    .where(eq(tablesTable.restaurantId, "rest-001"));
 
-export function tablesCountByFloor(): { defaultFloor: number } {
-  const tables = JSON.parse(
-    readFileSync(TABLES_FILE_PATH, "utf8"),
-  ) as ITable[];
-
-  const restaurantTables = tables.filter(
-    (table) => table.restaurantId === "rest-001",
-  );
-  if (restaurantTables.length === 0) return { defaultFloor: 1 };
+  if (rows.length === 0) return { defaultFloor: 1 };
 
   let maxFloor = 0;
-  for (const table of restaurantTables) {
-    if (table.floor > maxFloor) maxFloor = table.floor;
+  for (const row of rows) {
+    if (row.floor > maxFloor) maxFloor = row.floor;
   }
   return { defaultFloor: maxFloor };
 }

@@ -14,8 +14,10 @@ import { safeNextPath } from "@libs/safe-next";
 import { createSession } from "@libs/session";
 import type { FormState } from "@types";
 
-const findByIdentity = (identity: string): AuthAccount | undefined => {
-  const byEmail = findAccountByEmail(identity);
+const findByIdentity = async (
+  identity: string,
+): Promise<AuthAccount | undefined> => {
+  const byEmail = await findAccountByEmail(identity);
   if (byEmail) return byEmail;
   return findAccountByUsername(identity);
 };
@@ -40,7 +42,7 @@ export async function SigninAction(
     };
   }
 
-  const account = findByIdentity(validated.data.identity);
+  const account = await findByIdentity(validated.data.identity);
   const passwordMatches =
     account && (await verifyPassword(validated.data.password, account.password));
 

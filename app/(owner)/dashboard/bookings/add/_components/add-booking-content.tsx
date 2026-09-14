@@ -9,7 +9,7 @@ export default async function AddBookingContent({
 }) {
   const { date } = await searchParams;
   const defaultDate = normalizeDate(date);
-  const { tables } = getAddBookingOptions();
+  const { tables } = await getAddBookingOptions();
 
   return <ManualBookingForm defaultDate={defaultDate} tables={tables} />;
 }

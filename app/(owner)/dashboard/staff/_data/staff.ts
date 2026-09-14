@@ -1,20 +1,13 @@
-import { readFileSync } from "fs";
-import path from "path";
+import { eq } from "drizzle-orm";
 
-import type { IOfficer, IOwner, IRestaurant } from "@types";
+import { db } from "@db/client";
+import {
+  officers as officersTable,
+  restaurants as restaurantsTable,
+  users as usersTable,
+} from "@db/schema";
 
-const OFFICERS_PATH = path.join(
-  process.cwd(),
-  "app/_data/dummy/officers.json",
-);
-const OWNERS_PATH = path.join(
-  process.cwd(),
-  "app/_data/dummy/owners.json",
-);
-const RESTAURANTS_PATH = path.join(
-  process.cwd(),
-  "app/_data/dummy/restaurants.json",
-);
+import type { IRestaurant } from "@types";
 
 const RESTAURANT_ID = "rest-001";
 
@@ -30,48 +23,68 @@ export interface StaffMember {
   invitedByName?: string;
 }
 
-export const getStaffData = (
+const toIRestaurant = (
+  row: (typeof restaurantsTable.$inferSelect),
+): IRestaurant => ({
+  id: row.id,
+  name: row.name,
+  slug: row.slug,
+  country: row.country,
+  city: row.city,
+  address: row.address,
+  tags: row.tags,
+  ownerId: row.ownerId,
+  ...(row.categoryId ? { categoryId: row.categoryId } : {}),
+  ...(row.discount !== null ? { discount: row.discount } : {}),
+  description: row.description,
+  ...(row.shortDescription ? { shortDescription: row.shortDescription } : {}),
+  ...(row.lat !== null ? { lat: row.lat } : {}),
+  ...(row.lng !== null ? { lng: row.lng } : {}),
+  createdAt: row.createdAt,
+  updatedAt: row.updatedAt,
+});
+
+export const getStaffData = async (
   restaurantId = RESTAURANT_ID,
-): {
+): Promise<{
   restaurant?: IRestaurant;
   staff: StaffMember[];
-} => {
-  const officers = JSON.parse(
-    readFileSync(OFFICERS_PATH, "utf8"),
-  ) as IOfficer[];
-  const owners = JSON.parse(
-    readFileSync(OWNERS_PATH, "utf8"),
-  ) as IOwner[];
-  const restaurants = JSON.parse(
-    readFileSync(RESTAURANTS_PATH, "utf8"),
-  ) as IRestaurant[];
+}> => {
+  const [restaurantRows, officerRows, userRows] = await Promise.all([
+    db
+      .select()
+      .from(restaurantsTable)
+      .where(eq(restaurantsTable.id, restaurantId))
+      .limit(1),
+    db
+      .select()
+      .from(officersTable)
+      .innerJoin(usersTable, eq(usersTable.id, officersTable.userId))
+      .where(eq(officersTable.restaurantId, restaurantId)),
+    db.select().from(usersTable),
+  ]);
 
-  const restaurant = restaurants.find((r) => r.id === restaurantId);
   const nameMap = new Map(
-    owners.map((o) => [o.id, `${o.firstName} ${o.lastName}`]),
+    userRows.map((user) => [user.id, `${user.firstName} ${user.lastName}`]),
   );
-  for (const o of officers) {
-    nameMap.set(o.id, `${o.firstName} ${o.lastName}`);
-  }
 
-  const staff: StaffMember[] = [];
-  for (const o of officers) {
-    if (o.restaurantId !== restaurantId) continue;
-    staff.push({
-      id: o.id,
-      firstName: o.firstName,
-      lastName: o.lastName,
-      username: o.username,
-      email: o.email,
-      avatar: o.avatar ?? "",
-      position: o.position,
-      createdAt: o.createdAt,
-      invitedByName: nameMap.get(o.invitedBy),
-    });
-  }
+  const staff: StaffMember[] = officerRows.map(({ officers, users }) => ({
+    id: users.id,
+    firstName: users.firstName,
+    lastName: users.lastName,
+    username: users.username,
+    email: users.email,
+    avatar: users.avatar ?? "",
+    position: officers.position,
+    createdAt: users.createdAt,
+    invitedByName: nameMap.get(officers.invitedBy),
+  }));
   staff.sort((a, b) =>
     (b.createdAt ?? "").localeCompare(a.createdAt ?? ""),
   );
 
-  return { restaurant, staff };
+  return {
+    restaurant: restaurantRows[0] ? toIRestaurant(restaurantRows[0]) : undefined,
+    staff,
+  };
 };

@@ -1,25 +1,18 @@
-import { readFileSync } from "fs";
-import path from "path";
+import { eq, inArray } from "drizzle-orm";
 
-import rawRestaurants from "@data/dummy/restaurants.json";
-import rawTables from "@data/dummy/tables.json";
-import { getEffectiveBookingStatus } from "../../../../_data/bookings/booking-deadline";
+import { db } from "@db/client";
+import {
+  bookings as bookingsTable,
+  payments as paymentsTable,
+  restaurants as restaurantsTable,
+  tables as tablesTable,
+} from "@db/schema";
+import { getEffectiveBookingStatus } from "@data/bookings/booking-deadline";
 
-import type { IBooking, IPayment, IRestaurant, ITable } from "@types";
-
-const BOOKINGS_FILE_PATH = path.join(
-  process.cwd(),
-  "app/_data/dummy/bookings.json",
-);
-const PAYMENTS_FILE_PATH = path.join(
-  process.cwd(),
-  "app/_data/dummy/payments.json",
-);
+import type { BookingRow, PaymentRow } from "@db/schema";
+import type { IBooking, IPayment } from "@types";
 
 const RESTAURANT_ID = "rest-001";
-
-const TABLES = rawTables as ITable[];
-const RESTAURANTS = rawRestaurants as IRestaurant[];
 
 const todayString = (): string => {
   const now = new Date();
@@ -115,6 +108,40 @@ const hourLabel = (time: string): string => {
   return `${displayHour}:${String(minute).padStart(2, "0")} ${period}`;
 };
 
+const toIBooking = (row: BookingRow): IBooking => ({
+  id: row.id,
+  date: row.date,
+  time: row.time,
+  partySize: row.partySize,
+  ...(row.specialRequest ? { specialRequest: row.specialRequest } : {}),
+  status: row.status,
+  customerId: row.customerId,
+  tableId: row.tableId,
+  ...(row.cancelledBy
+    ? {
+        cancelled: {
+          date: row.cancelledDate ?? "",
+          by: row.cancelledBy,
+          reason: row.cancelledReason ?? "",
+        },
+      }
+    : {}),
+  createdAt: row.createdAt,
+  updatedAt: row.updatedAt,
+});
+
+const toIPayment = (row: PaymentRow): IPayment => ({
+  id: row.id,
+  price: row.price,
+  status: row.status,
+  deadline: row.deadline,
+  gatewayToken: row.gatewayToken,
+  bookingId: row.bookingId,
+  paidAt: row.paidAt ?? undefined,
+  createdAt: row.createdAt,
+  updatedAt: row.updatedAt,
+});
+
 const deriveBucket = (
   booking: IBooking,
   payment: IPayment | undefined,
@@ -140,32 +167,49 @@ const deriveBucket = (
 const percentDelta = (current: number, previous: number): number | null =>
   previous === 0 ? null : Math.round(((current - previous) / previous) * 100);
 
-export const getAnalyticsData = (): AnalyticsData => {
-  const restaurant = RESTAURANTS.find((item) => item.id === RESTAURANT_ID);
+export const getAnalyticsData = async (): Promise<AnalyticsData> => {
+  const restaurantRows = await db
+    .select()
+    .from(restaurantsTable)
+    .where(eq(restaurantsTable.id, RESTAURANT_ID))
+    .limit(1);
+  const restaurant = restaurantRows[0];
   const restaurantName = restaurant?.name ?? "My Restaurant";
 
-  const restaurantTables = TABLES.filter(
-    (table) => table.restaurantId === RESTAURANT_ID,
-  );
-  const tableIds = new Set(restaurantTables.map((table) => table.id));
+  const tables = await db
+    .select()
+    .from(tablesTable)
+    .where(eq(tablesTable.restaurantId, RESTAURANT_ID));
+  const tableIds = new Set(tables.map((table) => table.id));
 
-  const raw: IBooking[] = JSON.parse(
-    readFileSync(BOOKINGS_FILE_PATH, "utf8"),
-  ) as IBooking[];
-  const payments: IPayment[] = JSON.parse(
-    readFileSync(PAYMENTS_FILE_PATH, "utf8"),
-  ) as IPayment[];
+  const bookingRows = await db
+    .select()
+    .from(bookingsTable)
+    .where(inArray(bookingsTable.tableId, [...tableIds]));
+  const paymentRows = bookingRows.length
+    ? await db
+        .select()
+        .from(paymentsTable)
+        .where(
+          inArray(
+            paymentsTable.bookingId,
+            bookingRows.map((booking) => booking.id),
+          ),
+        )
+    : [];
 
-  const paymentByBookingId = new Map(
-    payments.map((item) => [item.bookingId, item] as const),
-  );
+  const paymentByBookingId = new Map<string, IPayment>();
+  for (const row of paymentRows) {
+    paymentByBookingId.set(row.bookingId, toIPayment(row));
+  }
 
   const today = todayString();
 
   const bookings: IBooking[] = [];
   const derivedBuckets = new Map<string, Bucket>();
-  for (const booking of raw) {
-    if (!tableIds.has(booking.tableId)) continue;
+  for (const row of bookingRows) {
+    if (!tableIds.has(row.tableId)) continue;
+    const booking = toIBooking(row);
     bookings.push(booking);
     derivedBuckets.set(
       booking.id,
@@ -298,7 +342,7 @@ export const getAnalyticsData = (): AnalyticsData => {
   const topTables: TablePoint[] = [...tableStats.entries()]
     .map(([id, stats]) => ({
       id,
-      name: TABLES.find((table) => table.id === id)?.name ?? "Unknown",
+      name: tables.find((table) => table.id === id)?.name ?? "Unknown",
       bookings: stats.bookings,
       revenue: stats.revenue,
     }))

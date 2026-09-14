@@ -177,7 +177,7 @@ const linkOrCreateAccount = async (
   const email = claims.email?.toLowerCase();
   if (!email) return undefined;
 
-  const existing = findAccountByEmail(email);
+  const existing = await findAccountByEmail(email);
   if (existing) return existing;
 
   const name = claims.name?.trim() ?? email;

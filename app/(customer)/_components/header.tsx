@@ -13,34 +13,43 @@ export const Header = async () => {
   const session = await getAuthUser();
   const customer =
     session?.role === "customer"
-      ? getCustomerProfile(session.userId)
+      ? await getCustomerProfile(session.userId)
       : undefined;
 
   const dashboardRole = await getDashboardRole();
-  const dashboardUser =
-    session && dashboardRole !== null
-      ? (() => {
-          const data = getDashboardData();
-          if (dashboardRole === "owner") {
-            const owner = session ? findAccountById(session.userId) : undefined;
-            return {
-              firstName: owner
-                ? owner.firstName
-                : data.owner.firstName,
-              lastName: owner ? owner.lastName : data.owner.lastName,
-              email: owner?.email ?? "",
-              avatar: owner?.avatar ?? data.owner.avatar,
-            };
-          }
-          const officer = session ? getOfficerData(session.userId) : undefined;
-          return {
-            firstName: officer?.officer.firstName ?? "Staff",
-            lastName: officer?.officer.lastName ?? "",
-            email: officer?.officer.email ?? "",
-            avatar: officer?.officer.avatar ?? "",
-          };
-        })()
-      : undefined;
+
+  let dashboardUser:
+    | {
+        firstName: string;
+        lastName: string;
+        email: string;
+        avatar?: string;
+      }
+    | undefined;
+  if (session && dashboardRole !== null) {
+    const data = await getDashboardData();
+    if (dashboardRole === "owner") {
+      const owner = session
+        ? await findAccountById(session.userId)
+        : undefined;
+      dashboardUser = {
+        firstName: owner ? owner.firstName : data.owner.firstName,
+        lastName: owner ? owner.lastName : data.owner.lastName,
+        email: owner?.email ?? "",
+        avatar: owner?.avatar ?? data.owner.avatar,
+      };
+    } else {
+      const officer = session
+        ? await getOfficerData(session.userId)
+        : undefined;
+      dashboardUser = {
+        firstName: officer?.officer.firstName ?? "Staff",
+        lastName: officer?.officer.lastName ?? "",
+        email: officer?.officer.email ?? "",
+        avatar: officer?.officer.avatar ?? "",
+      };
+    }
+  }
 
   return (
     <header className="sticky top-0 left-0 z-30 w-full bg-base-100/90 backdrop-blur-md border-b border-muted/30 transition-colors">

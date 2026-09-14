@@ -27,7 +27,8 @@ export default async function DashboardTableDetailPage({
   const { date: dateParam } = await searchParams;
   const date = normalizeDate(dateParam);
 
-  const table = getTablesData(date).tables.find((item) => item.id === id);
+  const data = await getTablesData(date);
+  const table = data.tables.find((item) => item.id === id);
   if (!table) notFound();
 
   const meta = TABLE_STATUS_META[table.status];

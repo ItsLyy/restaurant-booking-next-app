@@ -1,48 +1,21 @@
-import { readFileSync } from "fs";
-import path from "path";
+import { eq, inArray } from "drizzle-orm";
 
-import rawOwners from "../../../_data/dummy/owners.json";
-import rawTables from "../../../_data/dummy/tables.json";
-import rawRestaurants from "../../../_data/dummy/restaurants.json";
-import rawUsers from "../../../_data/dummy/users.json";
-import rawOfficers from "../../../_data/dummy/officers.json";
+import { db } from "@db/client";
+import {
+  bookings as bookingsTable,
+  payments as paymentsTable,
+  restaurants as restaurantsTable,
+  tables as tablesTable,
+  users as usersTable,
+} from "@db/schema";
 
-import { getEffectiveBookingStatus, isPendingVisibleOn } from "../../../_data/bookings/booking-deadline";
+import {
+  getEffectiveBookingStatus,
+  isPendingVisibleOn,
+} from "@data/bookings/booking-deadline";
 
-import type {
-  IBooking,
-  IOwner,
-  IPayment,
-  IRestaurant,
-  ITable,
-  IUser,
-} from "@types";
-
-const RESTAURANTS = rawRestaurants as IRestaurant[];
-const OWNERS = rawOwners as IOwner[];
-const TABLES = rawTables as ITable[];
-const USERS = rawUsers as IUser[];
-
-const BOOKINGS_FILE_PATH = path.join(
-  process.cwd(),
-  "app/_data/dummy/bookings.json",
-);
-const PAYMENTS_FILE_PATH = path.join(
-  process.cwd(),
-  "app/_data/dummy/payments.json",
-);
-
-function readJson<T>(filePath: string): T {
-  return JSON.parse(readFileSync(filePath, "utf8")) as T;
-}
-
-function readBookings(): IBooking[] {
-  return readJson<IBooking[]>(BOOKINGS_FILE_PATH);
-}
-
-function readPayments(): IPayment[] {
-  return readJson<IPayment[]>(PAYMENTS_FILE_PATH);
-}
+import type { BookingRow, PaymentRow } from "@db/schema";
+import type { IBooking, IPayment } from "@types";
 
 const OWNER_ID = "owner-001";
 const RESTAURANT_ID = "rest-001";
@@ -52,16 +25,6 @@ interface Person {
   firstName: string;
   lastName: string;
 }
-
-const PEOPLE: Person[] = [
-  ...(rawOwners as Person[]),
-  ...(rawOfficers as Person[]),
-  ...USERS.map((user) => ({
-    id: user.id,
-    firstName: user.firstName,
-    lastName: user.lastName,
-  })),
-];
 
 export interface DashboardBooking {
   id: string;
@@ -103,33 +66,101 @@ const toTime = (time: string) => {
   return `${displayHour}:${String(minute).padStart(2, "0")} ${period}`;
 };
 
-const getTableName = (tableId: string) =>
-  TABLES.find((table) => table.id === tableId)?.name ?? "Unknown";
+const toIBooking = (row: BookingRow): IBooking => ({
+  id: row.id,
+  date: row.date,
+  time: row.time,
+  partySize: row.partySize,
+  ...(row.specialRequest ? { specialRequest: row.specialRequest } : {}),
+  status: row.status,
+  customerId: row.customerId,
+  tableId: row.tableId,
+  ...(row.cancelledBy
+    ? {
+        cancelled: {
+          date: row.cancelledDate ?? "",
+          by: row.cancelledBy,
+          reason: row.cancelledReason ?? "",
+        },
+      }
+    : {}),
+  createdAt: row.createdAt,
+  updatedAt: row.updatedAt,
+});
 
-export const getDashboardData = () => {
-  const restaurant = RESTAURANTS.find(
-    (item) => item.id === RESTAURANT_ID,
-  );
-  const owner = OWNERS.find((item) => item.id === OWNER_ID);
+const toIPayment = (row?: PaymentRow): IPayment | undefined => {
+  if (!row) return undefined;
+  return {
+    id: row.id,
+    price: row.price,
+    status: row.status,
+    deadline: row.deadline,
+    gatewayToken: row.gatewayToken,
+    bookingId: row.bookingId,
+    paidAt: row.paidAt ?? undefined,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+  };
+};
 
-  const restaurantTables = TABLES.filter(
-    (table) => table.restaurantId === RESTAURANT_ID,
-  );
+export async function getDashboardData() {
+  const restaurantTables = await db
+    .select()
+    .from(tablesTable)
+    .where(eq(tablesTable.restaurantId, RESTAURANT_ID));
   const tableIds = new Set(restaurantTables.map((table) => table.id));
 
-  const BOOKINGS = readBookings();
-  const payments = readPayments();
+  const restaurantRows = await db
+    .select()
+    .from(restaurantsTable)
+    .where(eq(restaurantsTable.id, RESTAURANT_ID))
+    .limit(1);
+  const restaurant = restaurantRows[0];
 
-  const restaurantBookings = BOOKINGS.filter((booking) =>
-    tableIds.has(booking.tableId),
-  );
-
-  const upcoming = restaurantBookings.filter(
-    (booking) => booking.status !== "cancelled",
-  );
+  const bookingRows = tableIds.size
+    ? await db
+        .select()
+        .from(bookingsTable)
+        .where(inArray(bookingsTable.tableId, [...tableIds]))
+    : [];
+  const bookingIds = bookingRows.map((booking) => booking.id);
+  const paymentRows = bookingIds.length
+    ? await db
+        .select()
+        .from(paymentsTable)
+        .where(inArray(paymentsTable.bookingId, bookingIds))
+    : [];
 
   const paymentByBookingId = new Map(
-    payments.map((item) => [item.bookingId, item] as const),
+    paymentRows.map((item) => [item.bookingId, item]),
+  );
+
+  const ownerId = restaurant?.ownerId ?? OWNER_ID;
+  const [ownerRows, userRows] = await Promise.all([
+    db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.id, ownerId))
+      .limit(1),
+    db
+      .select({
+        id: usersTable.id,
+        firstName: usersTable.firstName,
+        lastName: usersTable.lastName,
+      })
+      .from(usersTable),
+  ]);
+  const owner = ownerRows[0];
+
+  const people = new Map<string, Person>(
+    userRows.map((user) => [
+      user.id,
+      { id: user.id, firstName: user.firstName, lastName: user.lastName },
+    ]),
+  );
+
+  const tableById = new Map(
+    restaurantTables.map((table) => [table.id, table]),
   );
 
   const today = (() => {
@@ -142,24 +173,29 @@ export const getDashboardData = () => {
   })();
 
   const visibleBookings: DashboardBooking[] = [];
-  for (const booking of upcoming) {
-    const customer = PEOPLE.find((user) => user.id === booking.customerId);
+  for (const booking of bookingRows) {
+    if (booking.status === "cancelled" || booking.status === "no_show") {
+      continue;
+    }
     const payment = paymentByBookingId.get(booking.id);
 
-    const effectiveStatus = getEffectiveBookingStatus(booking, payment);
+    const effectiveStatus = getEffectiveBookingStatus(
+      toIBooking(booking),
+      toIPayment(payment),
+    );
 
     if (effectiveStatus === "cancelled") continue;
 
     const status = effectiveStatus === "confirmed" ? "confirmed" : "pending";
 
-    // Pending requests: exist from the day they were placed until the day
-    // before the reserved date (never on the reserved date itself).
     if (status === "pending") {
-      if (!isPendingVisibleOn(booking, today)) continue;
+      if (!isPendingVisibleOn(toIBooking(booking), today)) continue;
     } else if (booking.date !== today) {
-      // Confirmed bookings (paid or unpaid): only appear on their booking day.
       continue;
     }
+
+    const customer = people.get(booking.customerId);
+    const table = tableById.get(booking.tableId);
 
     visibleBookings.push({
       id: booking.id,
@@ -169,7 +205,7 @@ export const getDashboardData = () => {
         ? `${customer.firstName} ${customer.lastName}`
         : "Unknown guest",
       party: booking.partySize,
-      table: getTableName(booking.tableId),
+      table: table?.name ?? "Unknown",
       tableId: booking.tableId,
       status,
       isPaid: payment?.status === "paid",
@@ -205,4 +241,4 @@ export const getDashboardData = () => {
     bookings: visibleBookings,
     tablesByFloor,
   };
-};
+}

@@ -1,25 +1,21 @@
-import { readFileSync, writeFileSync } from "fs";
-import path from "path";
+import { eq } from "drizzle-orm";
+
+import { db } from "@db/client";
+import { restaurantPhotos } from "@db/schema";
 
 import type { IRestaurantPhoto } from "@types";
 
 const RESTAURANT_ID = "rest-001";
 
-const PHOTOS_FILE_PATH = path.join(
-  process.cwd(),
-  "app/_data/dummy/restaurant_photos.json",
-);
-
-function readPhotos(): IRestaurantPhoto[] {
-  return JSON.parse(readFileSync(PHOTOS_FILE_PATH, "utf8")) as IRestaurantPhoto[];
-}
-
-function writePhotos(photos: IRestaurantPhoto[]): void {
-  writeFileSync(
-    PHOTOS_FILE_PATH,
-    `${JSON.stringify(photos, null, 2)}\n`,
-    "utf8",
-  );
+function toPhoto(row: (typeof restaurantPhotos.$inferSelect)): IRestaurantPhoto {
+  return {
+    id: row.id,
+    url: row.url,
+    type: row.type,
+    restaurantId: row.restaurantId,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+  };
 }
 
 export interface PhotosData {
@@ -28,10 +24,12 @@ export interface PhotosData {
   menus: IRestaurantPhoto[];
 }
 
-export function getPhotosData(): PhotosData {
-  const photos = readPhotos().filter(
-    (photo) => photo.restaurantId === RESTAURANT_ID,
-  );
+export async function getPhotosData(): Promise<PhotosData> {
+  const rows = await db
+    .select()
+    .from(restaurantPhotos)
+    .where(eq(restaurantPhotos.restaurantId, RESTAURANT_ID));
+  const photos = rows.map(toPhoto);
   return {
     cover: photos.find((photo) => photo.type === "cover") ?? null,
     posts: photos
@@ -43,12 +41,9 @@ export function getPhotosData(): PhotosData {
   };
 }
 
-export function readAllPhotos(): IRestaurantPhoto[] {
-  return readPhotos();
-}
-
-export function writeAllPhotos(photos: IRestaurantPhoto[]): void {
-  writePhotos(photos);
+export async function readAllPhotos(): Promise<IRestaurantPhoto[]> {
+  const rows = await db.select().from(restaurantPhotos);
+  return rows.map(toPhoto);
 }
 
 export type PhotoKind = "post" | "menu";

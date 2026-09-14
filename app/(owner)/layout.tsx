@@ -17,24 +17,29 @@ export default async function DashboardsLayout({
   const role = await getDashboardRole();
   if (role === null) redirect("/signin");
 
-  const data = getDashboardData();
-  const session = await getAuthUser();
+  const [data, session] = await Promise.all([
+    getDashboardData(),
+    getAuthUser(),
+  ]);
 
-  const user: DashboardUser = (() => {
-    if (role === "owner") {
-      const owner = session ? findAccountById(session.userId) : undefined;
-      return {
-        name: owner
-          ? `${owner.firstName} ${owner.lastName}`
-          : `${data.owner.firstName} ${data.owner.lastName}`,
-        avatar: owner?.avatar ?? data.owner.avatar,
-        email: owner?.email ?? "",
-        role,
-      };
-    }
-
-    const officer = session ? getOfficerData(session.userId) : undefined;
-    return {
+  let user: DashboardUser;
+  if (role === "owner") {
+    const owner = session
+      ? await findAccountById(session.userId)
+      : undefined;
+    user = {
+      name: owner
+        ? `${owner.firstName} ${owner.lastName}`
+        : `${data.owner.firstName} ${data.owner.lastName}`,
+      avatar: owner?.avatar ?? data.owner.avatar,
+      email: owner?.email ?? "",
+      role,
+    };
+  } else {
+    const officer = session
+      ? await getOfficerData(session.userId)
+      : undefined;
+    user = {
       name: officer
         ? `${officer.officer.firstName} ${officer.officer.lastName}`
         : "Staff",
@@ -43,7 +48,7 @@ export default async function DashboardsLayout({
       role,
       position: officer?.officer.position,
     };
-  })();
+  }
 
   return (
     <div className="flex w-svw h-svh">

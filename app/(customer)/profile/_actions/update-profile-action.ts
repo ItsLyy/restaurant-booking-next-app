@@ -5,14 +5,10 @@ import z from "zod";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
-import type { FormState, IUser } from "@types";
+import type { FormState } from "@types";
 import { saveAvatarFile } from "@data/profiles/avatar";
 import { profileFieldsSchema } from "@data/profiles/profile-schema";
-import {
-  patchProfile,
-  PROFILES_FILES,
-  readProfiles,
-} from "@data/profiles/update-profile";
+import { patchUserProfile } from "@data/profiles/update-profile";
 import { getCustomerSession } from "@libs/session";
 
 export async function updateProfileAction(
@@ -41,17 +37,11 @@ export async function updateProfileAction(
     };
   }
 
-  const users = readProfiles<IUser>(PROFILES_FILES.customers);
-  const current = users.find((user) => user.id === customerId);
-  if (!current) {
-    return { success: false, message: "Profile not found." };
-  }
-
-  const patched = patchProfile<IUser>(PROFILES_FILES.customers, customerId, {
+  const patched = await patchUserProfile(customerId, {
     firstName: validated.data.firstName,
     lastName: validated.data.lastName,
     email: validated.data.email,
-    avatar: avatarResult.path ?? current.avatar,
+    ...(avatarResult.path ? { avatar: avatarResult.path } : {}),
     allergics: validated.data.allergics,
   });
   if (!patched) {

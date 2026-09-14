@@ -43,7 +43,7 @@ export default async function ConfirmBookingPage({
 
   let preview;
   try {
-    preview = getBookingPreview({
+    preview = await getBookingPreview({
       restaurantId: id,
       date: bookingDate,
       time: bookingTime,

@@ -11,7 +11,7 @@ import { requireManagerOrAbove } from "@libs/session";
 
 export default async function AnalyticsPage() {
   await requireManagerOrAbove();
-  const data = getAnalyticsData();
+  const data = await getAnalyticsData();
 
   const revenueSeries = data.monthly.map((month) => ({
     label: month.label,

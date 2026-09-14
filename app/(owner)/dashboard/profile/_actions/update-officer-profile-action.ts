@@ -1,18 +1,18 @@
 "use server";
 
+import { eq } from "drizzle-orm";
+
 import z from "zod";
 
 import { revalidatePath } from "next/cache";
 
-import type { FormState, IOfficer } from "@types";
+import type { FormState } from "@types";
 import { saveAvatarFile } from "@data/profiles/avatar";
 import { profileFieldsSchema } from "@data/profiles/profile-schema";
-import {
-  patchProfile,
-  PROFILES_FILES,
-  readProfiles,
-} from "@data/profiles/update-profile";
+import { patchUserProfile } from "@data/profiles/update-profile";
 import { getSessionOfficerId } from "@libs/session";
+import { db } from "@db/client";
+import { users as usersTable } from "@db/schema";
 
 export async function updateOfficerProfileAction(
   _: FormState,
@@ -39,20 +39,24 @@ export async function updateOfficerProfileAction(
     };
   }
 
-  const officers = readProfiles<IOfficer>(PROFILES_FILES.officers);
-  const current = officers.find((officer) => officer.id === officerId);
+  const officerRows = await db
+    .select()
+    .from(usersTable)
+    .where(eq(usersTable.id, officerId))
+    .limit(1);
+  const current = officerRows[0];
   if (!current) {
     return { success: false, message: "Profile not found." };
   }
 
-  const patched = patchProfile<IOfficer>(PROFILES_FILES.officers, officerId, {
+  const updated = await patchUserProfile(officerId, {
     firstName: validated.data.firstName,
     lastName: validated.data.lastName,
     email: validated.data.email,
-    avatar: avatarResult.path ?? current.avatar,
+    avatar: avatarResult.path ?? current.avatar ?? undefined,
     allergics: validated.data.allergics,
   });
-  if (!patched) {
+  if (!updated) {
     return { success: false, message: "Profile not found." };
   }
 
