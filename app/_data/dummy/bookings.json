@@ -1390,5 +1390,16 @@
     "tableId": "table-103",
     "createdAt": "2026-09-11T19:00:00.000Z",
     "updatedAt": "2026-09-11T19:00:00.000Z"
+  },
+  {
+    "id": "booking-133",
+    "date": "2026-09-14",
+    "time": "19:00",
+    "partySize": 1,
+    "status": "pending",
+    "customerId": "owner-001",
+    "tableId": "table-016",
+    "createdAt": "2026-09-13T23:38:41.979Z",
+    "updatedAt": "2026-09-13T23:38:41.979Z"
   }
 ]

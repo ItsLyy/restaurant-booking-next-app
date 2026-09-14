@@ -53,7 +53,7 @@ export async function verifyOTPAction(
     return { success: false, message: "Signup session expired. Try again." };
   }
 
-  const account = createCustomerAccount({
+  const account = await createCustomerAccount({
     firstName: pending.firstName,
     lastName: pending.lastName,
     username: pending.username,

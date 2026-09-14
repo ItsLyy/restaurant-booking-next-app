@@ -6,7 +6,7 @@ import { requireManagerOrAbove } from "@libs/session";
 
 export default async function InterceptedAddTablePage() {
   await requireManagerOrAbove();
-  const { defaultFloor } = tablesCountByFloor();
+  const { defaultFloor } = await tablesCountByFloor();
 
   return (
     <AddTableModal>

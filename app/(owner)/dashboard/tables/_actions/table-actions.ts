@@ -1,38 +1,24 @@
 "use server";
 
-import { readFileSync, writeFileSync } from "fs";
-import path from "path";
-
+import { and, eq, like } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 import { TABLE_CATEGORIES } from "../_data/table-meta";
+import { db } from "@db/client";
+import { tables as tablesTable } from "@db/schema";
 
 import type { TableCategory } from "../_data/table-meta";
 
-import type { ITable } from "@types";
-
-const TABLES_FILE_PATH = path.join(
-  process.cwd(),
-  "app/_data/dummy/tables.json",
-);
 const RESTAURANT_ID = "rest-001";
 
-function readTables(): ITable[] {
-  return JSON.parse(readFileSync(TABLES_FILE_PATH, "utf8")) as ITable[];
-}
-
-function writeTables(tables: ITable[]): void {
-  writeFileSync(
-    TABLES_FILE_PATH,
-    `${JSON.stringify(tables, null, 2)}\n`,
-    "utf8",
-  );
-}
-
-function buildNextTableId(tables: ITable[]): string {
+async function buildNextTableId(): Promise<string> {
+  const rows = await db
+    .select({ id: tablesTable.id })
+    .from(tablesTable)
+    .where(like(tablesTable.id, "table-%"));
   let max = 0;
-  for (const table of tables) {
-    const sequence = Number(table.id.replace("table-", ""));
+  for (const row of rows) {
+    const sequence = Number(row.id.replace("table-", ""));
     if (Number.isFinite(sequence) && sequence > max) {
       max = sequence;
     }
@@ -71,20 +57,23 @@ export async function createTableAction(
     return { ok: false, error: "Price must be zero or more." };
   }
 
-  const tables = readTables();
-
-  const duplicate = tables.some(
-    (table) =>
-      table.restaurantId === RESTAURANT_ID &&
-      table.name.toLowerCase() === name.toLowerCase(),
-  );
-  if (duplicate) {
+  const duplicateRows = await db
+    .select({ id: tablesTable.id })
+    .from(tablesTable)
+    .where(
+      and(
+        eq(tablesTable.restaurantId, RESTAURANT_ID),
+        eq(tablesTable.name, name),
+      ),
+    )
+    .limit(1);
+  if (duplicateRows.length > 0) {
     return { ok: false, error: `A table named “${name}” already exists.` };
   }
 
   const now = new Date().toISOString();
-  tables.push({
-    id: buildNextTableId(tables),
+  await db.insert(tablesTable).values({
+    id: await buildNextTableId(),
     name,
     price,
     category,
@@ -94,7 +83,6 @@ export async function createTableAction(
     createdAt: now,
     updatedAt: now,
   });
-  writeTables(tables);
 
   revalidatePath("/dashboard", "page");
   revalidatePath("/dashboard/tables", "page");

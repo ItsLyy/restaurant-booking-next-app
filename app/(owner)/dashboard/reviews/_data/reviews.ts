@@ -1,59 +1,59 @@
-import { readFileSync, writeFileSync } from "fs";
-import path from "path";
+import { eq, inArray } from "drizzle-orm";
 
-import rawUsers from "@data/dummy/users.json";
-import rawOfficers from "@data/dummy/officers.json";
-import rawOwners from "@data/dummy/owners.json";
-import rawTables from "@data/dummy/tables.json";
-import rawRestaurants from "@data/dummy/restaurants.json";
+import { db } from "@db/client";
+import {
+  bookings,
+  restaurants,
+  reviews,
+  tables,
+  users,
+} from "@db/schema";
 
-import type {
-  IBooking,
-  IOwner,
-  IReview,
-  ITable,
-  IUser,
-} from "@types";
+import type { ReviewRow } from "@db/schema";
+import type { IReview } from "@types";
 
 const RESTAURANT_ID = "rest-001";
 
-const BOOKINGS_FILE_PATH = path.join(
-  process.cwd(),
-  "app/_data/dummy/bookings.json",
-);
-const REVIEWS_FILE_PATH = path.join(
-  process.cwd(),
-  "app/_data/dummy/reviews.json",
-);
+const toIReview = (row: ReviewRow): IReview => ({
+  id: row.id,
+  customerComment: row.customerComment,
+  customerRating: row.customerRating,
+  customerCommentAt: row.customerCommentAt,
+  bookingId: row.bookingId,
+  ...(row.ownerReply ? { ownerReply: row.ownerReply } : {}),
+  ...(row.ownerReplyAt ? { ownerReplyAt: row.ownerReplyAt } : {}),
+  createdAt: row.createdAt,
+  updatedAt: row.updatedAt,
+});
 
-const TABLES = rawTables as ITable[];
-const BOOKINGS_PROVIDER = (): IBooking[] =>
-  JSON.parse(readFileSync(BOOKINGS_FILE_PATH, "utf8")) as IBooking[];
-
-function readReviews(): IReview[] {
-  return JSON.parse(readFileSync(REVIEWS_FILE_PATH, "utf8")) as IReview[];
+export async function readAllReviews(): Promise<IReview[]> {
+  const rows = await db.select().from(reviews);
+  return rows.map(toIReview);
 }
 
-export function readAllReviews(): IReview[] {
-  return readReviews();
-}
-
-export function writeAllReviews(reviews: IReview[]): void {
-  writeFileSync(
-    REVIEWS_FILE_PATH,
-    `${JSON.stringify(reviews, null, 2)}\n`,
-    "utf8",
-  );
-}
-
-export function getRestaurantSlugForReview(review: IReview): string | null {
-  const bookings = BOOKINGS_PROVIDER();
-  const booking = bookings.find((item) => item.id === review.bookingId);
-  const table = TABLES.find((item) => item.id === booking?.tableId);
-  const restaurant = rawRestaurants.find(
-    (item) => item.id === table?.restaurantId,
-  );
-  return restaurant?.slug ?? null;
+export async function getRestaurantSlugForReview(
+  review: IReview,
+): Promise<string | null> {
+  const bookingRows = await db
+    .select()
+    .from(bookings)
+    .where(eq(bookings.id, review.bookingId))
+    .limit(1);
+  const booking = bookingRows[0];
+  if (!booking) return null;
+  const table = await db
+    .select()
+    .from(tables)
+    .where(eq(tables.id, booking.tableId))
+    .limit(1);
+  const tableRow = table[0];
+  if (!tableRow) return null;
+  const restaurant = await db
+    .select()
+    .from(restaurants)
+    .where(eq(restaurants.id, tableRow.restaurantId))
+    .limit(1);
+  return restaurant[0]?.slug ?? null;
 }
 
 interface Person {
@@ -62,22 +62,6 @@ interface Person {
   lastName: string;
   avatar: string;
 }
-
-const PEOPLE: Person[] = [
-  ...(rawOwners as IOwner[]).map((owner) => ({
-    id: owner.id,
-    firstName: owner.firstName,
-    lastName: owner.lastName,
-    avatar: owner.avatar ?? "",
-  })),
-  ...(rawOfficers as unknown as Person[]),
-  ...(rawUsers as IUser[]).map((user) => ({
-    id: user.id,
-    firstName: user.firstName,
-    lastName: user.lastName,
-    avatar: user.avatar ?? "",
-  })),
-];
 
 export interface DashboardReview {
   id: string;
@@ -92,19 +76,40 @@ export interface DashboardReview {
   ownerReplyAt?: string;
 }
 
-export function getDashboardReviews(): DashboardReview[] {
-  const bookings = BOOKINGS_PROVIDER();
-  const tableIds = new Set(
-    TABLES.filter((table) => table.restaurantId === RESTAURANT_ID).map(
-      (table) => table.id,
-    ),
+export async function getDashboardReviews(): Promise<DashboardReview[]> {
+  const [restaurantTables, userRows, reviewRows] = await Promise.all([
+    db
+      .select()
+      .from(tables)
+      .where(eq(tables.restaurantId, RESTAURANT_ID)),
+    db
+      .select()
+      .from(users),
+    db.select().from(reviews),
+  ]);
+  const tableIds = new Set(restaurantTables.map((table) => table.id));
+
+  const bookingRows = await db
+    .select()
+    .from(bookings)
+    .where(inArray(bookings.tableId, [...tableIds]));
+  const bookingById = new Map(bookingRows.map((booking) => [booking.id, booking]));
+
+  const personById = new Map<string, Person>(
+    userRows.map((user) => [
+      user.id,
+      {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        avatar: user.avatar ?? "",
+      },
+    ]),
   );
 
-  const bookingById = new Map(bookings.map((booking) => [booking.id, booking]));
-  const personById = new Map(PEOPLE.map((person) => [person.id, person]));
-
-  return readReviews()
-    .map((review) => {
+  return reviewRows
+    .map((row) => {
+      const review = toIReview(row);
       const booking = bookingById.get(review.bookingId);
       if (!booking || !tableIds.has(booking.tableId)) return null;
 

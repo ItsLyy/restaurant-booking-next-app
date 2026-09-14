@@ -47,7 +47,7 @@ export async function createRestaurantAction(
     };
   }
 
-  const owner = promoteToOwner(session.userId);
+  const owner = await promoteToOwner(session.userId);
   if (!owner) {
     return {
       success: false,

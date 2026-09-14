@@ -1,12 +1,12 @@
-import { readFileSync } from "fs";
-import path from "path";
+import { eq } from "drizzle-orm";
+
+import { db } from "@db/client";
+import {
+  restaurants as restaurantsTable,
+  tables as tablesTable,
+} from "@db/schema";
 
 import type { IRestaurant } from "@types";
-
-const RESTAURANTS_FILE_PATH = path.join(
-  process.cwd(),
-  "app/_data/dummy/restaurants.json",
-);
 
 const RESTAURANT_ID = "rest-001";
 
@@ -15,19 +15,43 @@ export interface RestaurantProfileData {
   tablesCount: number;
 }
 
-export const getRestaurantProfile = (): RestaurantProfileData | undefined => {
-  const restaurants = JSON.parse(
-    readFileSync(RESTAURANTS_FILE_PATH, "utf8"),
-  ) as IRestaurant[];
-  const restaurant = restaurants.find((item) => item.id === RESTAURANT_ID);
-  if (!restaurant) return undefined;
+const toIRestaurant = (
+  row: (typeof restaurantsTable.$inferSelect),
+): IRestaurant => ({
+  id: row.id,
+  name: row.name,
+  slug: row.slug,
+  country: row.country,
+  city: row.city,
+  address: row.address,
+  tags: row.tags,
+  ownerId: row.ownerId,
+  ...(row.categoryId ? { categoryId: row.categoryId } : {}),
+  ...(row.discount !== null ? { discount: row.discount } : {}),
+  description: row.description,
+  ...(row.shortDescription ? { shortDescription: row.shortDescription } : {}),
+  ...(row.lat !== null ? { lat: row.lat } : {}),
+  ...(row.lng !== null ? { lng: row.lng } : {}),
+  createdAt: row.createdAt,
+  updatedAt: row.updatedAt,
+});
 
-  const rawTables = JSON.parse(
-    readFileSync(path.join(process.cwd(), "app/_data/dummy/tables.json"), "utf8"),
-  ) as { id: string; restaurantId: string }[];
-  const tablesCount = rawTables.filter(
-    (table) => table.restaurantId === RESTAURANT_ID,
-  ).length;
+export const getRestaurantProfile = async (): Promise<
+  RestaurantProfileData | undefined
+> => {
+  const [restaurantRows, tableRows] = await Promise.all([
+    db
+      .select()
+      .from(restaurantsTable)
+      .where(eq(restaurantsTable.id, RESTAURANT_ID))
+      .limit(1),
+    db
+      .select({ id: tablesTable.id })
+      .from(tablesTable)
+      .where(eq(tablesTable.restaurantId, RESTAURANT_ID)),
+  ]);
+  const restaurantRow = restaurantRows[0];
+  if (!restaurantRow) return undefined;
 
-  return { restaurant, tablesCount };
+  return { restaurant: toIRestaurant(restaurantRow), tablesCount: tableRows.length };
 };

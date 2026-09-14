@@ -9,11 +9,7 @@ import { getDashboardRole } from "@libs/session";
 
 import type { IReview } from "@types";
 
-import {
-  readAllReviews,
-  writeAllReviews,
-  getRestaurantSlugForReview,
-} from "../_data/reviews";
+import { getRestaurantSlugForReview } from "../_data/reviews";
 
 const MAX_REPLY_LENGTH = 500;
 
@@ -26,13 +22,25 @@ export async function replyReviewAction(
     throw new Error("You must be signed in to reply to reviews.");
   }
 
-  const reviewsList = readAllReviews();
-  const review = reviewsList.find((item) => item.id === reviewId);
+  const reviewRows = await db
+    .select()
+    .from(reviews)
+    .where(eq(reviews.id, reviewId))
+    .limit(1);
+  const review = reviewRows[0];
   if (!review) {
     throw new Error("Review not found.");
   }
 
-  const slug = getRestaurantSlugForReview(review);
+  const slug = await getRestaurantSlugForReview({
+    id: review.id,
+    customerComment: review.customerComment,
+    customerRating: review.customerRating,
+    customerCommentAt: review.customerCommentAt,
+    bookingId: review.bookingId,
+    createdAt: review.createdAt,
+    updatedAt: review.updatedAt,
+  });
   if (slug !== "sakura-garden") {
     throw new Error("This review does not belong to your restaurant.");
   }
@@ -49,9 +57,14 @@ export async function replyReviewAction(
 
   const now = new Date().toISOString();
   const updatedReview: IReview = {
-    ...review,
+    id: review.id,
+    customerComment: review.customerComment,
+    customerRating: review.customerRating,
+    customerCommentAt: review.customerCommentAt,
+    bookingId: review.bookingId,
     ownerReply: trimmedReply,
     ownerReplyAt: now,
+    createdAt: review.createdAt,
     updatedAt: now,
   };
 
@@ -63,11 +76,6 @@ export async function replyReviewAction(
   } catch {
     throw new Error("Your reply could not be saved right now.");
   }
-
-  const synced = reviewsList.map((item) =>
-    item.id === reviewId ? updatedReview : item,
-  );
-  writeAllReviews(synced);
 
   revalidatePath("/dashboard/reviews", "page");
   if (slug) {

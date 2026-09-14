@@ -11,7 +11,7 @@ import { updateOfficerProfileAction } from "../_actions/update-officer-profile-a
 import { LeaveRestaurantButton } from "./leave-restaurant-button";
 
 export const OfficerProfile = async () => {
-  const data = getOfficerData(await getSessionOfficerId());
+  const data = await getOfficerData(await getSessionOfficerId());
   if (!data) notFound();
 
   const { officer, restaurant, invitedByOwner } = data;

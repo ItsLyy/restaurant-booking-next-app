@@ -1,10 +1,17 @@
-import {
-  PROFILES_FILES,
-  readProfiles,
-  writeProfiles,
-} from "@data/profiles/update-profile";
+import "server-only";
 
-import type { IOwner, IOfficer, IUser } from "@types";
+import { cache } from "react";
+import { and, eq, like, type SQL } from "drizzle-orm";
+
+import { db } from "@db/client";
+import {
+  customers as customersTable,
+  officers as officersTable,
+  owners as ownersTable,
+  users as usersTable,
+} from "@db/schema";
+
+import type { UserRow } from "@db/schema";
 
 export type AuthRole = "customer" | "owner" | "manager" | "staff";
 
@@ -15,7 +22,7 @@ export interface AuthAccount {
   password: string;
   firstName: string;
   lastName: string;
-  role: "customer" | "owner" | "officer";
+  role: AuthRole;
   position?: "manager" | "staff";
   restaurantId?: string;
   emailVerifyAt: string;
@@ -25,170 +32,173 @@ export interface AuthAccount {
   updatedAt?: string;
 }
 
-export const getAccessRole = (account: AuthAccount): AuthRole => {
-  if (account.role === "owner") return "owner";
-  if (account.role === "officer") {
-    return account.position === "manager" ? "manager" : "staff";
-  }
-  return "customer";
+export const accountFromRow = (
+  row: UserRow,
+  extras?: Partial<AuthAccount>,
+): AuthAccount => {
+  const role: AuthRole =
+    row.role === "officer"
+      ? extras?.position ?? "staff"
+      : row.role === "owner"
+        ? "owner"
+        : "customer";
+  return {
+    id: row.id,
+    username: row.username,
+    email: row.email,
+    password: row.password,
+    firstName: row.firstName,
+    lastName: row.lastName,
+    role,
+    emailVerifyAt: row.emailVerifyAt,
+    allergics: row.allergics,
+    avatar: row.avatar ?? undefined,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+    ...extras,
+  };
 };
 
-const toAccount = (row: IUser, extras?: Partial<AuthAccount>): AuthAccount => ({
-  id: row.id,
-  username: row.username,
-  email: row.email,
-  password: row.password,
-  firstName: row.firstName,
-  lastName: row.lastName,
-  role: row.role,
-  emailVerifyAt: row.emailVerifyAt,
-  allergics: row.allergics,
-  avatar: row.avatar,
-  createdAt: row.createdAt,
-  updatedAt: row.updatedAt,
-  ...extras,
-});
+export const getAccessRole = (account: AuthAccount): AuthRole =>
+  account.role;
 
-export const findAccountByEmail = (email: string): AuthAccount | undefined => {
-  const normalized = email.trim().toLowerCase();
+interface AccountQuery {
+  email?: string;
+  username?: string;
+  id?: string;
+}
 
-  const officers = readProfiles<IOfficer>(PROFILES_FILES.officers);
-  const officer = officers.find(
-    (row) => row.email.toLowerCase() === normalized,
-  );
-  if (officer) {
-    return toAccount(officer, {
-      role: officer.role,
-      position: officer.position,
-      restaurantId: officer.restaurantId,
+const findAccountRow = async (
+  where: AccountQuery,
+): Promise<AuthAccount | undefined> => {
+  const conditions: SQL[] = [];
+  if (where.email) conditions.push(eq(usersTable.email, where.email));
+  if (where.username) conditions.push(eq(usersTable.username, where.username));
+  if (where.id) conditions.push(eq(usersTable.id, where.id));
+  if (conditions.length === 0) return undefined;
+
+  const rows = await db
+    .select()
+    .from(usersTable)
+    .leftJoin(customersTable, eq(customersTable.userId, usersTable.id))
+    .leftJoin(ownersTable, eq(ownersTable.userId, usersTable.id))
+    .leftJoin(officersTable, eq(officersTable.userId, usersTable.id))
+    .where(and(...conditions))
+    .limit(1);
+
+  const row = rows[0];
+  if (!row) return undefined;
+
+  const { users: userRow, officers: officerRow } = row;
+  if (userRow.role === "officer" && officerRow) {
+    return accountFromRow(userRow, {
+      role: officerRow.position,
+      position: officerRow.position,
+      restaurantId: officerRow.restaurantId,
     });
   }
-
-  const owners = readProfiles<IOwner>(PROFILES_FILES.owners);
-  const owner = owners.find((row) => row.email.toLowerCase() === normalized);
-  if (owner) {
-    return toAccount(owner, { role: owner.role });
-  }
-
-  const customers = readProfiles<IUser>(PROFILES_FILES.customers);
-  const customer = customers.find(
-    (row) => row.email.toLowerCase() === normalized,
-  );
-  if (customer) {
-    return toAccount(customer, { role: customer.role });
-  }
-
-  return undefined;
+  return accountFromRow(userRow);
 };
 
-export const findAccountByUsername = (
-  username: string,
-): AuthAccount | undefined => {
-  const normalized = username.trim().toLowerCase();
+export const findAccountByEmail = cache(
+  async (email: string): Promise<AuthAccount | undefined> => {
+    const normalized = email.trim().toLowerCase();
+    return findAccountRow({ email: normalized });
+  },
+);
 
-  const officers = readProfiles<IOfficer>(PROFILES_FILES.officers);
-  const officer = officers.find(
-    (row) => row.username.toLowerCase() === normalized,
-  );
-  if (officer) return toAccount(officer, { role: officer.role });
+export const findAccountByUsername = cache(
+  async (username: string): Promise<AuthAccount | undefined> => {
+    const normalized = username.trim().toLowerCase();
+    return findAccountRow({ username: normalized });
+  },
+);
 
-  const owners = readProfiles<IOwner>(PROFILES_FILES.owners);
-  const owner = owners.find(
-    (row) => row.username.toLowerCase() === normalized,
-  );
-  if (owner) return toAccount(owner, { role: "owner" });
+export const findAccountById = cache(
+  async (id: string): Promise<AuthAccount | undefined> =>
+    findAccountRow({ id }),
+);
 
-  const customers = readProfiles<IUser>(PROFILES_FILES.customers);
-  const customer = customers.find(
-    (row) => row.username.toLowerCase() === normalized,
-  );
-  if (customer) return toAccount(customer, { role: "customer" });
-
-  return undefined;
-};
-
-export const findAccountById = (id: string): AuthAccount | undefined => {
-  const officers = readProfiles<IOfficer>(PROFILES_FILES.officers);
-  const officer = officers.find((row) => row.id === id);
-  if (officer) {
-    return toAccount(officer, {
-      role: officer.role,
-      position: officer.position,
-      restaurantId: officer.restaurantId,
-    });
-  }
-
-  const owners = readProfiles<IOwner>(PROFILES_FILES.owners);
-  const owner = owners.find((row) => row.id === id);
-  if (owner) return toAccount(owner, { role: "owner" });
-
-  const customers = readProfiles<IUser>(PROFILES_FILES.customers);
-  const customer = customers.find((row) => row.id === id);
-  if (customer) return toAccount(customer, { role: "customer" });
-
-  return undefined;
-};
-
-export const createCustomerAccount = (input: {
+export interface CreateCustomerInput {
+  firstName: string;
+  lastName: string;
   username: string;
   email: string;
   password: string;
-  firstName: string;
-  lastName: string;
   avatar?: string;
   emailVerifyAt?: string;
-}): AuthAccount => {
-  const customers = readProfiles<IUser>(PROFILES_FILES.customers);
-  const maxNum = customers.reduce((max, c) => {
-    const n = Number.parseInt(c.id.replace(/^user-/, ""), 10);
-    return Number.isFinite(n) ? Math.max(max, n) : max;
-  }, 0);
+}
 
+const buildNextUserId = async (): Promise<string> => {
+  const rows = await db
+    .select({ id: usersTable.id })
+    .from(usersTable)
+    .where(like(usersTable.id, "user-%"));
+  let max = 0;
+  for (const row of rows) {
+    const sequence = Number(row.id.replace("user-", ""));
+    if (Number.isFinite(sequence) && sequence > max) max = sequence;
+  }
+  return `user-${String(max + 1).padStart(3, "0")}`;
+};
+
+export async function createCustomerAccount(
+  input: CreateCustomerInput,
+): Promise<AuthAccount> {
   const now = new Date().toISOString();
-  const account: AuthAccount = {
-    id: `user-${String(maxNum + 1).padStart(3, "0")}`,
-    username: input.username,
-    email: input.email,
+  const id = await buildNextUserId();
+  const email = input.email.trim().toLowerCase();
+  const username = input.username.trim().toLowerCase();
+
+  await db.transaction(async (tx) => {
+    await tx.insert(usersTable).values({
+      id,
+      username,
+      email,
+      password: input.password,
+      firstName: input.firstName,
+      lastName: input.lastName,
+      role: "customer",
+      emailVerifyAt: input.emailVerifyAt ?? now,
+      allergics: [],
+      avatar: input.avatar ?? null,
+      createdAt: now,
+      updatedAt: now,
+    });
+    await tx.insert(customersTable).values({ userId: id });
+  });
+
+  return accountFromRow({
+    id,
+    username,
+    email,
     password: input.password,
     firstName: input.firstName,
     lastName: input.lastName,
     role: "customer",
     emailVerifyAt: input.emailVerifyAt ?? now,
     allergics: [],
-    avatar: input.avatar,
+    avatar: input.avatar ?? null,
     createdAt: now,
     updatedAt: now,
-  };
+  });
+}
 
-  writeProfiles(PROFILES_FILES.customers, [
-    ...customers,
-    account as IUser,
-  ]);
-  return account;
-};
-
-export const promoteToOwner = (accountId: string): AuthAccount | undefined => {
-  const customers = readProfiles<IUser>(PROFILES_FILES.customers);
-  const customer = customers.find((c) => c.id === accountId);
-  if (!customer) return undefined;
-
-  const owners = readProfiles<IOwner>(PROFILES_FILES.owners);
-  const maxNum = owners.reduce((max, o) => {
-    const n = Number.parseInt(o.id.replace(/^owner-/, ""), 10);
-    return Number.isFinite(n) ? Math.max(max, n) : max;
-  }, 0);
-
+export async function promoteToOwner(
+  userId: string,
+): Promise<AuthAccount | undefined> {
   const now = new Date().toISOString();
-  const owner: IOwner = {
-    ...customer,
-    id: `owner-${String(maxNum + 1).padStart(3, "0")}`,
-    role: "owner",
-    businessLicense: undefined,
-    verifyAt: "",
-    updatedAt: now,
-  };
+  const updated = await db
+    .update(usersTable)
+    .set({ role: "owner", updatedAt: now })
+    .where(eq(usersTable.id, userId))
+    .returning({ id: usersTable.id });
+  if (updated.length === 0) return undefined;
 
-  writeProfiles(PROFILES_FILES.owners, [...owners, owner]);
-  writeProfiles(PROFILES_FILES.customers, customers);
-  return toAccount(owner, { role: "owner" });
-};
+  await db
+    .insert(ownersTable)
+    .values({ userId, businessLicense: null, verifyAt: null })
+    .onConflictDoNothing();
+
+  return findAccountRow({ id: userId });
+}

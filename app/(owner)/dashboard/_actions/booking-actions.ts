@@ -1,94 +1,129 @@
 "use server";
 
-import { readFileSync, writeFileSync } from "fs";
-import path from "path";
-
+import { and, eq, inArray, like, ne } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
-import tables from "@data/dummy/tables.json";
+import { db } from "@db/client";
+import {
+  bookings as bookingsTable,
+  payments as paymentsTable,
+  tables as tablesTable,
+} from "@db/schema";
+import { broadcastBookingEvent } from "@db/broadcast";
+import { getDashboardRole } from "@libs/session";
 
 import {
   derivePaymentDeadline,
   getEffectiveBookingStatus,
-} from "../../../_data/bookings/booking-deadline";
+} from "@data/bookings/booking-deadline";
 
-import { getDashboardRole } from "@libs/session";
+import type { BookingRow, PaymentRow, TableRow } from "@db/schema";
+import type { IBooking, IPayment } from "@types";
 
-import type { IBooking, IPayment, ITable } from "@types";
+const RESTAURANT_ID = "rest-001";
+const MANUAL_BOOKING_ACTOR_ID = "owner-001";
 
-const BOOKINGS_FILE_PATH = path.join(
-  process.cwd(),
-  "app/_data/dummy/bookings.json",
-);
+const toIBooking = (row: BookingRow): IBooking => ({
+  id: row.id,
+  date: row.date,
+  time: row.time,
+  partySize: row.partySize,
+  ...(row.specialRequest ? { specialRequest: row.specialRequest } : {}),
+  status: row.status,
+  customerId: row.customerId,
+  tableId: row.tableId,
+  ...(row.cancelledBy
+    ? {
+        cancelled: {
+          date: row.cancelledDate ?? "",
+          by: row.cancelledBy,
+          reason: row.cancelledReason ?? "",
+        },
+      }
+    : {}),
+  createdAt: row.createdAt,
+  updatedAt: row.updatedAt,
+});
 
-const PAYMENTS_FILE_PATH = path.join(
-  process.cwd(),
-  "app/_data/dummy/payments.json",
-);
+const toIPayment = (row?: PaymentRow): IPayment | undefined => {
+  if (!row) return undefined;
+  return {
+    id: row.id,
+    price: row.price,
+    status: row.status,
+    deadline: row.deadline,
+    gatewayToken: row.gatewayToken,
+    bookingId: row.bookingId,
+    paidAt: row.paidAt ?? undefined,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+  };
+};
 
-function readBookings(): IBooking[] {
-  return JSON.parse(readFileSync(BOOKINGS_FILE_PATH, "utf8")) as IBooking[];
-}
-
-function readPayments(): IPayment[] {
-  return JSON.parse(readFileSync(PAYMENTS_FILE_PATH, "utf8")) as IPayment[];
-}
-
-function writePayments(payments: IPayment[]): void {
-  writeFileSync(
-    PAYMENTS_FILE_PATH,
-    `${JSON.stringify(payments, null, 2)}\n`,
-    "utf8",
-  );
-}
-
-function writeBookings(bookings: IBooking[]): void {
-  writeFileSync(
-    BOOKINGS_FILE_PATH,
-    `${JSON.stringify(bookings, null, 2)}\n`,
-    "utf8",
-  );
-}
-
-function buildNextPaymentId(payments: IPayment[]): string {
+const buildNextPaymentId = async (): Promise<string> => {
+  const rows = await db
+    .select({ id: paymentsTable.id })
+    .from(paymentsTable)
+    .where(like(paymentsTable.id, "payment-%"));
   let max = 0;
-  for (const payment of payments) {
-    const sequence = Number(payment.id.replace("payment-", ""));
+  for (const row of rows) {
+    const sequence = Number(row.id.replace("payment-", ""));
     if (Number.isFinite(sequence) && sequence > max) {
       max = sequence;
     }
   }
   return `payment-${String(max + 1).padStart(3, "0")}`;
-}
+};
 
-function buildNextBookingId(bookings: IBooking[]): string {
+const buildNextBookingId = async (): Promise<string> => {
+  const rows = await db
+    .select({ id: bookingsTable.id })
+    .from(bookingsTable)
+    .where(like(bookingsTable.id, "booking-%"));
   let max = 0;
-  for (const booking of bookings) {
-    const sequence = Number(booking.id.replace("booking-", ""));
+  for (const row of rows) {
+    const sequence = Number(row.id.replace("booking-", ""));
     if (Number.isFinite(sequence) && sequence > max) {
       max = sequence;
     }
   }
   return `booking-${String(max + 1).padStart(3, "0")}`;
-}
+};
 
-function findBookingIndex(bookings: IBooking[], id: string): number {
-  const index = bookings.findIndex((booking) => booking.id === id);
-  if (index === -1) {
-    throw new Error("Booking not found.");
-  }
-  return index;
-}
+const getBookingRow = async (id: string): Promise<BookingRow | undefined> => {
+  const rows = await db
+    .select()
+    .from(bookingsTable)
+    .where(eq(bookingsTable.id, id))
+    .limit(1);
+  return rows[0];
+};
 
-function saveBooking(bookings: IBooking[], booking: IBooking): IBooking {
-  const index = findBookingIndex(bookings, booking.id);
-  bookings[index] = booking;
-  writeBookings(bookings);
+const getTableRow = async (id: string): Promise<TableRow | undefined> => {
+  const rows = await db
+    .select()
+    .from(tablesTable)
+    .where(eq(tablesTable.id, id))
+    .limit(1);
+  return rows[0];
+};
+
+const getPaymentRow = async (
+  bookingId: string,
+): Promise<PaymentRow | undefined> => {
+  const rows = await db
+    .select()
+    .from(paymentsTable)
+    .where(eq(paymentsTable.bookingId, bookingId))
+    .limit(1);
+  return rows[0];
+};
+
+const revalidateBookingPaths = (id: string): void => {
   revalidatePath("/dashboard", "page");
   revalidatePath("/dashboard/bookings", "page");
-  revalidatePath(`/bookings/${booking.id}`, "page");
-  return booking;
-}
+  revalidatePath(`/bookings/${id}`, "page");
+};
 
 export async function confirmBookingAction(id: string): Promise<IBooking> {
   const role = await getDashboardRole();
@@ -96,120 +131,127 @@ export async function confirmBookingAction(id: string): Promise<IBooking> {
     throw new Error("Unauthorized.");
   }
 
-  const bookings = readBookings();
-  const index = findBookingIndex(bookings, id);
-  const booking = bookings[index];
+  const bookingRow = await getBookingRow(id);
+  if (!bookingRow) {
+    throw new Error("Booking not found.");
+  }
 
-  if (booking.status !== "pending") {
+  if (bookingRow.status !== "pending") {
     throw new Error("Only pending bookings can be confirmed.");
   }
 
-  const table = tables.find((item) => item.id === booking.tableId) as
-    | ITable
-    | undefined;
-
-  const paymentByBookingId = new Map(
-    readPayments().map((payment) => [payment.bookingId, payment]),
-  );
+  const tableRow = await getTableRow(bookingRow.tableId);
+  const paymentRow = await getPaymentRow(id);
 
   if (
-    getEffectiveBookingStatus(booking, paymentByBookingId.get(id)) !== "pending"
+    getEffectiveBookingStatus(toIBooking(bookingRow), toIPayment(paymentRow)) !==
+    "pending"
   ) {
     throw new Error(
       "This booking was auto-cancelled because it was not confirmed within 72 hours.",
     );
   }
 
-  const conflictingBooking = bookings.find(
-    (item) =>
-      item.id !== id &&
-      item.tableId === booking.tableId &&
-      item.date === booking.date &&
-      item.time === booking.time &&
-      item.status !== "cancelled" &&
-      getEffectiveBookingStatus(item, paymentByBookingId.get(item.id)) ===
-        "confirmed",
+  const conflictRows = await db
+    .select()
+    .from(bookingsTable)
+    .where(
+      and(
+        eq(bookingsTable.tableId, bookingRow.tableId),
+        eq(bookingsTable.date, bookingRow.date),
+        eq(bookingsTable.time, bookingRow.time),
+        ne(bookingsTable.id, id),
+      ),
+    );
+
+  const conflictBookingIds = conflictRows.map((item) => item.id);
+  const conflictPaymentRows = conflictBookingIds.length
+    ? await db
+        .select()
+        .from(paymentsTable)
+        .where(inArray(paymentsTable.bookingId, conflictBookingIds))
+    : [];
+  const conflictPaymentByBookingId = new Map(
+    conflictPaymentRows.map((item) => [item.bookingId, item]),
   );
+
+  const conflictingBooking = conflictRows.find((item) => {
+    if (item.status === "cancelled") return false;
+    return (
+      getEffectiveBookingStatus(
+        toIBooking(item),
+        toIPayment(conflictPaymentByBookingId.get(item.id)),
+      ) === "confirmed"
+    );
+  });
   if (conflictingBooking) {
     throw new Error(
-      `Cannot confirm: that slot at ${booking.time} on ${table?.name ?? booking.tableId} is already held by booking ${conflictingBooking.id}. Reject that booking first.`,
+      `Cannot confirm: that slot at ${bookingRow.time} on ${tableRow?.name ?? bookingRow.tableId} is already held by booking ${conflictingBooking.id}. Reject that booking first.`,
     );
   }
 
   const now = new Date().toISOString();
-  const confirmed = saveBooking(bookings, {
-    ...booking,
-    status: "confirmed",
-    updatedAt: now,
-  });
 
-  const payments = readPayments();
-  let existingPayment = payments.find((item) => item.bookingId === id);
-  if (!existingPayment) {
-    existingPayment = {
-      id: buildNextPaymentId(payments),
-      price: table?.price ?? booking.partySize * 25,
+  await db
+    .update(bookingsTable)
+    .set({ status: "confirmed", updatedAt: now })
+    .where(eq(bookingsTable.id, id));
+
+  let paymentStatus: IPayment["status"] = paymentRow?.status ?? "unpaid";
+  if (!paymentRow) {
+    const paymentId = await buildNextPaymentId();
+    await db.insert(paymentsTable).values({
+      id: paymentId,
+      price: tableRow?.price ?? bookingRow.partySize * 25,
       status: "unpaid",
       deadline: derivePaymentDeadline(),
       gatewayToken: `tok_sandbox_${id}`,
+      paidAt: null,
       bookingId: id,
       createdAt: now,
       updatedAt: now,
-    };
-    payments.push(existingPayment);
-    writePayments(payments);
-  }
-
-  // DB Sync
-  try {
-    const { db } = await import("@db/client");
-    const { bookings: bookingsTable, payments: paymentsTable } = await import("@db/schema");
-    const { eq } = await import("drizzle-orm");
-
+    });
+    paymentStatus = "unpaid";
+  } else {
     await db
-      .update(bookingsTable)
-      .set({ status: "confirmed", updatedAt: now })
-      .where(eq(bookingsTable.id, id));
-
-    if (existingPayment) {
-      await db
-        .insert(paymentsTable)
-        .values({
-          id: existingPayment.id,
-          price: existingPayment.price,
-          status: (existingPayment.status === "paid" ? "paid" : "unpaid") as "unpaid" | "paid",
-          deadline: existingPayment.deadline,
-          gatewayToken: existingPayment.gatewayToken,
-          paidAt: null,
-          bookingId: id,
-          createdAt: existingPayment.createdAt ?? now,
-          updatedAt: existingPayment.updatedAt ?? now,
-        })
-        .onConflictDoNothing();
-    }
-  } catch {
-    // DB sync error handled gracefully
+      .insert(paymentsTable)
+      .values({
+        id: paymentRow.id,
+        price: paymentRow.price,
+        status: paymentRow.status === "paid" ? "paid" : "unpaid",
+        deadline: paymentRow.deadline,
+        gatewayToken: paymentRow.gatewayToken,
+        paidAt: paymentRow.paidAt,
+        bookingId: id,
+        createdAt: paymentRow.createdAt,
+        updatedAt: paymentRow.updatedAt,
+      })
+      .onConflictDoNothing();
   }
 
-  // Broadcast
   try {
-    const { broadcastBookingEvent } = await import("@db/broadcast");
     await broadcastBookingEvent("booking:confirmed", {
       bookingId: id,
-      restaurantId: table?.restaurantId ?? RESTAURANT_ID,
-      customerId: booking.customerId,
-      tableId: booking.tableId,
+      restaurantId: tableRow?.restaurantId ?? RESTAURANT_ID,
+      customerId: bookingRow.customerId,
+      tableId: bookingRow.tableId,
       status: "confirmed",
-      date: booking.date,
-      time: booking.time,
-      partySize: booking.partySize,
-      paymentStatus: existingPayment?.status ?? "unpaid",
+      date: bookingRow.date,
+      time: bookingRow.time,
+      partySize: bookingRow.partySize,
+      paymentStatus,
     });
   } catch {
-    // Broadcast error handled gracefully
+    // Broadcast error handled gracefully.
   }
 
-  return confirmed;
+  revalidateBookingPaths(id);
+
+  return {
+    ...toIBooking(bookingRow),
+    status: "confirmed",
+    updatedAt: now,
+  };
 }
 
 export async function rejectBookingAction(
@@ -221,19 +263,49 @@ export async function rejectBookingAction(
     throw new Error("Unauthorized.");
   }
 
-  const bookings = readBookings();
-  const index = findBookingIndex(bookings, id);
-  const booking = bookings[index];
+  const bookingRow = await getBookingRow(id);
+  if (!bookingRow) {
+    throw new Error("Booking not found.");
+  }
 
-  if (booking.status === "cancelled") {
+  if (bookingRow.status === "cancelled") {
     throw new Error("Booking is already cancelled.");
   }
 
   const cancelledReason = reason?.trim() || "Rejected by the restaurant.";
   const now = new Date().toISOString();
 
-  const rejected = saveBooking(bookings, {
-    ...booking,
+  await db
+    .update(bookingsTable)
+    .set({
+      status: "cancelled",
+      cancelledBy: "restaurant",
+      cancelledDate: now.slice(0, 10),
+      cancelledReason,
+      updatedAt: now,
+    })
+    .where(eq(bookingsTable.id, id));
+
+  const tableRow = await getTableRow(bookingRow.tableId);
+
+  try {
+    await broadcastBookingEvent("booking:rejected", {
+      bookingId: id,
+      restaurantId: tableRow?.restaurantId ?? RESTAURANT_ID,
+      customerId: bookingRow.customerId,
+      tableId: bookingRow.tableId,
+      status: "cancelled",
+      cancelledBy: "restaurant",
+      cancelledReason,
+    });
+  } catch {
+    // Broadcast error handled gracefully.
+  }
+
+  revalidateBookingPaths(id);
+
+  return {
+    ...toIBooking(bookingRow),
     status: "cancelled",
     cancelled: {
       date: now.slice(0, 10),
@@ -241,49 +313,7 @@ export async function rejectBookingAction(
       reason: cancelledReason,
     },
     updatedAt: now,
-  });
-
-  const table = tables.find((item) => item.id === booking.tableId) as
-    | ITable
-    | undefined;
-
-  // DB Sync
-  try {
-    const { db } = await import("@db/client");
-    const { bookings: bookingsTable } = await import("@db/schema");
-    const { eq } = await import("drizzle-orm");
-
-    await db
-      .update(bookingsTable)
-      .set({
-        status: "cancelled",
-        cancelledBy: "restaurant",
-        cancelledDate: now.slice(0, 10),
-        cancelledReason,
-        updatedAt: now,
-      })
-      .where(eq(bookingsTable.id, id));
-  } catch {
-    // DB sync error handled gracefully
-  }
-
-  // Broadcast
-  try {
-    const { broadcastBookingEvent } = await import("@db/broadcast");
-    await broadcastBookingEvent("booking:rejected", {
-      bookingId: id,
-      restaurantId: table?.restaurantId ?? RESTAURANT_ID,
-      customerId: booking.customerId,
-      tableId: booking.tableId,
-      status: "cancelled",
-      cancelledBy: "restaurant",
-      cancelledReason,
-    });
-  } catch {
-    // Broadcast error handled gracefully
-  }
-
-  return rejected;
+  };
 }
 
 export async function completeBookingAction(id: string): Promise<IBooking> {
@@ -292,71 +322,52 @@ export async function completeBookingAction(id: string): Promise<IBooking> {
     throw new Error("Unauthorized.");
   }
 
-  const bookings = readBookings();
-  const index = findBookingIndex(bookings, id);
-  const booking = bookings[index];
+  const bookingRow = await getBookingRow(id);
+  if (!bookingRow) {
+    throw new Error("Booking not found.");
+  }
 
-  if (booking.status !== "confirmed") {
+  if (bookingRow.status !== "confirmed") {
     throw new Error("Only confirmed bookings can be marked as completed.");
   }
 
   const now = new Date().toISOString();
-  const completed = saveBooking(bookings, {
-    ...booking,
-    status: "completed",
-    updatedAt: now,
-  });
 
-  const payments = readPayments();
-  const payment = payments.find((item) => item.bookingId === id);
-  if (payment && payment.status === "unpaid") {
-    payment.status = "paid";
-    payment.paidAt = now;
-    payment.updatedAt = now;
-    writePayments(payments);
-  }
+  await db
+    .update(bookingsTable)
+    .set({ status: "completed", updatedAt: now })
+    .where(eq(bookingsTable.id, id));
 
-  const table = tables.find((item) => item.id === booking.tableId) as
-    | ITable
-    | undefined;
-
-  // DB Sync
-  try {
-    const { db } = await import("@db/client");
-    const { bookings: bookingsTable, payments: paymentsTable } = await import("@db/schema");
-    const { eq } = await import("drizzle-orm");
-
+  const paymentRow = await getPaymentRow(id);
+  if (paymentRow && paymentRow.status === "unpaid") {
     await db
-      .update(bookingsTable)
-      .set({ status: "completed", updatedAt: now })
-      .where(eq(bookingsTable.id, id));
-
-    if (payment) {
-      await db
-        .update(paymentsTable)
-        .set({ status: "paid", paidAt: now, updatedAt: now })
-        .where(eq(paymentsTable.bookingId, id));
-    }
-  } catch {
-    // DB sync error handled gracefully
+      .update(paymentsTable)
+      .set({ status: "paid", paidAt: now, updatedAt: now })
+      .where(eq(paymentsTable.bookingId, id));
   }
 
-  // Broadcast
+  const tableRow = await getTableRow(bookingRow.tableId);
+
   try {
-    const { broadcastBookingEvent } = await import("@db/broadcast");
     await broadcastBookingEvent("booking:completed", {
       bookingId: id,
-      restaurantId: table?.restaurantId ?? RESTAURANT_ID,
-      customerId: booking.customerId,
-      tableId: booking.tableId,
+      restaurantId: tableRow?.restaurantId ?? RESTAURANT_ID,
+      customerId: bookingRow.customerId,
+      tableId: bookingRow.tableId,
       status: "completed",
       paymentStatus: "paid",
     });
   } catch {
-    // Broadcast error handled gracefully
+    // Broadcast error handled gracefully.
   }
 
-  return completed;
+  revalidateBookingPaths(id);
+
+  return {
+    ...toIBooking(bookingRow),
+    status: "completed",
+    updatedAt: now,
+  };
 }
 
 export interface ManualBookingState {
@@ -364,9 +375,6 @@ export interface ManualBookingState {
   error?: string;
   date?: string;
 }
-
-const RESTAURANT_ID = "rest-001";
-const MANUAL_BOOKING_ACTOR_ID = "owner-001";
 
 export async function createManualBookingAction(
   _prevState: ManualBookingState,
@@ -408,9 +416,18 @@ export async function createManualBookingAction(
       };
     }
   }
-  const table = tables.find(
-    (item) => item.id === tableId && item.restaurantId === RESTAURANT_ID,
-  ) as ITable | undefined;
+
+  const tableRows = await db
+    .select()
+    .from(tablesTable)
+    .where(
+      and(
+        eq(tablesTable.id, tableId),
+        eq(tablesTable.restaurantId, RESTAURANT_ID),
+      ),
+    )
+    .limit(1);
+  const table = tableRows[0];
   if (!table) {
     return { ok: false, error: "Please choose a table." };
   }
@@ -424,18 +441,33 @@ export async function createManualBookingAction(
     };
   }
   if (tableId && date && time) {
-    const bookings = readBookings();
+    const bookingRows = await db
+      .select()
+      .from(bookingsTable)
+      .where(
+        and(
+          eq(bookingsTable.tableId, tableId),
+          eq(bookingsTable.date, date),
+          eq(bookingsTable.time, time),
+        ),
+      );
+    const bookingIds = bookingRows.map((item) => item.id);
+    const paymentRows = bookingIds.length
+      ? await db
+          .select()
+          .from(paymentsTable)
+          .where(inArray(paymentsTable.bookingId, bookingIds))
+      : [];
     const paymentByBookingId = new Map(
-      readPayments().map((payment) => [payment.bookingId, payment]),
+      paymentRows.map((item) => [item.bookingId, item]),
     );
-    const conflicting = bookings.find(
+    const conflicting = bookingRows.find(
       (item) =>
-        item.tableId === tableId &&
-        item.date === date &&
-        item.time === time &&
         item.status !== "cancelled" &&
-        getEffectiveBookingStatus(item, paymentByBookingId.get(item.id)) ===
-          "confirmed",
+        getEffectiveBookingStatus(
+          toIBooking(item),
+          toIPayment(paymentByBookingId.get(item.id)),
+        ) === "confirmed",
     );
     if (conflicting) {
       return {
@@ -446,73 +478,41 @@ export async function createManualBookingAction(
   }
 
   const now = new Date().toISOString();
-  const bookings = readBookings();
-  const id = buildNextBookingId(bookings);
+  const id = await buildNextBookingId();
+  const paymentId = await buildNextPaymentId();
 
-  bookings.push({
-    id,
-    date,
-    time,
-    partySize,
-    status: "confirmed",
-    customerId: MANUAL_BOOKING_ACTOR_ID,
-    tableId,
-    specialRequest: specialRequest || undefined,
-    createdAt: now,
-    updatedAt: now,
-  });
-  writeBookings(bookings);
-
-  const payments = readPayments();
-  const newPayment = {
-    id: buildNextPaymentId(payments),
-    price: table.price,
-    status: "unpaid" as const,
-    deadline: derivePaymentDeadline(),
-    gatewayToken: `tok_sandbox_${id}`,
-    bookingId: id,
-    createdAt: now,
-    updatedAt: now,
-  };
-  payments.push(newPayment);
-  writePayments(payments);
-
-  // DB Sync
   try {
-    const { db } = await import("@db/client");
-    const { bookings: bookingsTable, payments: paymentsTable } = await import("@db/schema");
+    await db.transaction(async (tx) => {
+      await tx.insert(bookingsTable).values({
+        id,
+        date,
+        time,
+        partySize,
+        specialRequest: specialRequest || null,
+        status: "confirmed",
+        customerId: MANUAL_BOOKING_ACTOR_ID,
+        tableId,
+        createdAt: now,
+        updatedAt: now,
+      });
 
-    await db.insert(bookingsTable).values({
-      id,
-      date,
-      time,
-      partySize,
-      specialRequest: specialRequest || null,
-      status: "confirmed",
-      customerId: MANUAL_BOOKING_ACTOR_ID,
-      tableId,
-      createdAt: now,
-      updatedAt: now,
-    });
-
-    await db.insert(paymentsTable).values({
-      id: newPayment.id,
-      price: newPayment.price,
-      status: "unpaid",
-      deadline: newPayment.deadline,
-      gatewayToken: newPayment.gatewayToken,
-      paidAt: null,
-      bookingId: id,
-      createdAt: now,
-      updatedAt: now,
+      await tx.insert(paymentsTable).values({
+        id: paymentId,
+        price: table.price,
+        status: "unpaid",
+        deadline: derivePaymentDeadline(),
+        gatewayToken: `tok_sandbox_${id}`,
+        paidAt: null,
+        bookingId: id,
+        createdAt: now,
+        updatedAt: now,
+      });
     });
   } catch {
-    // DB sync error handled gracefully
+    return { ok: false, error: "Could not save the booking." };
   }
 
-  // Broadcast
   try {
-    const { broadcastBookingEvent } = await import("@db/broadcast");
     await broadcastBookingEvent("booking:created", {
       bookingId: id,
       restaurantId: table.restaurantId ?? RESTAURANT_ID,
@@ -528,7 +528,7 @@ export async function createManualBookingAction(
       price: table.price,
     });
   } catch {
-    // Broadcast error handled gracefully
+    // Broadcast error handled gracefully.
   }
 
   revalidatePath("/dashboard", "page");

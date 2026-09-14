@@ -17,7 +17,7 @@ import { DeleteRestaurantButton } from "./_components/delete-restaurant-button";
 
 export default async function OwnerRestaurantPage() {
   await requireOwner();
-  const data = getRestaurantProfile();
+  const data = await getRestaurantProfile();
   if (!data) notFound();
 
   const { restaurant, tablesCount } = data;

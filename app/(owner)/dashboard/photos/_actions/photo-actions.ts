@@ -17,7 +17,6 @@ import {
 import {
   buildNextPhotoId,
   readAllPhotos,
-  writeAllPhotos,
 } from "../_data/photos";
 
 import { MAX_GALLERY_PHOTOS } from "../_constants";
@@ -74,7 +73,7 @@ export async function updateCoverAction(
   const upload = await readUploadedPhoto("cover", formData);
   if (!upload.okay) return upload.error;
 
-  const photos = readAllPhotos();
+  const photos = await readAllPhotos();
   const cover = photos.find((photo) => photo.id === COVER_ID);
   if (!cover) {
     return { success: false, message: "Cover photo not found." };
@@ -96,14 +95,6 @@ export async function updateCoverAction(
     };
   }
 
-  writeAllPhotos(
-    photos.map((photo) =>
-      photo.id === COVER_ID
-        ? { ...photo, url: upload.url, updatedAt }
-        : photo,
-    ),
-  );
-
   await deleteStoredPhoto(previousUrl);
 
   await revalidatePaths();
@@ -118,7 +109,7 @@ async function addPhotoAction(
   if (unauthorized) return unauthorized;
 
   if (kind === "post") {
-    const existing = readAllPhotos().filter(
+    const existing = (await readAllPhotos()).filter(
       (photo) => photo.restaurantId === RESTAURANT_ID && photo.type === "post",
     );
     if (existing.length >= MAX_GALLERY_PHOTOS) {
@@ -133,7 +124,7 @@ async function addPhotoAction(
   if (!upload.okay) return upload.error;
 
   const timestamp = now();
-  const id = buildNextPhotoId(readAllPhotos(), kind);
+  const id = buildNextPhotoId(await readAllPhotos(), kind);
 
   try {
     await db.insert(restaurantPhotos).values({
@@ -151,18 +142,6 @@ async function addPhotoAction(
       message: "Photo could not be saved to the live site.",
     };
   }
-
-  writeAllPhotos([
-    ...readAllPhotos(),
-    {
-      id,
-      url: upload.url,
-      type: kind,
-      restaurantId: RESTAURANT_ID,
-      createdAt: timestamp,
-      updatedAt: timestamp,
-    },
-  ]);
 
   await revalidatePaths();
   return {
@@ -193,7 +172,7 @@ export async function deletePhotoAction(
   if (unauthorized) return unauthorized;
 
   const photoId = String(formData.get("photoId") ?? "");
-  const photos = readAllPhotos();
+  const photos = await readAllPhotos();
   const target = photos.find((photo) => photo.id === photoId);
   if (!target) {
     return { success: false, message: "Photo not found." };
@@ -210,8 +189,6 @@ export async function deletePhotoAction(
       message: "Photo could not be removed from the live site.",
     };
   }
-
-  writeAllPhotos(photos.filter((photo) => photo.id !== photoId));
 
   await deleteStoredPhoto(target.url);
 

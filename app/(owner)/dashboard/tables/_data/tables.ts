@@ -1,16 +1,19 @@
-import { readFileSync } from "fs";
-import path from "path";
+import { and, eq, inArray } from "drizzle-orm";
 
 import { formatTime } from "@utils";
-import rawUsers from "@data/dummy/users.json";
-import rawOwners from "@data/dummy/owners.json";
-import rawOfficers from "@data/dummy/officers.json";
-
-import { getEffectiveBookingStatus } from "../../../../_data/bookings/booking-deadline";
+import { db } from "@db/client";
+import {
+  bookings as bookingsTable,
+  payments as paymentsTable,
+  tables as tablesTable,
+  users as usersTable,
+} from "@db/schema";
+import { getEffectiveBookingStatus } from "@data/bookings/booking-deadline";
 
 import { normalizeDate, shiftDate, todayString } from "../../_data/dates";
 
-import type { IBooking, IPayment, ITable, IUser } from "@types";
+import type { BookingRow, PaymentRow } from "@db/schema";
+import type { IBooking, IPayment } from "@types";
 
 export { normalizeDate, shiftDate, todayString };
 
@@ -21,24 +24,39 @@ import type { TablePlace, TableStatus } from "./table-meta";
 
 const RESTAURANT_ID = "rest-001";
 
-const USERS = rawUsers as IUser[];
+const toIBooking = (row: BookingRow): IBooking => ({
+  id: row.id,
+  date: row.date,
+  time: row.time,
+  partySize: row.partySize,
+  ...(row.specialRequest ? { specialRequest: row.specialRequest } : {}),
+  status: row.status,
+  customerId: row.customerId,
+  tableId: row.tableId,
+  ...(row.cancelledBy
+    ? {
+        cancelled: {
+          date: row.cancelledDate ?? "",
+          by: row.cancelledBy,
+          reason: row.cancelledReason ?? "",
+        },
+      }
+    : {}),
+  createdAt: row.createdAt,
+  updatedAt: row.updatedAt,
+});
 
-const TABLES_FILE_PATH = path.join(
-  process.cwd(),
-  "app/_data/dummy/tables.json",
-);
-const BOOKINGS_FILE_PATH = path.join(
-  process.cwd(),
-  "app/_data/dummy/bookings.json",
-);
-const PAYMENTS_FILE_PATH = path.join(
-  process.cwd(),
-  "app/_data/dummy/payments.json",
-);
-
-function readJson<T>(filePath: string): T {
-  return JSON.parse(readFileSync(filePath, "utf8")) as T;
-}
+const toIPayment = (row: PaymentRow): IPayment => ({
+  id: row.id,
+  price: row.price,
+  status: row.status,
+  deadline: row.deadline,
+  gatewayToken: row.gatewayToken,
+  bookingId: row.bookingId,
+  paidAt: row.paidAt ?? undefined,
+  createdAt: row.createdAt,
+  updatedAt: row.updatedAt,
+});
 
 export interface TableDayBooking {
   id: string;
@@ -87,16 +105,6 @@ interface Person {
   lastName: string;
 }
 
-const PEOPLE: Person[] = [
-  ...(rawOwners as Person[]),
-  ...(rawOfficers as Person[]),
-  ...USERS.map((user) => ({
-    id: user.id,
-    firstName: user.firstName,
-    lastName: user.lastName,
-  })),
-];
-
 const getPlace = (category: string): TablePlace =>
   category === "outdoor"
     ? "outdoor"
@@ -104,23 +112,54 @@ const getPlace = (category: string): TablePlace =>
       ? "private"
       : "indoor";
 
-export const getTablesData = (date: string): TablesData => {
-  const restaurantTables = readJson<ITable[]>(TABLES_FILE_PATH).filter(
-    (table) => table.restaurantId === RESTAURANT_ID,
-  );
+export const getTablesData = async (date: string): Promise<TablesData> => {
+  const [restaurantTables, userRows] = await Promise.all([
+    db
+      .select()
+      .from(tablesTable)
+      .where(eq(tablesTable.restaurantId, RESTAURANT_ID)),
+    db
+      .select({
+        id: usersTable.id,
+        firstName: usersTable.firstName,
+        lastName: usersTable.lastName,
+      })
+      .from(usersTable),
+  ]);
   const tableIds = new Set(restaurantTables.map((table) => table.id));
-
-  const BOOKINGS = readJson<IBooking[]>(BOOKINGS_FILE_PATH);
-  const payments = readJson<IPayment[]>(PAYMENTS_FILE_PATH);
-
-  const paymentByBookingId = new Map(
-    payments.map((item) => [item.bookingId, item] as const),
+  const people = new Map<string, Person>(
+    userRows.map((user) => [
+      user.id,
+      { id: user.id, firstName: user.firstName, lastName: user.lastName },
+    ]),
   );
 
-  const dayBookings = BOOKINGS.filter(
-    (booking) => tableIds.has(booking.tableId) && booking.date === date,
+  const dayBookingRows = await db
+    .select()
+    .from(bookingsTable)
+    .where(
+      and(
+        inArray(bookingsTable.tableId, [...tableIds]),
+        eq(bookingsTable.date, date),
+      ),
+    );
+
+  const paymentRows = dayBookingRows.length
+    ? await db
+        .select()
+        .from(paymentsTable)
+        .where(
+          inArray(
+            paymentsTable.bookingId,
+            dayBookingRows.map((row) => row.id),
+          ),
+        )
+    : [];
+  const paymentByBookingId = new Map<string, IPayment>(
+    paymentRows.map((row) => [row.bookingId, toIPayment(row)]),
   );
 
+  const dayBookings: IBooking[] = dayBookingRows.map(toIBooking);
   const dayBookingsByTable = new Map<string, IBooking[]>();
   for (const booking of dayBookings) {
     const list = dayBookingsByTable.get(booking.tableId);
@@ -139,9 +178,7 @@ export const getTablesData = (date: string): TablesData => {
       if (getEffectiveBookingStatus(booking, payment) !== "confirmed") {
         continue;
       }
-      const customer = PEOPLE.find(
-        (person) => person.id === booking.customerId,
-      );
+      const customer = people.get(booking.customerId);
       bookings.push({
         id: booking.id,
         guest: customer
@@ -168,7 +205,7 @@ export const getTablesData = (date: string): TablesData => {
       price: table.price,
       status,
       bookings,
-    };
+    } satisfies TableDayInfo;
   });
 
   const placeCounts: TablesData["placeCounts"] = {

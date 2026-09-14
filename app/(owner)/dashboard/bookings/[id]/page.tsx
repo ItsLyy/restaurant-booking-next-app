@@ -32,7 +32,7 @@ export default async function DashboardBookingDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const booking = getBookingInfo(id);
+  const booking = await getBookingInfo(id);
   if (!booking) notFound();
 
   return (

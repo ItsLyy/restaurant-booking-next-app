@@ -9,7 +9,7 @@ import { requireManagerOrAbove } from "@libs/session";
 
 export default async function AddTablePage() {
   await requireManagerOrAbove();
-  const { defaultFloor } = tablesCountByFloor();
+  const { defaultFloor } = await tablesCountByFloor();
 
   return (
     <section className="px-4 pt-3 pb-6 size-full">

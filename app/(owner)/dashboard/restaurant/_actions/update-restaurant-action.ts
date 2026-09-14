@@ -1,18 +1,15 @@
 "use server";
 
+import { eq } from "drizzle-orm";
+
 import z from "zod";
 
 import { revalidatePath } from "next/cache";
 
 import type { FormState } from "@types";
 import { restaurantFieldsSchema } from "@data/profiles/restaurant-schema";
-import {
-  patchProfile,
-  PROFILES_FILES,
-  readProfiles,
-} from "@data/profiles/update-profile";
-
-import type { IRestaurant } from "@types";
+import { db } from "@db/client";
+import { restaurants as restaurantsTable } from "@db/schema";
 
 const RESTAURANT_ID = "rest-001";
 
@@ -38,13 +35,17 @@ export async function updateRestaurantAction(
     };
   }
 
-  const restaurants = readProfiles<IRestaurant>(PROFILES_FILES.restaurants);
-  const current = restaurants.find((item) => item.id === RESTAURANT_ID);
+  const restaurantRows = await db
+    .select()
+    .from(restaurantsTable)
+    .where(eq(restaurantsTable.id, RESTAURANT_ID))
+    .limit(1);
+  const current = restaurantRows[0];
   if (!current) {
     return { success: false, message: "Restaurant not found." };
   }
 
-  const fields: Partial<IRestaurant> = {
+  const setClause: Partial<typeof restaurantsTable.$inferInsert> = {
     name: validated.data.name,
     country: validated.data.country,
     city: validated.data.city,
@@ -53,17 +54,18 @@ export async function updateRestaurantAction(
     shortDescription:
       validated.data.shortDescription ?? current.shortDescription,
     tags: validated.data.tags,
+    updatedAt: new Date().toISOString(),
   };
   if (validated.data.discount !== undefined) {
-    fields.discount = validated.data.discount;
+    setClause.discount = validated.data.discount;
   }
 
-  const patched = patchProfile<IRestaurant>(
-    PROFILES_FILES.restaurants,
-    RESTAURANT_ID,
-    fields,
-  );
-  if (!patched) {
+  const updated = await db
+    .update(restaurantsTable)
+    .set(setClause)
+    .where(eq(restaurantsTable.id, RESTAURANT_ID))
+    .returning({ id: restaurantsTable.id });
+  if (updated.length === 0) {
     return { success: false, message: "Restaurant not found." };
   }
 

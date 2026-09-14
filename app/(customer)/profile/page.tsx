@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 
 export default async function CustomerProfilePage() {
   const customer = await requireCustomer("/profile");
-  const data = getCustomerProfileData(customer.userId);
+  const data = await getCustomerProfileData(customer.userId);
   if (!data) notFound();
 
   return (

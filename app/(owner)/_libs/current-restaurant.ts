@@ -1,6 +1,11 @@
+import { eq } from "drizzle-orm";
+
+import { db } from "@db/client";
+import {
+  officers as officersTable,
+  restaurants as restaurantsTable,
+} from "@db/schema";
 import { getAuthUser } from "@libs/session";
-import { PROFILES_FILES, readProfiles } from "@data/profiles/update-profile";
-import type { IOfficer, IRestaurant } from "@types";
 
 const DEFAULT_RESTAURANT_ID = "rest-001";
 
@@ -9,12 +14,20 @@ export async function getCurrentRestaurantId(): Promise<string> {
   if (!user) return DEFAULT_RESTAURANT_ID;
 
   if (user.role === "owner") {
-    const restaurants = readProfiles<IRestaurant>(PROFILES_FILES.restaurants);
-    const found = restaurants.find((r) => r.ownerId === user.userId);
+    const rows = await db
+      .select({ id: restaurantsTable.id })
+      .from(restaurantsTable)
+      .where(eq(restaurantsTable.ownerId, user.userId))
+      .limit(1);
+    const found = rows[0];
     if (found) return found.id;
   } else if (user.role === "manager" || user.role === "staff") {
-    const officers = readProfiles<IOfficer>(PROFILES_FILES.officers);
-    const found = officers.find((o) => o.id === user.userId);
+    const rows = await db
+      .select({ restaurantId: officersTable.restaurantId })
+      .from(officersTable)
+      .where(eq(officersTable.userId, user.userId))
+      .limit(1);
+    const found = rows[0];
     if (found) return found.restaurantId;
   }
 

@@ -3,7 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import restaurants from "@data/dummy/restaurants.json";
+import { eq } from "drizzle-orm";
+
+import { db } from "@db/client";
+import { restaurants } from "@db/schema";
 
 import {
   BookingLeadTimeError,
@@ -57,11 +60,15 @@ export async function confirmBookingAction(
   try {
     const booking = await createBooking(parsed.data, customer.userId);
 
-    const restaurant = restaurants.find(
-      (item) => item.id === parsed.data.restaurantId,
-    );
-    if (restaurant) {
-      revalidatePath(`/restaurants/${restaurant.slug}`, "page");
+    const restaurantRow = (
+      await db
+        .select({ slug: restaurants.slug })
+        .from(restaurants)
+        .where(eq(restaurants.id, parsed.data.restaurantId))
+        .limit(1)
+    )[0];
+    if (restaurantRow) {
+      revalidatePath(`/restaurants/${restaurantRow.slug}`, "page");
     }
     revalidatePath("/bookings", "page");
     revalidatePath("/dashboard", "page");
@@ -70,7 +77,7 @@ export async function confirmBookingAction(
     // Broadcast booking:created event to restaurant dashboard and customer listeners
     const { findAccountById } = await import("@data/auth/users");
     const { broadcastBookingEvent } = await import("@db/broadcast");
-    const customerAccount = findAccountById(customer.userId);
+    const customerAccount = await findAccountById(customer.userId);
     const guestName = customerAccount
       ? `${customerAccount.firstName} ${customerAccount.lastName}`.trim()
       : customer.email;

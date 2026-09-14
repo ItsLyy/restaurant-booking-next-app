@@ -70,13 +70,13 @@ export async function SignupAction(
 
   const { email, username } = validated.data;
 
-  if (findAccountByEmail(email)) {
+  if (await findAccountByEmail(email)) {
     return {
       errors: { email: ["An account with this email already exists."] },
     };
   }
 
-  if (findAccountByUsername(username)) {
+  if (await findAccountByUsername(username)) {
     return {
       errors: { username: ["This username is already taken."] },
     };

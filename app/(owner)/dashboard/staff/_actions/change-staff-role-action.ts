@@ -3,12 +3,7 @@
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
-import type { FormState, IOfficer } from "@types";
-import {
-  readProfiles,
-  writeProfiles,
-  PROFILES_FILES,
-} from "@data/profiles/update-profile";
+import type { FormState } from "@types";
 import { getDashboardRole } from "@libs/session";
 import { db } from "@db/client";
 import { officers as officersTable } from "@db/schema";
@@ -25,30 +20,13 @@ export async function changeStaffRoleAction(
     };
   }
 
-  const officers = readProfiles<IOfficer>(PROFILES_FILES.officers);
-  const targetIndex = officers.findIndex((o) => o.id === officerId);
-  if (targetIndex === -1) {
+  const updated = await db
+    .update(officersTable)
+    .set({ position: newPosition })
+    .where(eq(officersTable.userId, officerId))
+    .returning({ userId: officersTable.userId });
+  if (updated.length === 0) {
     return { success: false, message: "Staff member not found." };
-  }
-
-  const now = new Date().toISOString();
-  officers[targetIndex] = {
-    ...officers[targetIndex],
-    position: newPosition,
-    updatedAt: now,
-  };
-
-  // 1. Update JSON
-  writeProfiles(PROFILES_FILES.officers, officers);
-
-  // 2. Update DB
-  try {
-    await db
-      .update(officersTable)
-      .set({ position: newPosition })
-      .where(eq(officersTable.userId, officerId));
-  } catch {
-    // DB sync error handled gracefully
   }
 
   revalidatePath("/dashboard/staff", "page");

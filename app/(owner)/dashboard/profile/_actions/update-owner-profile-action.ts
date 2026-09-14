@@ -1,17 +1,17 @@
 "use server";
 
+import { eq } from "drizzle-orm";
+
 import z from "zod";
 
 import { revalidatePath } from "next/cache";
 
-import type { FormState, IOwner } from "@types";
+import type { FormState } from "@types";
 import { saveAvatarFile } from "@data/profiles/avatar";
 import { profileFieldsSchema } from "@data/profiles/profile-schema";
-import {
-  patchProfile,
-  PROFILES_FILES,
-  readProfiles,
-} from "@data/profiles/update-profile";
+import { patchUserProfile } from "@data/profiles/update-profile";
+import { db } from "@db/client";
+import { users as usersTable } from "@db/schema";
 
 const OWNER_ID = "owner-001";
 
@@ -37,20 +37,24 @@ export async function updateOwnerProfileAction(
     };
   }
 
-  const owners = readProfiles<IOwner>(PROFILES_FILES.owners);
-  const current = owners.find((owner) => owner.id === OWNER_ID);
+  const ownerRows = await db
+    .select()
+    .from(usersTable)
+    .where(eq(usersTable.id, OWNER_ID))
+    .limit(1);
+  const current = ownerRows[0];
   if (!current) {
     return { success: false, message: "Profile not found." };
   }
 
-  const patched = patchProfile<IOwner>(PROFILES_FILES.owners, OWNER_ID, {
+  const updated = await patchUserProfile(OWNER_ID, {
     firstName: validated.data.firstName,
     lastName: validated.data.lastName,
     email: validated.data.email,
-    avatar: avatarResult.path ?? current.avatar,
+    avatar: avatarResult.path ?? current.avatar ?? undefined,
     allergics: validated.data.allergics,
   });
-  if (!patched) {
+  if (!updated) {
     return { success: false, message: "Profile not found." };
   }
 

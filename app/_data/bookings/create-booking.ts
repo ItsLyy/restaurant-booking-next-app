@@ -1,9 +1,14 @@
-import { readFileSync, writeFileSync } from "fs";
-import path from "path";
+import "server-only";
 
-import restaurants from "@data/dummy/restaurants.json";
-import tables from "@data/dummy/tables.json";
-import payments from "@data/dummy/payments.json";
+import { eq, inArray, like } from "drizzle-orm";
+
+import { db } from "@db/client";
+import {
+  bookings as bookingsTable,
+  payments as paymentsTable,
+  restaurants as restaurantsTable,
+  tables as tablesTable,
+} from "@db/schema";
 
 import {
   derivePaymentDeadline,
@@ -11,7 +16,8 @@ import {
   isBookingTooSoon,
 } from "./booking-deadline";
 
-import type { IBooking, IPayment, ITable } from "@types";
+import type { BookingRow, PaymentRow, RestaurantRow, TableRow } from "@db/schema";
+import type { IBooking, IPayment } from "@types";
 
 export interface CreateBookingInput {
   restaurantId: string;
@@ -20,16 +26,6 @@ export interface CreateBookingInput {
   partySize: number;
   specialRequest?: string;
 }
-
-const BOOKINGS_FILE_PATH = path.join(
-  process.cwd(),
-  "app/_data/dummy/bookings.json",
-);
-
-const PAYMENTS_FILE_PATH = path.join(
-  process.cwd(),
-  "app/_data/dummy/payments.json",
-);
 
 const CUSTOMER_ID = "user-001";
 const INITIAL_STATUS = "pending";
@@ -54,55 +50,80 @@ export class BookingWriteError extends Error {
   name = "BookingWriteError";
 }
 
-function readBookings(): IBooking[] {
-  try {
-    const raw = readFileSync(BOOKINGS_FILE_PATH, "utf8");
-    return (JSON.parse(raw) as IBooking[]);
-  } catch {
-    throw new BookingWriteError("Could not read the bookings data.");
-  }
-}
+const toIBooking = (row: BookingRow): IBooking => ({
+  id: row.id,
+  date: row.date,
+  time: row.time,
+  partySize: row.partySize,
+  ...(row.specialRequest ? { specialRequest: row.specialRequest } : {}),
+  status: row.status,
+  customerId: row.customerId,
+  tableId: row.tableId,
+  ...(row.cancelledBy
+    ? {
+        cancelled: {
+          date: row.cancelledDate ?? "",
+          by: row.cancelledBy,
+          reason: row.cancelledReason ?? "",
+        },
+      }
+    : {}),
+  createdAt: row.createdAt,
+  updatedAt: row.updatedAt,
+});
 
-function readPayments(): IPayment[] {
-  try {
-    const raw = readFileSync(PAYMENTS_FILE_PATH, "utf8");
-    return (JSON.parse(raw) as IPayment[]);
-  } catch {
-    throw new BookingWriteError("Could not read the payment data.");
-  }
-}
+const toIPayment = (row?: PaymentRow): IPayment | undefined => {
+  if (!row) return undefined;
+  return {
+    id: row.id,
+    price: row.price,
+    status: row.status,
+    deadline: row.deadline,
+    gatewayToken: row.gatewayToken,
+    bookingId: row.bookingId,
+    paidAt: row.paidAt ?? undefined,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+  };
+};
 
-function buildNextPaymentId(payments: IPayment[]): string {
+const findRestaurantTables = async (
+  restaurantId: string,
+): Promise<TableRow[]> =>
+  db
+    .select()
+    .from(tablesTable)
+    .where(eq(tablesTable.restaurantId, restaurantId));
+
+const buildNextPaymentId = async (): Promise<string> => {
+  const rows = await db
+    .select({ id: paymentsTable.id })
+    .from(paymentsTable)
+    .where(like(paymentsTable.id, "payment-%"));
   let max = 0;
-  for (const payment of payments) {
-    const sequence = Number(payment.id.replace("payment-", ""));
+  for (const row of rows) {
+    const sequence = Number(row.id.replace("payment-", ""));
     if (Number.isFinite(sequence) && sequence > max) {
       max = sequence;
     }
   }
   return `payment-${String(max + 1).padStart(3, "0")}`;
-}
+};
 
-function buildNextBookingId(bookings: IBooking[]): string {
+const buildNextBookingId = async (): Promise<string> => {
+  const rows = await db
+    .select({ id: bookingsTable.id })
+    .from(bookingsTable)
+    .where(like(bookingsTable.id, "booking-%"));
   let max = 0;
-  for (const booking of bookings) {
-    const sequence = Number(booking.id.replace("booking-", ""));
+  for (const row of rows) {
+    const sequence = Number(row.id.replace("booking-", ""));
     if (Number.isFinite(sequence) && sequence > max) {
       max = sequence;
     }
   }
   return `booking-${String(max + 1).padStart(3, "0")}`;
-}
-
-function findRestaurantTables(restaurantId: string): ITable[] {
-  const found: ITable[] = [];
-  for (const table of tables) {
-    if (table.restaurantId === restaurantId) {
-      found.push(table as ITable);
-    }
-  }
-  return found;
-}
+};
 
 export interface BookingPreview {
   restaurantName: string;
@@ -111,15 +132,22 @@ export interface BookingPreview {
   price: number;
 }
 
-function selectBooking(input: CreateBookingInput): {
-  restaurant: (typeof restaurants)[number];
-  restaurantTables: ITable[];
+interface SelectedBooking {
+  restaurant: RestaurantRow;
+  bestTable: TableRow;
   busyTableIds: Set<string>;
-  bestTable: ITable;
-} {
+  restaurantTables: TableRow[];
+}
+
+async function selectBooking(input: CreateBookingInput): Promise<SelectedBooking> {
   const { restaurantId, date, time, partySize } = input;
 
-  const restaurant = restaurants.find((item) => item.id === restaurantId);
+  const restaurantRows = await db
+    .select()
+    .from(restaurantsTable)
+    .where(eq(restaurantsTable.id, restaurantId))
+    .limit(1);
+  const restaurant = restaurantRows[0];
   if (!restaurant) {
     throw new RestaurantNotFoundError("The restaurant does not exist.");
   }
@@ -130,26 +158,38 @@ function selectBooking(input: CreateBookingInput): {
     );
   }
 
-  const restaurantTables = findRestaurantTables(restaurantId);
+  const restaurantTables = await findRestaurantTables(restaurantId);
   if (restaurantTables.length === 0) {
-    throw new RestaurantNoTablesError("This restaurant has no bookable tables yet.");
+    throw new RestaurantNoTablesError(
+      "This restaurant has no bookable tables yet.",
+    );
   }
 
-  const bookings = readBookings();
+  const tableIds = restaurantTables.map((table) => table.id);
+  const bookingRows = await db
+    .select()
+    .from(bookingsTable)
+    .where(inArray(bookingsTable.tableId, tableIds));
+
+  const bookingIds = bookingRows.map((booking) => booking.id);
+  const paymentRows = bookingIds.length
+    ? await db
+        .select()
+        .from(paymentsTable)
+        .where(inArray(paymentsTable.bookingId, bookingIds))
+    : [];
 
   const paymentByBookingId = new Map(
-    payments.map((item) => [item.bookingId, item] as const),
+    paymentRows.map((item) => [item.bookingId, item] as const),
   );
 
   const busyTableIds = new Set<string>();
-  for (const booking of bookings) {
+  for (const booking of bookingRows) {
     if (booking.status === "cancelled" || booking.status === "no_show") {
       continue;
     }
-    const payment = paymentByBookingId.get(booking.id) as
-      | IPayment
-      | undefined;
-    if (getEffectiveBookingStatus(booking, payment) === "cancelled") {
+    const payment = paymentByBookingId.get(booking.id);
+    if (getEffectiveBookingStatus(toIBooking(booking), toIPayment(payment)) === "cancelled") {
       continue;
     }
     if (booking.date !== date || booking.time !== time) {
@@ -158,7 +198,7 @@ function selectBooking(input: CreateBookingInput): {
     busyTableIds.add(booking.tableId);
   }
 
-  let bestTable: ITable | null = null;
+  let bestTable: TableRow | null = null;
   for (const table of restaurantTables) {
     if (busyTableIds.has(table.id)) {
       continue;
@@ -182,8 +222,10 @@ function selectBooking(input: CreateBookingInput): {
   return { restaurant, restaurantTables, busyTableIds, bestTable };
 }
 
-export function getBookingPreview(input: CreateBookingInput): BookingPreview {
-  const { restaurant, bestTable } = selectBooking(input);
+export async function getBookingPreview(
+  input: CreateBookingInput,
+): Promise<BookingPreview> {
+  const { restaurant, bestTable } = await selectBooking(input);
   return {
     restaurantName: restaurant.name,
     restaurantSlug: restaurant.slug,
@@ -197,13 +239,13 @@ export async function createBooking(
   customerId: string = CUSTOMER_ID,
 ): Promise<IBooking> {
   const { date, time, partySize, specialRequest } = input;
-  const { bestTable } = selectBooking(input);
+  const { bestTable } = await selectBooking(input);
 
-  const bookings = readBookings();
-  const payments = readPayments();
   const now = new Date().toISOString();
+  const bookingId = await buildNextBookingId();
+  const paymentId = await buildNextPaymentId();
   const booking: IBooking = {
-    id: buildNextBookingId(bookings),
+    id: bookingId,
     date,
     time,
     partySize,
@@ -215,66 +257,46 @@ export async function createBooking(
     updatedAt: now,
   };
 
-  bookings.push(booking);
-
   const payment: IPayment = {
-    id: buildNextPaymentId(payments),
+    id: paymentId,
     price: bestTable.price,
     status: "unpaid",
     deadline: derivePaymentDeadline(),
-    gatewayToken: `tok_sandbox_${booking.id}`,
-    bookingId: booking.id,
+    gatewayToken: `tok_sandbox_${bookingId}`,
+    bookingId,
     createdAt: now,
     updatedAt: now,
   };
-  payments.push(payment);
 
   try {
-    writeFileSync(
-      BOOKINGS_FILE_PATH,
-      `${JSON.stringify(bookings, null, 2)}\n`,
-      "utf8",
-    );
-    writeFileSync(
-      PAYMENTS_FILE_PATH,
-      `${JSON.stringify(payments, null, 2)}\n`,
-      "utf8",
-    );
+    await db.transaction(async (tx) => {
+      await tx.insert(bookingsTable).values({
+        id: bookingId,
+        date,
+        time,
+        partySize,
+        specialRequest: specialRequest ?? null,
+        status: "pending",
+        customerId,
+        tableId: bestTable.id,
+        createdAt: now,
+        updatedAt: now,
+      });
+
+      await tx.insert(paymentsTable).values({
+        id: paymentId,
+        price: payment.price,
+        status: "unpaid",
+        deadline: payment.deadline,
+        gatewayToken: payment.gatewayToken,
+        paidAt: null,
+        bookingId,
+        createdAt: now,
+        updatedAt: now,
+      });
+    });
   } catch {
     throw new BookingWriteError("Could not save the booking.");
-  }
-
-  // Sync to database if available
-  try {
-    const { db } = await import("@db/client");
-    const { bookings: bookingsTable, payments: paymentsTable } = await import("@db/schema");
-
-    await db.insert(bookingsTable).values({
-      id: booking.id,
-      date: booking.date,
-      time: booking.time,
-      partySize: booking.partySize,
-      specialRequest: booking.specialRequest ?? null,
-      status: "pending",
-      customerId: booking.customerId,
-      tableId: booking.tableId,
-      createdAt: booking.createdAt ?? now,
-      updatedAt: booking.updatedAt ?? now,
-    });
-
-    await db.insert(paymentsTable).values({
-      id: payment.id,
-      price: payment.price,
-      status: "unpaid",
-      deadline: payment.deadline,
-      gatewayToken: payment.gatewayToken,
-      paidAt: null,
-      bookingId: payment.bookingId,
-      createdAt: payment.createdAt ?? now,
-      updatedAt: payment.updatedAt ?? now,
-    });
-  } catch {
-    // DB sync error handled gracefully
   }
 
   return booking;

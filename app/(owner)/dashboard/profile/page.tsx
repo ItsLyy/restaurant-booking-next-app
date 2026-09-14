@@ -15,7 +15,7 @@ export default async function DashboardProfilePage() {
   const role = await getDashboardRole();
   if (role !== "owner") return <OfficerProfile />;
 
-  const data = getOwnerProfile();
+  const data = await getOwnerProfile();
   if (!data) notFound();
 
   const { owner, restaurant } = data;
