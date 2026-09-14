@@ -1,22 +1,36 @@
-import Image from "next/image";
+import { UserIcon } from "@phosphor-icons/react/dist/ssr";
+import type { ReactNode } from "react";
+
+import { SafeImage } from "./safe-image";
 
 interface AvatarProps {
   src: string;
   alt: string;
   className?: string;
+  sizes?: string;
+  fallbackIcon?: ReactNode;
 }
 
-export const Avatar = ({ src, alt, className }: AvatarProps) => {
+export const Avatar = ({
+  src,
+  alt,
+  className,
+  sizes = "44px",
+  fallbackIcon,
+}: AvatarProps) => {
   return (
     <div
       className={`relative rounded-lg bg-base-200 size-11 overflow-hidden ${className}`}
     >
-      <Image
+      <SafeImage
         src={src}
         alt={alt}
         fill
-        sizes="44px"
-        className={`text-transparent object-cover object-center`}
+        sizes={sizes}
+        className="text-transparent object-cover object-center"
+        fallbackIcon={
+          fallbackIcon ?? <UserIcon className="size-5 text-muted/60" />
+        }
       />
     </div>
   );

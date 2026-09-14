@@ -1,6 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 import { MapPinIcon, StarIcon, TagIcon } from "@phosphor-icons/react/dist/ssr";
+import { SafeImage } from "@components";
 import { formatPrice } from "@utils";
 
 interface RestaurantCardProps {
@@ -31,7 +31,7 @@ const RestaurantCard = ({
       className="group flex flex-col overflow-hidden rounded-2xl border border-muted/50 bg-base-100 shadow-2xs hover:border-accent-200/60 transition-colors"
     >
       <div className="relative w-full aspect-3/2 overflow-hidden bg-base-200">
-        <Image
+        <SafeImage
           src={image}
           alt={name}
           fill

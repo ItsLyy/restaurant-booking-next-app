@@ -1,4 +1,5 @@
 export { Avatar } from "./general/avatar";
+export { SafeImage } from "./general/safe-image";
 export { DashboardNavFooter } from "./general/dashboard-nav-footer";
 
 export { default as Logo } from "./general/logo";

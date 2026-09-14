@@ -4,13 +4,13 @@ import { useState } from "react";
 
 import { useRouter } from "next/navigation";
 
-import Image from "next/image";
-
 import { TrashIcon } from "@phosphor-icons/react/dist/ssr";
 
 import { toast } from "sonner";
 
 import type { IRestaurantPhoto } from "@types";
+
+import { SafeImage } from "@components";
 
 import { deletePhotoAction } from "../_actions/photo-actions";
 
@@ -50,7 +50,7 @@ export const PhotoItem = ({ photo }: { photo: IRestaurantPhoto }) => {
   return (
     <div className="group flex flex-col gap-2 border border-muted rounded-lg p-2 bg-base-100">
       <div className="relative aspect-[3/4] w-full overflow-hidden rounded-md bg-base-200">
-        <Image
+        <SafeImage
           src={photo.url}
           alt={`Photo ${photo.id}`}
           fill

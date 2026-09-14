@@ -10,6 +10,8 @@ import {
 
 import type { IRestaurantPhoto } from "@types";
 
+import { SafeImage } from "@components";
+
 import { addMenuPhotoAction, addPostPhotoAction } from "../_actions/photo-actions";
 
 import { MAX_GALLERY_PHOTOS } from "../_constants";
@@ -89,11 +91,12 @@ export const PhotoTabs = ({ cover, posts, menus }: PhotoTabsProps) => {
             </span>
           </div>
           <div className="relative aspect-video w-full overflow-hidden rounded-lg border border-muted bg-base-100">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <SafeImage
               src={cover.url}
               alt="Current cover image"
-              className="size-full object-cover"
+              fill
+              sizes="(min-width: 1024px) 1024px, 100vw"
+              className="object-cover"
             />
           </div>
           <CoverForm />

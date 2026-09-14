@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { SafeImage } from "@components";
 import Link from "next/link";
 
 import type { IRestaurantPhoto } from "@types";
@@ -29,7 +29,7 @@ export const Photos = ({
         aria-label={`Open photos of ${name}`}
         className="relative block w-full h-56 sm:h-67 rounded-2xl overflow-hidden bg-base-200"
       >
-        <Image
+        <SafeImage
           src={cover}
           alt={`Photo of ${name}`}
           fill
@@ -57,7 +57,7 @@ export const Photos = ({
               aria-label={`Open photo ${index + 1} of ${name}`}
               className="relative w-full rounded-2xl overflow-hidden bg-base-200"
             >
-              <Image
+              <SafeImage
                 src={photo.url}
                 alt={`Photo of ${name} ${index + 1}`}
                 fill
@@ -88,7 +88,7 @@ const PhotoOtherLink = ({
       href={`/restaurants/${slug}/images/${photo.id}`}
       className="relative w-full rounded-2xl overflow-hidden bg-base-200"
     >
-      <Image
+      <SafeImage
         src={photo.url}
         alt={alt}
         fill

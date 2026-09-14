@@ -1,8 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useEffectEvent } from "react";
+import { SafeImage } from "@components";
 
 import { CaretLeftIcon, CaretRightIcon } from "@phosphor-icons/react/dist/ssr";
 
@@ -75,7 +75,7 @@ export const ImageGallery = ({
   return (
     <div className="flex flex-col gap-3 w-full">
       <div className="relative w-full h-96 sm:h-128 rounded-2xl overflow-hidden bg-base-200 flex items-center justify-center">
-        <Image
+        <SafeImage
           key={image.url}
           src={image.url}
           alt={alt}
@@ -130,7 +130,7 @@ export const ImageGallery = ({
               }`}
             >
               <span className="size-full absolute inset-0 rounded-xl overflow-hidden bg-base-200">
-                <Image
+                <SafeImage
                   src={getThumbnailUrl(item.url)}
                   alt=""
                   fill

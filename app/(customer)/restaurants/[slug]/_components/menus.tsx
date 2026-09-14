@@ -1,5 +1,5 @@
 import type { IRestaurantPhoto } from "@types";
-import Image from "next/image";
+import { SafeImage } from "@components";
 import Link from "next/link";
 
 interface MenusProps {
@@ -18,7 +18,7 @@ export const Menus = ({ slug, name, menus }: MenusProps) => {
           aria-label={`Open menu of ${name} ${index + 1}`}
           className="w-32 h-21.5 relative overflow-hidden bg-base-200 rounded-2xl"
         >
-          <Image
+          <SafeImage
             src={menu.url}
             alt={`Menu of ${name} ${index + 1}`}
             fill
