@@ -1,5 +1,7 @@
 # restaurant-booking-next-app
 
+![Res.Book preview](docs/preview.jpg)
+
 A full-stack **restaurant table-booking + owner CRM** application. Customers
 browse restaurants and book tables; owners manage their restaurants, staff,
 tables, photos, bookings, payments, and reviews; managers and staff run the
